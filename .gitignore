@@ -1,0 +1,32 @@
+# Dependencies
+node_modules
+
+# Next.js
+.next
+.next-build
+out
+next-env.d.ts
+*.tsbuildinfo
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Runtime files
+/public/uploads/
+/public/fonts/custom/
+/data/stills
+/avatar
+/cover
+/frames
+/*.txt
+
+# Logs
+npm-debug.log*
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode

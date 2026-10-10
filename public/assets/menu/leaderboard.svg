@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon" clip-path="url(#clip0_0_9)">
+<path id="Vector" d="M6.66667 9.77333V10.8573C6.66415 11.0857 6.60299 11.3097 6.48905 11.5077C6.37512 11.7057 6.21223 11.8711 6.016 11.988C5.59943 12.2965 5.26056 12.698 5.02632 13.1604C4.79209 13.6229 4.66894 14.1336 4.66667 14.652" stroke="#C3C8D1" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M9.33333 9.77333V10.8573C9.33585 11.0857 9.39701 11.3097 9.51095 11.5077C9.62488 11.7057 9.78777 11.8711 9.984 11.988C10.4006 12.2965 10.7394 12.698 10.9737 13.1604C11.2079 13.6229 11.3311 14.1336 11.3333 14.652" stroke="#C3C8D1" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_3" d="M12 6H13C13.442 6 13.866 5.82441 14.1785 5.51184C14.4911 5.19928 14.6667 4.77536 14.6667 4.33333C14.6667 3.89131 14.4911 3.46738 14.1785 3.15482C13.866 2.84226 13.442 2.66667 13 2.66667H12" stroke="#C3C8D1" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_4" d="M2.66667 14.6667H13.3333" stroke="#C3C8D1" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_5" d="M4 6C4 7.06087 4.42143 8.07828 5.17157 8.82843C5.92172 9.57857 6.93913 10 8 10C9.06087 10 10.0783 9.57857 10.8284 8.82843C11.5786 8.07828 12 7.06087 12 6V2C12 1.82319 11.9298 1.65362 11.8047 1.5286C11.6797 1.40357 11.5101 1.33333 11.3333 1.33333H4.66667C4.48986 1.33333 4.32029 1.40357 4.19526 1.5286C4.07024 1.65362 4 1.82319 4 2V6Z" stroke="#C3C8D1" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_6" d="M4 6H3C2.55797 6 2.13405 5.82441 1.82149 5.51184C1.50893 5.19928 1.33333 4.77536 1.33333 4.33333C1.33333 3.89131 1.50893 3.46738 1.82149 3.15482C2.13405 2.84226 2.55797 2.66667 3 2.66667H4" stroke="#C3C8D1" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_0_9">
+<rect width="16" height="16" fill="white"/>
+</clipPath>
+</defs>
+</svg>

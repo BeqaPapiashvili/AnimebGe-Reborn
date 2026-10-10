@@ -1,0 +1,2083 @@
+{
+  "catalog": [
+    {
+      "title": "Discord",
+      "items": [
+        {
+          "name": "I'm a Clown",
+          "file": "im_a_clown.avif",
+          "missing": false
+        },
+        {
+          "name": "Mokoko",
+          "file": "mokoko.avif",
+          "missing": false
+        },
+        {
+          "name": "Gyoiko Sakura",
+          "file": "gyoiko_sakura.avif",
+          "missing": true
+        },
+        {
+          "name": "Warp Helmet",
+          "file": "warp_helmet.avif",
+          "missing": false
+        },
+        {
+          "name": "Fortnite Victory Crown",
+          "file": "fortnite_victory_crown.avif",
+          "missing": true
+        },
+        {
+          "name": "Freezer Bunny Lovebug",
+          "file": "freezer_bunny_lovebug.avif",
+          "missing": false
+        },
+        {
+          "name": "Wingman Boba",
+          "file": "wingman_boba.avif",
+          "missing": false
+        },
+        {
+          "name": "Los Santos",
+          "file": "los_santos.avif",
+          "missing": false
+        },
+        {
+          "name": "Hailey",
+          "file": "hailey.avif",
+          "missing": false
+        },
+        {
+          "name": "Bunny",
+          "file": "bunny.avif",
+          "missing": false
+        },
+        {
+          "name": "Torgal Puppy",
+          "file": "torgal_puppy.avif",
+          "missing": false
+        },
+        {
+          "name": "Street Fighter 6 Battle Field",
+          "file": "street_fighter_6_battle_field.avif",
+          "missing": false
+        },
+        {
+          "name": "Wolf Morph",
+          "file": "wolf_morph.avif",
+          "missing": false
+        },
+        {
+          "name": "Wallach IX Spaceport",
+          "file": "wallach_ix_spaceport.avif",
+          "missing": true
+        },
+        {
+          "name": "Batarang",
+          "file": "batarang.avif",
+          "missing": false
+        },
+        {
+          "name": "Rift Butterfly",
+          "file": "rift_butterfly.avif",
+          "missing": false
+        },
+        {
+          "name": "Bush Camper",
+          "file": "bush_camper.avif",
+          "missing": false
+        },
+        {
+          "name": "Shield Potion",
+          "file": "shield_potion.avif",
+          "missing": false
+        },
+        {
+          "name": "TGA Controller",
+          "file": "tga_controller.avif",
+          "missing": false
+        },
+        {
+          "name": "Shadow",
+          "file": "shadow.avif",
+          "missing": false
+        },
+        {
+          "name": "2025 Balloons",
+          "file": "2025_balloons.avif",
+          "missing": true
+        },
+        {
+          "name": "Holiday Cat Ears",
+          "file": "holiday_cat_ears.avif",
+          "missing": true
+        },
+        {
+          "name": "Snowfall",
+          "file": "snowfall.avif",
+          "missing": false
+        },
+        {
+          "name": "Rec Room Lightning",
+          "file": "rec_room_lightning.avif",
+          "missing": false
+        },
+        {
+          "name": "WINGMAN'S GOT IT",
+          "file": "wingmans_got_it.avif",
+          "missing": false
+        },
+        {
+          "name": "Jeff the Land Shark",
+          "file": "jeff_the_land_shark.avif",
+          "missing": false
+        },
+        {
+          "name": "Fuchsia Agent",
+          "file": "fuchsia_agent.avif",
+          "missing": false
+        },
+        {
+          "name": "Heart-to-Heart",
+          "file": "heart_to_heart.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Lunar New Year",
+      "items": [
+        {
+          "name": "Snake's Hug",
+          "file": "snakes_hug.avif",
+          "missing": false
+        },
+        {
+          "name": "Lotus Flower",
+          "file": "lotus_flower.avif",
+          "missing": false
+        },
+        {
+          "name": "Red Lantern",
+          "file": "red_lantern.avif",
+          "missing": false
+        },
+        {
+          "name": "Fan Flourish",
+          "file": "fan_flourish.avif",
+          "missing": false
+        },
+        {
+          "name": "Lunar Lanterns",
+          "file": "lunar_lanterns.avif",
+          "missing": false
+        },
+        {
+          "name": "Firecrackers",
+          "file": "firecrackers.avif",
+          "missing": false
+        },
+        {
+          "name": "Dragon's Smile",
+          "file": "dragons_smile.avif",
+          "missing": false
+        },
+        {
+          "name": "Lucky Envelopes",
+          "file": "lucky_envelopes.avif",
+          "missing": false
+        },
+        {
+          "name": "Koi Pond",
+          "file": "koi_pond.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Steampunk",
+      "items": [
+        {
+          "name": "Steampunk Cat Ears",
+          "file": "steampunk_cat_ears.avif",
+          "missing": false
+        },
+        {
+          "name": "Mech Flora",
+          "file": "mech_flora.avif",
+          "missing": false
+        },
+        {
+          "name": "Bowler Hat",
+          "file": "bowler_hat.avif",
+          "missing": false
+        },
+        {
+          "name": "Brass Beats",
+          "file": "brass_beats.avif",
+          "missing": false
+        },
+        {
+          "name": "Timekeeper's Clock",
+          "file": "timekeepers_clock.avif",
+          "missing": false
+        },
+        {
+          "name": "Flux Alchemy",
+          "file": "flux_alchemy.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Fantasy 2",
+      "items": [
+        {
+          "name": "Fairy Sprites",
+          "file": "fairy_sprites.avif",
+          "missing": false
+        },
+        {
+          "name": "Cottage Home",
+          "file": "cottage_home.avif",
+          "missing": false
+        },
+        {
+          "name": "Flaming Sword",
+          "file": "flaming_sword.avif",
+          "missing": false
+        },
+        {
+          "name": "Magical Potion",
+          "file": "magical_potion.avif",
+          "missing": false
+        },
+        {
+          "name": "Wizard's Staff",
+          "file": "wizards_staff.avif",
+          "missing": false
+        },
+        {
+          "name": "Glowing Runes",
+          "file": "glowing_runes.avif",
+          "missing": false
+        },
+        {
+          "name": "Defensive Shield",
+          "file": "defensive_shield.avif",
+          "missing": false
+        },
+        {
+          "name": "Skull Medallion",
+          "file": "skull_medallion.avif",
+          "missing": false
+        },
+        {
+          "name": "Treasure and Key",
+          "file": "treasure_and_key.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Winter Wonderland",
+      "items": [
+        {
+          "name": "Aurora",
+          "file": "aurora.avif",
+          "missing": false
+        },
+        {
+          "name": "Polar Bear Hat",
+          "file": "polar_bear_hat.avif",
+          "missing": false
+        },
+        {
+          "name": "String Lights",
+          "file": "string_lights.avif",
+          "missing": false
+        },
+        {
+          "name": "Snowglobe",
+          "file": "snowglobe.avif",
+          "missing": false
+        },
+        {
+          "name": "Fresh Pine",
+          "file": "fresh_pine.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Lofi Girl",
+      "items": [
+        {
+          "name": "Lofi Girl Outfit",
+          "file": "lofi_girl_outfit.avif",
+          "missing": false
+        },
+        {
+          "name": "Playful Lofi Cat",
+          "file": "playful_lofi_cat.avif",
+          "missing": false
+        },
+        {
+          "name": "Sleepy ChilledCow",
+          "file": "sleepy_chilledcow.avif",
+          "missing": false
+        },
+        {
+          "name": "Study Session",
+          "file": "study_session.avif",
+          "missing": false
+        },
+        {
+          "name": "Group Hug",
+          "file": "group_hug.avif",
+          "missing": false
+        },
+        {
+          "name": "Cozy Post-It",
+          "file": "cozy_post_it.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Kawaii Mode",
+      "items": [
+        {
+          "name": "Cat Ear Headset",
+          "file": "cat_ear_headset.avif",
+          "missing": false
+        },
+        {
+          "name": "Bubble Tea",
+          "file": "bubble_tea.avif",
+          "missing": false
+        },
+        {
+          "name": "Bunny Zzzs",
+          "file": "bunny_zzzs.avif",
+          "missing": false
+        },
+        {
+          "name": "Sproutling",
+          "file": "sproutling.avif",
+          "missing": false
+        },
+        {
+          "name": "Bloomling",
+          "file": "bloomling.avif",
+          "missing": false
+        },
+        {
+          "name": "Neon Nibbles",
+          "file": "neon_nibbles.avif",
+          "missing": false
+        },
+        {
+          "name": "UwU XP",
+          "file": "uwu_xp.avif",
+          "missing": false
+        },
+        {
+          "name": "Hex Lights",
+          "file": "hex_lights.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Arcane",
+      "items": [
+        {
+          "name": "The Anomaly",
+          "file": "the_anomaly.avif",
+          "missing": false
+        },
+        {
+          "name": "The Mark",
+          "file": "the_mark.avif",
+          "missing": false
+        },
+        {
+          "name": "The Monster You Created",
+          "file": "the_monster_you_created.avif",
+          "missing": false
+        },
+        {
+          "name": "The Atlas Gauntlets",
+          "file": "the_atlas_gauntlets.avif",
+          "missing": false
+        },
+        {
+          "name": "Flame Chompers",
+          "file": "flame_chompers.avif",
+          "missing": false
+        },
+        {
+          "name": "FISHBONES!",
+          "file": "fishbones.avif",
+          "missing": false
+        },
+        {
+          "name": "The Hexcore",
+          "file": "the_hexcore.avif",
+          "missing": false
+        },
+        {
+          "name": "Powered by Shimmer",
+          "file": "powered_by_shimmer.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Mythical Creatures",
+      "items": [
+        {
+          "name": "Kitsune",
+          "file": "kitsune.avif",
+          "missing": false
+        },
+        {
+          "name": "Unicorn",
+          "file": "unicorn.avif",
+          "missing": false
+        },
+        {
+          "name": "Phoenix",
+          "file": "phoenix.avif",
+          "missing": false
+        },
+        {
+          "name": "Dancing Fairies",
+          "file": "dancing_fairies.avif",
+          "missing": false
+        },
+        {
+          "name": "Crystal Elk",
+          "file": "crystal_elk.avif",
+          "missing": false
+        },
+        {
+          "name": "Mermaid Serenade",
+          "file": "mermaid_serenade.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Dungeons &amp; Dragons",
+      "items": [
+        {
+          "name": "Violet Dice",
+          "file": "violet_dice.avif",
+          "missing": true
+        },
+        {
+          "name": "Azure Dice",
+          "file": "azure_dice.avif",
+          "missing": true
+        },
+        {
+          "name": "Green Gelatinous Cube",
+          "file": "green_gelatinous_cube.avif",
+          "missing": true
+        },
+        {
+          "name": "Blue Gelatinous Cube",
+          "file": "blue_gelatinous_cube.avif",
+          "missing": true
+        },
+        {
+          "name": "Owlbear Cub",
+          "file": "owlbear_cub.avif",
+          "missing": false
+        },
+        {
+          "name": "Snowy Owlbear Cub",
+          "file": "snowy_owlbear_cub.avif",
+          "missing": true
+        },
+        {
+          "name": "Baby Displacer Beast",
+          "file": "baby_displacer_beast.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Spooky Night",
+      "items": [
+        {
+          "name": "Spooky Cat Ears",
+          "file": "spooky_cat_ears.avif",
+          "missing": false
+        },
+        {
+          "name": "Candlelight",
+          "file": "candlelight.avif",
+          "missing": false
+        },
+        {
+          "name": "Crimson Candlelight",
+          "file": "crimson_candlelight.avif",
+          "missing": true
+        },
+        {
+          "name": "Dark Candlelight",
+          "file": "dark_candlelight.avif",
+          "missing": true
+        },
+        {
+          "name": "Dark Hood",
+          "file": "dark_hood.avif",
+          "missing": true
+        },
+        {
+          "name": "Crimson Hood",
+          "file": "crimson_hood.avif",
+          "missing": true
+        },
+        {
+          "name": "Plum Witch Hat",
+          "file": "plum_witch_hat.avif",
+          "missing": true
+        },
+        {
+          "name": "Midnight Witch Hat",
+          "file": "midnight_witch_hat.avif",
+          "missing": true
+        },
+        {
+          "name": "Zombie Food",
+          "file": "zombie_food.avif",
+          "missing": false
+        },
+        {
+          "name": "Bloodthirsty",
+          "file": "bloodthirsty.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Street Fighter",
+      "items": [
+        {
+          "name": "Ryu",
+          "file": "ryu.avif",
+          "missing": false
+        },
+        {
+          "name": "Chun-Li",
+          "file": "chun_li.avif",
+          "missing": false
+        },
+        {
+          "name": "Ken",
+          "file": "ken.avif",
+          "missing": false
+        },
+        {
+          "name": "Akuma",
+          "file": "akuma.avif",
+          "missing": false
+        },
+        {
+          "name": "Cammy",
+          "file": "cammy.avif",
+          "missing": false
+        },
+        {
+          "name": "Guile",
+          "file": "guile.avif",
+          "missing": false
+        },
+        {
+          "name": "Juri",
+          "file": "juri.avif",
+          "missing": false
+        },
+        {
+          "name": "M. Bison",
+          "file": "m_bison.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Autumn Equinox",
+      "items": [
+        {
+          "name": "Twilight Chrysanthemums",
+          "file": "twilight_chrysanthemums.avif",
+          "missing": true
+        },
+        {
+          "name": "Morning Chrysanthemums",
+          "file": "morning_chrysanthemums.avif",
+          "missing": true
+        },
+        {
+          "name": "Dusk and Dawn",
+          "file": "dusk_and_dawn.avif",
+          "missing": false
+        },
+        {
+          "name": "Floral Harmony",
+          "file": "floral_harmony.avif",
+          "missing": false
+        },
+        {
+          "name": "Autumn's Arbor",
+          "file": "autumns_arbor.avif",
+          "missing": false
+        },
+        {
+          "name": "Autumn Crown",
+          "file": "autumn_crown.avif",
+          "missing": false
+        },
+        {
+          "name": "Faces of the Moon",
+          "file": "faces_of_the_moon.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Fall 2",
+      "items": [
+        {
+          "name": "Fox Hat",
+          "file": "fox_hat.avif",
+          "missing": false
+        },
+        {
+          "name": "Chestnut Fox Hat",
+          "file": "chestnut_fox_hat.avif",
+          "missing": true
+        },
+        {
+          "name": "Snow Fox Hat",
+          "file": "snow_fox_hat.avif",
+          "missing": true
+        },
+        {
+          "name": "Fall Leaves",
+          "file": "fall_leaves.avif",
+          "missing": false
+        },
+        {
+          "name": "Scarlet Leaves",
+          "file": "scarlet_leaves.avif",
+          "missing": true
+        },
+        {
+          "name": "Woodland Leaves",
+          "file": "woodland_leaves.avif",
+          "missing": true
+        }
+      ]
+    },
+    {
+      "title": "The Vault",
+      "items": [
+        {
+          "name": "Sakura",
+          "file": "sakura.avif",
+          "missing": false
+        },
+        {
+          "name": "Pink Sakura",
+          "file": "pink_sakura.avif",
+          "missing": true
+        },
+        {
+          "name": "Ukon Sakura",
+          "file": "ukon_sakura.avif",
+          "missing": true
+        },
+        {
+          "name": "Gyoiko Sakura",
+          "file": "gyoiko_sakura.avif",
+          "missing": true
+        },
+        {
+          "name": "Angry Frog",
+          "file": "angry_frog.avif",
+          "missing": true
+        },
+        {
+          "name": "Derpy Frog",
+          "file": "derpy_frog.avif",
+          "missing": true
+        },
+        {
+          "name": "Fried Egg",
+          "file": "fried_egg.avif",
+          "missing": false
+        },
+        {
+          "name": "Green Fried Egg",
+          "file": "green_fried_egg.avif",
+          "missing": false
+        },
+        {
+          "name": "Morning Coffee",
+          "file": "morning_coffee.avif",
+          "missing": false
+        },
+        {
+          "name": "Toast",
+          "file": "toast.avif",
+          "missing": false
+        },
+        {
+          "name": "Burnt Toast",
+          "file": "burnt_toast.avif",
+          "missing": false
+        },
+        {
+          "name": "Stinkums",
+          "file": "stinkums.avif",
+          "missing": false
+        },
+        {
+          "name": "Goblin Stinkums",
+          "file": "goblin_stinkums.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Dojo",
+      "items": [
+        {
+          "name": "Kabuto",
+          "file": "kabuto.avif",
+          "missing": false
+        },
+        {
+          "name": "Oni Mask",
+          "file": "oni_mask.avif",
+          "missing": false
+        },
+        {
+          "name": "Straw Hat",
+          "file": "straw_hat.avif",
+          "missing": false
+        },
+        {
+          "name": "Sakura Ink",
+          "file": "sakura_ink.avif",
+          "missing": false
+        },
+        {
+          "name": "Sakura Warrior",
+          "file": "sakura_warrior.avif",
+          "missing": false
+        },
+        {
+          "name": "Shuriken's Mask",
+          "file": "shurikens_mask.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "VALORANT CHAMPIONS",
+      "items": [
+        {
+          "name": "VALORANT Champions 2024",
+          "file": "valorant_champions_2024.avif",
+          "missing": false
+        },
+        {
+          "name": "Yoru Dimensional Drift",
+          "file": "yoru_dimensional_drift.avif",
+          "missing": false
+        },
+        {
+          "name": "Viper Poison Cloud",
+          "file": "viper_poison_cloud.avif",
+          "missing": false
+        },
+        {
+          "name": "Cypher Neural Theft",
+          "file": "cypher_neural_theft.avif",
+          "missing": false
+        },
+        {
+          "name": "A Hint of Clove",
+          "file": "a_hint_of_clove.avif",
+          "missing": false
+        },
+        {
+          "name": "Omen's Cowl",
+          "file": "omens_cowl.avif",
+          "missing": false
+        },
+        {
+          "name": "Reyna's Leer",
+          "file": "reynas_leer.avif",
+          "missing": false
+        },
+        {
+          "name": "FRAG OUT",
+          "file": "frag_out.avif",
+          "missing": false
+        },
+        {
+          "name": "Blade Storm",
+          "file": "blade_storm.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Spongebob",
+      "items": [
+        {
+          "name": "SpongeBob",
+          "file": "spongebob.avif",
+          "missing": false
+        },
+        {
+          "name": "Imagination",
+          "file": "imagination.avif",
+          "missing": false
+        },
+        {
+          "name": "Patrick Star",
+          "file": "patrick_star.avif",
+          "missing": false
+        },
+        {
+          "name": "Flower Clouds",
+          "file": "flower_clouds.avif",
+          "missing": false
+        },
+        {
+          "name": "Gary the Snail",
+          "file": "gary_the_snail.avif",
+          "missing": false
+        },
+        {
+          "name": "Sandy Cheeks",
+          "file": "sandy_cheeks.avif",
+          "missing": false
+        },
+        {
+          "name": "MuscleBob",
+          "file": "musclebob.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Dark Fantasy",
+      "items": [
+        {
+          "name": "Midnight Sorceress",
+          "file": "midnight_sorceress.avif",
+          "missing": false
+        },
+        {
+          "name": "Malefic Crown",
+          "file": "malefic_crown.avif",
+          "missing": false
+        },
+        {
+          "name": "Death's Edge",
+          "file": "deaths_edge.avif",
+          "missing": false
+        },
+        {
+          "name": "Spirit Embers",
+          "file": "spirit_embers.avif",
+          "missing": false
+        },
+        {
+          "name": "Eldritch Ring",
+          "file": "eldritch_ring.avif",
+          "missing": false
+        },
+        {
+          "name": "Arcane Sigil",
+          "file": "arcane_sigil.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Palworld",
+      "items": [
+        {
+          "name": "Chillet",
+          "file": "chillet.avif",
+          "missing": false
+        },
+        {
+          "name": "Pal Sphere",
+          "file": "pal_sphere.avif",
+          "missing": false
+        },
+        {
+          "name": "Cattiva",
+          "file": "cattiva.avif",
+          "missing": false
+        },
+        {
+          "name": "Lamball",
+          "file": "lamball.avif",
+          "missing": false
+        },
+        {
+          "name": "Depresso",
+          "file": "depresso.avif",
+          "missing": false
+        },
+        {
+          "name": "Selyne",
+          "file": "selyne.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Arcade",
+      "items": [
+        {
+          "name": "Joystick",
+          "file": "joystick.avif",
+          "missing": false
+        },
+        {
+          "name": "Clyde Invaders",
+          "file": "clyde_invaders.avif",
+          "missing": false
+        },
+        {
+          "name": "Pipedream",
+          "file": "pipedream.avif",
+          "missing": false
+        },
+        {
+          "name": "Hot Shot",
+          "file": "hot_shot.avif",
+          "missing": false
+        },
+        {
+          "name": "Mallow Jump",
+          "file": "mallow_jump.avif",
+          "missing": false
+        },
+        {
+          "name": "Slither 'n Snack",
+          "file": "slither_n_snack.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Feelin&#39; Retro",
+      "items": [
+        {
+          "name": "Feelin' Awe",
+          "file": "feelin_awe.avif",
+          "missing": false
+        },
+        {
+          "name": "Feelin' Panic",
+          "file": "feelin_panic.avif",
+          "missing": false
+        },
+        {
+          "name": "Feelin' Nervous",
+          "file": "feelin_nervous.avif",
+          "missing": false
+        },
+        {
+          "name": "Feelin' Scrumptious",
+          "file": "feelin_scrumptious.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Pirates",
+      "items": [
+        {
+          "name": "Pirate Captain",
+          "file": "pirate_captain.avif",
+          "missing": false
+        },
+        {
+          "name": "Scallywag",
+          "file": "scallywag.avif",
+          "missing": false
+        },
+        {
+          "name": "Good Ol' Pepper",
+          "file": "good_ol_pepper.avif",
+          "missing": false
+        },
+        {
+          "name": "Crossbones",
+          "file": "crossbones.avif",
+          "missing": false
+        },
+        {
+          "name": "Cannon Fire",
+          "file": "cannon_fire.avif",
+          "missing": false
+        },
+        {
+          "name": "Helmsman",
+          "file": "helmsman.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Galaxy",
+      "items": [
+        {
+          "name": "Stardust",
+          "file": "stardust.avif",
+          "missing": false
+        },
+        {
+          "name": "Black Hole",
+          "file": "black_hole.avif",
+          "missing": false
+        },
+        {
+          "name": "Constellations",
+          "file": "constellations.avif",
+          "missing": false
+        },
+        {
+          "name": "Solar Orbit",
+          "file": "solar_orbit.avif",
+          "missing": false
+        },
+        {
+          "name": "UFO",
+          "file": "ufo.avif",
+          "missing": false
+        },
+        {
+          "name": "Astronaut Helmet",
+          "file": "astronaut_helmet.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Lofi Vibes",
+      "items": [
+        {
+          "name": "Chromawave",
+          "file": "chromawave.avif",
+          "missing": false
+        },
+        {
+          "name": "Cozy Cat",
+          "file": "cozy_cat.avif",
+          "missing": false
+        },
+        {
+          "name": "Oasis",
+          "file": "oasis.avif",
+          "missing": false
+        },
+        {
+          "name": "Rainy Mood",
+          "file": "rainy_mood.avif",
+          "missing": false
+        },
+        {
+          "name": "Cozy Headphones",
+          "file": "cozy_headphones.avif",
+          "missing": false
+        },
+        {
+          "name": "Doodling",
+          "file": "doodling.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "VALORANT",
+      "items": [
+        {
+          "name": "A Hint of Clove",
+          "file": "a_hint_of_clove.avif",
+          "missing": false
+        },
+        {
+          "name": "Omen's Cowl",
+          "file": "omens_cowl.avif",
+          "missing": false
+        },
+        {
+          "name": "Reyna's Leer",
+          "file": "reynas_leer.avif",
+          "missing": false
+        },
+        {
+          "name": "FRAG OUT",
+          "file": "frag_out.avif",
+          "missing": false
+        },
+        {
+          "name": "Blade Storm",
+          "file": "blade_storm.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Springtoon",
+      "items": [
+        {
+          "name": "Honeyblossom",
+          "file": "honeyblossom.avif",
+          "missing": false
+        },
+        {
+          "name": "Dandelion Duo",
+          "file": "dandelion_duo.avif",
+          "missing": false
+        },
+        {
+          "name": "Hugh the Rainbow",
+          "file": "hugh_the_rainbow.avif",
+          "missing": false
+        },
+        {
+          "name": "Strawberry Vine",
+          "file": "strawberry_vine.avif",
+          "missing": false
+        },
+        {
+          "name": "Butterflies",
+          "file": "butterflies.avif",
+          "missing": false
+        },
+        {
+          "name": "The Petal Pack",
+          "file": "the_petal_pack.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Anime 2",
+      "items": [
+        {
+          "name": "Cat Ears",
+          "file": "cat_ears.avif",
+          "missing": false
+        },
+        {
+          "name": "Ki Energy",
+          "file": "ki_energy.avif",
+          "missing": false
+        },
+        {
+          "name": "Heartbloom",
+          "file": "heartbloom.avif",
+          "missing": false
+        },
+        {
+          "name": "Dismay",
+          "file": "dismay.avif",
+          "missing": false
+        },
+        {
+          "name": "Rage",
+          "file": "rage.avif",
+          "missing": false
+        },
+        {
+          "name": "In Tears",
+          "file": "in_tears.avif",
+          "missing": false
+        },
+        {
+          "name": "Radiating Energy",
+          "file": "radiating_energy.avif",
+          "missing": false
+        },
+        {
+          "name": "Soul Leaving Body",
+          "file": "soul_leaving_body.avif",
+          "missing": false
+        },
+        {
+          "name": "Sweat Drops",
+          "file": "sweat_drops.avif",
+          "missing": false
+        },
+        {
+          "name": "Starry Eyed",
+          "file": "starry_eyed.avif",
+          "missing": false
+        },
+        {
+          "name": "In Love",
+          "file": "in_love.avif",
+          "missing": false
+        },
+        {
+          "name": "Shocked",
+          "file": "shocked.avif",
+          "missing": false
+        },
+        {
+          "name": "Angry",
+          "file": "angry.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Elements",
+      "items": [
+        {
+          "name": "Fire",
+          "file": "fire.avif",
+          "missing": false
+        },
+        {
+          "name": "Water",
+          "file": "water.avif",
+          "missing": false
+        },
+        {
+          "name": "Air",
+          "file": "air.avif",
+          "missing": false
+        },
+        {
+          "name": "Earth",
+          "file": "earth.avif",
+          "missing": false
+        },
+        {
+          "name": "Lightning",
+          "file": "lightning.avif",
+          "missing": false
+        },
+        {
+          "name": "Balance",
+          "file": "balance.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Lunar New Year",
+      "items": [
+        {
+          "name": "Fan Flourish",
+          "file": "fan_flourish.avif",
+          "missing": false
+        },
+        {
+          "name": "Lunar Lanterns",
+          "file": "lunar_lanterns.avif",
+          "missing": false
+        },
+        {
+          "name": "Firecrackers",
+          "file": "firecrackers.avif",
+          "missing": false
+        },
+        {
+          "name": "Dragon's Smile",
+          "file": "dragons_smile.avif",
+          "missing": false
+        },
+        {
+          "name": "Lucky Envelopes",
+          "file": "lucky_envelopes.avif",
+          "missing": false
+        },
+        {
+          "name": "Koi Pond",
+          "file": "koi_pond.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Cyberpunk",
+      "items": [
+        {
+          "name": "Glitch",
+          "file": "glitch.avif",
+          "missing": false
+        },
+        {
+          "name": "Cybernetic",
+          "file": "cybernetic.avif",
+          "missing": false
+        },
+        {
+          "name": "Digital Sunrise",
+          "file": "digital_sunrise.avif",
+          "missing": false
+        },
+        {
+          "name": "Implant",
+          "file": "implant.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Monsters",
+      "items": [
+        {
+          "name": "Beamchop",
+          "file": "beamchop.avif",
+          "missing": false
+        },
+        {
+          "name": "Stinkums",
+          "file": "stinkums.avif",
+          "missing": false
+        },
+        {
+          "name": "Chuck",
+          "file": "chuck.avif",
+          "missing": false
+        },
+        {
+          "name": "Winkle",
+          "file": "winkle.avif",
+          "missing": false
+        },
+        {
+          "name": "Chewbert",
+          "file": "chewbert.avif",
+          "missing": false
+        },
+        {
+          "name": "Doodlezard",
+          "file": "doodlezard.avif",
+          "missing": false
+        },
+        {
+          "name": "Glop",
+          "file": "glop.avif",
+          "missing": false
+        },
+        {
+          "name": "Gawblehop",
+          "file": "gawblehop.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Winter Wonderland",
+      "items": [
+        {
+          "name": "New Year",
+          "file": "new_year.avif",
+          "missing": true
+        },
+        {
+          "name": "Fresh Pine",
+          "file": "fresh_pine.avif",
+          "missing": false
+        },
+        {
+          "name": "Snowglobe",
+          "file": "snowglobe.avif",
+          "missing": false
+        },
+        {
+          "name": "String Lights",
+          "file": "string_lights.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Halloween",
+      "items": [
+        {
+          "name": "Graveyard Cat",
+          "file": "graveyard_cat.avif",
+          "missing": false
+        },
+        {
+          "name": "Ghosts",
+          "file": "ghosts.avif",
+          "missing": false
+        },
+        {
+          "name": "Minions",
+          "file": "minions.avif",
+          "missing": false
+        },
+        {
+          "name": "Jack-o'-Lantern",
+          "file": "jack_o_lantern.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Fall",
+      "items": [
+        {
+          "name": "Fall Leaves",
+          "file": "fall_leaves.avif",
+          "missing": false
+        },
+        {
+          "name": "Pumpkin Spice",
+          "file": "pumpkin_spice.avif",
+          "missing": false
+        },
+        {
+          "name": "Frog Hat",
+          "file": "frog_hat.avif",
+          "missing": false
+        },
+        {
+          "name": "Fox Hat",
+          "file": "fox_hat.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Fantasy",
+      "items": [
+        {
+          "name": "Flaming Sword",
+          "file": "flaming_sword.avif",
+          "missing": false
+        },
+        {
+          "name": "Magical Potion",
+          "file": "magical_potion.avif",
+          "missing": false
+        },
+        {
+          "name": "Fairy Sprites",
+          "file": "fairy_sprites.avif",
+          "missing": false
+        },
+        {
+          "name": "Wizard's Staff",
+          "file": "wizards_staff.avif",
+          "missing": false
+        },
+        {
+          "name": "Glowing Runes",
+          "file": "glowing_runes.avif",
+          "missing": false
+        },
+        {
+          "name": "Defensive Shield",
+          "file": "defensive_shield.avif",
+          "missing": false
+        },
+        {
+          "name": "Skull Medallion",
+          "file": "skull_medallion.avif",
+          "missing": false
+        },
+        {
+          "name": "Treasure and Key",
+          "file": "treasure_and_key.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Anime",
+      "items": [
+        {
+          "name": "Radiating Energy",
+          "file": "radiating_energy.avif",
+          "missing": false
+        },
+        {
+          "name": "Soul Leaving Body",
+          "file": "soul_leaving_body.avif",
+          "missing": false
+        },
+        {
+          "name": "Sweat Drops",
+          "file": "sweat_drops.avif",
+          "missing": false
+        },
+        {
+          "name": "Starry Eyed",
+          "file": "starry_eyed.avif",
+          "missing": false
+        },
+        {
+          "name": "In Love",
+          "file": "in_love.avif",
+          "missing": false
+        },
+        {
+          "name": "Shocked",
+          "file": "shocked.avif",
+          "missing": false
+        },
+        {
+          "name": "Angry",
+          "file": "angry.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Breakfast",
+      "items": [
+        {
+          "name": "Toast",
+          "file": "toast.avif",
+          "missing": false
+        },
+        {
+          "name": "Morning Coffee",
+          "file": "morning_coffee.avif",
+          "missing": false
+        },
+        {
+          "name": "Fried Egg",
+          "file": "fried_egg.avif",
+          "missing": false
+        },
+        {
+          "name": "Blueberry Jam",
+          "file": "blueberry_jam.avif",
+          "missing": false
+        },
+        {
+          "name": "Donut",
+          "file": "donut.avif",
+          "missing": false
+        },
+        {
+          "name": "Pancakes",
+          "file": "pancakes.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Disxcore",
+      "items": [
+        {
+          "name": "DISXCORE Headset",
+          "file": "disxcore_headset.avif",
+          "missing": false
+        },
+        {
+          "name": "Futuristic UI",
+          "file": "futuristic_ui.avif",
+          "missing": true
+        },
+        {
+          "name": "Smoke",
+          "file": "smoke.avif",
+          "missing": true
+        }
+      ]
+    },
+    {
+      "title": "Discord 8th Birthday",
+      "items": [
+        {
+          "name": "Blue Headset",
+          "file": "blue_headset.avif",
+          "missing": true
+        },
+        {
+          "name": "Pink Headset",
+          "file": "pink_headset.avif",
+          "missing": false
+        },
+        {
+          "name": "Green Headset",
+          "file": "green_headset.avif",
+          "missing": false
+        },
+        {
+          "name": "Blue Futuristic UI",
+          "file": "blue_futuristic_ui.avif",
+          "missing": false
+        },
+        {
+          "name": "Pink Futuristic UI",
+          "file": "pink_futuristic_ui.avif",
+          "missing": false
+        },
+        {
+          "name": "Green Futuristic UI",
+          "file": "green_futuristic_ui.avif",
+          "missing": false
+        },
+        {
+          "name": "Blue Smoke",
+          "file": "blue_smoke.avif",
+          "missing": false
+        },
+        {
+          "name": "Pink Smoke",
+          "file": "pink_smoke.avif",
+          "missing": false
+        },
+        {
+          "name": "Green Smoke",
+          "file": "green_smoke.avif",
+          "missing": false
+        },
+        {
+          "name": "Blue Gyroscope",
+          "file": "blue_gyroscope.avif",
+          "missing": false
+        },
+        {
+          "name": "Pink Gyroscope",
+          "file": "pink_gyroscope.avif",
+          "missing": false
+        },
+        {
+          "name": "Green Gyroscope",
+          "file": "green_gyroscope.avif",
+          "missing": false
+        },
+        {
+          "name": "Blue Shine Helmet",
+          "file": "blue_shine_helmet.avif",
+          "missing": false
+        },
+        {
+          "name": "Pink Shine Helmet",
+          "file": "pink_shine_helmet.avif",
+          "missing": false
+        },
+        {
+          "name": "Green Shine Helmet",
+          "file": "green_shine_helmet.avif",
+          "missing": false
+        },
+        {
+          "name": "Blue Hyper Helmet",
+          "file": "blue_hyper_helmet.avif",
+          "missing": false
+        },
+        {
+          "name": "Pink Hyper Helmet",
+          "file": "pink_hyper_helmet.avif",
+          "missing": false
+        },
+        {
+          "name": "Green Hyper Helmet",
+          "file": "green_hyper_helmet.avif",
+          "missing": false
+        },
+        {
+          "name": "Saw",
+          "file": "saw.avif",
+          "missing": false
+        }
+      ]
+    },
+    {
+      "title": "Spring &#39;23",
+      "items": [
+        {
+          "name": "Sakura",
+          "file": "sakura.avif",
+          "missing": false
+        },
+        {
+          "name": "Pink Sakura",
+          "file": "pink_sakura.avif",
+          "missing": true
+        },
+        {
+          "name": "Ukon Sakura",
+          "file": "ukon_sakura.avif",
+          "missing": true
+        },
+        {
+          "name": "Gyoiko Sakura",
+          "file": "gyoiko_sakura.avif",
+          "missing": true
+        },
+        {
+          "name": "Mushroom #1",
+          "file": "mushroom_1.avif",
+          "missing": false
+        },
+        {
+          "name": "Mushroom #2",
+          "file": "mushroom_2.avif",
+          "missing": false
+        },
+        {
+          "name": "Mushroom #3",
+          "file": "mushroom_3.avif",
+          "missing": false
+        },
+        {
+          "name": "Mushroom #4",
+          "file": "mushroom_4.avif",
+          "missing": false
+        },
+        {
+          "name": "Forest",
+          "file": "forest.avif",
+          "missing": false
+        },
+        {
+          "name": "Frog #1",
+          "file": "frog_1.avif",
+          "missing": false
+        },
+        {
+          "name": "Frog #2",
+          "file": "frog_2.avif",
+          "missing": true
+        },
+        {
+          "name": "Frog #3",
+          "file": "frog_3.avif",
+          "missing": false
+        },
+        {
+          "name": "Frog #4",
+          "file": "frog_4.avif",
+          "missing": true
+        },
+        {
+          "name": "Lazy Cat #1",
+          "file": "lazy_cat_1.avif",
+          "missing": true
+        },
+        {
+          "name": "Lazy Cat #2",
+          "file": "lazy_cat_2.avif",
+          "missing": true
+        },
+        {
+          "name": "Lazy Cat #3",
+          "file": "lazy_cat_3.avif",
+          "missing": true
+        },
+        {
+          "name": "Lazy Cat #4",
+          "file": "lazy_cat_4.avif",
+          "missing": true
+        },
+        {
+          "name": "Dogs #1",
+          "file": "dogs_1.avif",
+          "missing": true
+        },
+        {
+          "name": "Dogs #2",
+          "file": "dogs_2.avif",
+          "missing": true
+        },
+        {
+          "name": "Dogs #3",
+          "file": "dogs_3.avif",
+          "missing": true
+        }
+      ]
+    },
+    {
+      "title": "Snowsgiving",
+      "items": [
+        {
+          "name": "Green Blanket",
+          "file": "green_blanket.avif",
+          "missing": true
+        },
+        {
+          "name": "Orange Blanket",
+          "file": "orange_blanket.avif",
+          "missing": true
+        },
+        {
+          "name": "Pink Blanket",
+          "file": "pink_blanket.avif",
+          "missing": true
+        },
+        {
+          "name": "Purple Blanket",
+          "file": "purple_blanket.avif",
+          "missing": true
+        },
+        {
+          "name": "White Box",
+          "file": "white_box.avif",
+          "missing": true
+        },
+        {
+          "name": "Blue Box",
+          "file": "blue_box.avif",
+          "missing": true
+        },
+        {
+          "name": "Green Box",
+          "file": "green_box.avif",
+          "missing": true
+        },
+        {
+          "name": "Red Box",
+          "file": "red_box.avif",
+          "missing": true
+        },
+        {
+          "name": "Red White Box",
+          "file": "red_white_box.avif",
+          "missing": true
+        },
+        {
+          "name": "Festive Confetti",
+          "file": "festive_confetti.avif",
+          "missing": true
+        },
+        {
+          "name": "Fire Confetti",
+          "file": "fire_confetti.avif",
+          "missing": true
+        },
+        {
+          "name": "Ice Confetti",
+          "file": "ice_confetti.avif",
+          "missing": true
+        },
+        {
+          "name": "Mint Confetti",
+          "file": "mint_confetti.avif",
+          "missing": true
+        },
+        {
+          "name": "Star Confetti",
+          "file": "star_confetti.avif",
+          "missing": true
+        },
+        {
+          "name": "Vaporwave Confetti",
+          "file": "vaporwave_confetti.avif",
+          "missing": true
+        },
+        {
+          "name": "Icecube",
+          "file": "icecube.avif",
+          "missing": true
+        },
+        {
+          "name": "Gleaming Icicle",
+          "file": "gleaming_icicle.avif",
+          "missing": true
+        },
+        {
+          "name": "Snowing Icicle",
+          "file": "snowing_icicle.avif",
+          "missing": true
+        },
+        {
+          "name": "Blue Teacup",
+          "file": "blue_teacup.avif",
+          "missing": true
+        },
+        {
+          "name": "Orange Teacup",
+          "file": "orange_teacup.avif",
+          "missing": true
+        },
+        {
+          "name": "Pink Teacup",
+          "file": "pink_teacup.avif",
+          "missing": true
+        },
+        {
+          "name": "Red Teacup",
+          "file": "red_teacup.avif",
+          "missing": true
+        }
+      ]
+    }
+  ],
+  "leftover": [
+    "autumns_arbor_aurora.avif",
+    "blanket_green.avif",
+    "blanket_orange.avif",
+    "blanket_pink.avif",
+    "blanket_purple.avif",
+    "bloodthirsty_gold.avif",
+    "bloodthirsty_green.avif",
+    "box_blue_yellow.avif",
+    "box_green_red.avif",
+    "box_red_white.avif",
+    "box_red_white_blue.avif",
+    "box_white_blue.avif",
+    "candlelight_crimson.avif",
+    "candlelight_dark.avif",
+    "cat_1.avif",
+    "cat_2.avif",
+    "cat_3.avif",
+    "cat_4.avif",
+    "chrysanthemums_morning.avif",
+    "chrysanthemums_twilight.avif",
+    "confetti_festive.avif",
+    "confetti_fire.avif",
+    "confetti_ice.avif",
+    "confetti_mint.avif",
+    "confetti_star.avif",
+    "confetti_vaporwave.avif",
+    "cozy_post_it_festive.avif",
+    "crystal_ball_blue.avif",
+    "crystal_ball_purple.avif",
+    "dice_azure.avif",
+    "dice_violet.avif",
+    "dog_1.avif",
+    "dog_2.avif",
+    "dog_3.avif",
+    "fairy_sprites_blue.avif",
+    "fairy_sprites_pink.avif",
+    "fall_leaves_scarlet.avif",
+    "fall_leaves_woodland.avif",
+    "floral_harmony_sunburst.avif",
+    "fox_hat_chestnut.avif",
+    "fox_hat_snow.avif",
+    "fresh_pine_cinnamon.avif",
+    "fresh_pine_ribbon.avif",
+    "frog_angry.avif",
+    "frog_derpy.avif",
+    "gelatinous_cube_blue.avif",
+    "gelatinous_cube_green.avif",
+    "hood_crimson.avif",
+    "hood_dark.avif",
+    "ice_cube.avif",
+    "icicle_gleaming.avif",
+    "icicle_snowing.avif",
+    "magical_wand_green.avif",
+    "magical_wand_purple.avif",
+    "magic_portal_blue.avif",
+    "magic_portal_purple.avif",
+    "mooncaps_blue.avif",
+    "mooncaps_pink.avif",
+    "new_year_2024.avif",
+    "new_year_2025.avif",
+    "owlbear_cub_snowy.avif",
+    "sakura_gyoiko.avif",
+    "sakura_pink.avif",
+    "sakura_ukon.avif",
+    "santa_cat_ears.avif",
+    "snowglobe_blue.avif",
+    "snowglobe_green.avif",
+    "snowglobe_pink.avif",
+    "snowglobe_wood.avif",
+    "spooky_cat_ears_midnight.avif",
+    "string_lights_aurora.avif",
+    "string_lights_dusk.avif",
+    "string_lights_ember.avif",
+    "string_lights_mix.avif",
+    "teacup_blue.avif",
+    "teacup_orange.avif",
+    "teacup_pink.avif",
+    "teacup_red.avif",
+    "victory_crown.avif",
+    "wallach_spaceport.avif",
+    "witch_hat_midnight.avif",
+    "witch_hat_plum.avif",
+    "wizard_hat_blue.avif",
+    "wizard_hat_purple.avif",
+    "zombie_food_purple.avif"
+  ],
+  "missing": [
+    "Gyoiko Sakura",
+    "Fortnite Victory Crown",
+    "Wallach IX Spaceport",
+    "2025 Balloons",
+    "Holiday Cat Ears",
+    "Violet Dice",
+    "Azure Dice",
+    "Green Gelatinous Cube",
+    "Blue Gelatinous Cube",
+    "Snowy Owlbear Cub",
+    "Crimson Candlelight",
+    "Dark Candlelight",
+    "Dark Hood",
+    "Crimson Hood",
+    "Plum Witch Hat",
+    "Midnight Witch Hat",
+    "Twilight Chrysanthemums",
+    "Morning Chrysanthemums",
+    "Chestnut Fox Hat",
+    "Snow Fox Hat",
+    "Scarlet Leaves",
+    "Woodland Leaves",
+    "Pink Sakura",
+    "Ukon Sakura",
+    "Gyoiko Sakura",
+    "Angry Frog",
+    "Derpy Frog",
+    "New Year",
+    "Futuristic UI",
+    "Smoke",
+    "Blue Headset",
+    "Pink Sakura",
+    "Ukon Sakura",
+    "Gyoiko Sakura",
+    "Frog #2",
+    "Frog #4",
+    "Lazy Cat #1",
+    "Lazy Cat #2",
+    "Lazy Cat #3",
+    "Lazy Cat #4",
+    "Dogs #1",
+    "Dogs #2",
+    "Dogs #3",
+    "Green Blanket",
+    "Orange Blanket",
+    "Pink Blanket",
+    "Purple Blanket",
+    "White Box",
+    "Blue Box",
+    "Green Box",
+    "Red Box",
+    "Red White Box",
+    "Festive Confetti",
+    "Fire Confetti",
+    "Ice Confetti",
+    "Mint Confetti",
+    "Star Confetti",
+    "Vaporwave Confetti",
+    "Icecube",
+    "Gleaming Icicle",
+    "Snowing Icicle",
+    "Blue Teacup",
+    "Orange Teacup",
+    "Pink Teacup",
+    "Red Teacup"
+  ]
+}
