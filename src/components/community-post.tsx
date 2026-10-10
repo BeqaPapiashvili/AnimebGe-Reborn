@@ -8,13 +8,14 @@ import { visibleBody } from "@/lib/community-body";
 import { communityCategories, type CommunityPageData, type CommunityPost } from "@/lib/community-types";
 const labelOf = (id: string) => communityCategories.find((item) => item.id === id)?.label ?? id;
 
+const imageLine = /^!\[[^\]]*\]\((https?:\/\/[^\s)]+|\/uploads\/community\/[\w.-]+)\)$/;
+
 function splitBody(body: string) {
-  const images: string[] = [];
-  const text = visibleBody(body).replace(/!\[[^\]]*\]\((https?:\/\/[^\s)]+|\/uploads\/community\/[\w.-]+)\)/g, (_match, src: string) => {
-    images.push(src);
-    return "";
-  }).trim();
-  return { text, images };
+  const lines = visibleBody(body).split("\n");
+  let end = lines.length;
+  while (end > 0 && (!lines[end - 1].trim() || imageLine.test(lines[end - 1].trim()))) end -= 1;
+  const images = lines.slice(end).flatMap((line) => line.trim().match(imageLine)?.[1] ?? []);
+  return { text: lines.slice(0, end).join("\n").trim(), images };
 }
 
 export function CommunityPostView({ page, post, onAuth }: { page: CommunityPageData; post: CommunityPost; onAuth: () => void }) {

@@ -135,8 +135,9 @@ async function characterPage(search: string, page: number) {
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({ query: charactersQuery, variables: { search, page, withMain: page === 1 } }),
     next: { revalidate: 86400 },
+    signal: AbortSignal.timeout(8000),
   });
-  if (!res.ok) return { main: [] as CastPerson[], support: [] as CastPerson[], hasNext: false };
+  if (!res.ok) throw new Error(`anilist ${res.status}`);
   const media = (await res.json())?.data?.Media;
   return {
     main: mapEdges(media?.main?.edges ?? []),
@@ -145,10 +146,31 @@ async function characterPage(search: string, page: number) {
   };
 }
 
-export async function getAnimeCharacters(search: string, page = 1) {
+type CastResult = { people: Omit<CastPerson, "favourites">[]; total: number; hasNext: boolean };
+
+const CAST_OK_MS = 24 * 60 * 60 * 1000;
+const CAST_FAIL_MS = 10 * 60 * 1000;
+const castStore = globalThis as typeof globalThis & { anilistCast?: Map<string, { at: number; ttl: number; value: Promise<CastResult> }> };
+const castCache = (castStore.anilistCast ??= new Map());
+
+export function getAnimeCharacters(search: string, page = 1): Promise<CastResult> {
   const term = search.trim();
-  const empty = { people: [] as Omit<CastPerson, "favourites">[], total: 0, hasNext: false };
-  if (!term || page > 1) return empty;
+  if (!term || page > 1) return Promise.resolve({ people: [], total: 0, hasNext: false });
+  const key = term.toLowerCase();
+  const hit = castCache.get(key);
+  if (hit && Date.now() - hit.at < hit.ttl) return hit.value;
+  if (castCache.size > 2000) castCache.clear();
+  const entry = { at: Date.now(), ttl: CAST_OK_MS, value: Promise.resolve<CastResult>({ people: [], total: 0, hasNext: false }) };
+  entry.value = fetchCharacters(term).then((result) => {
+    if (!result.people.length) entry.ttl = CAST_FAIL_MS;
+    return result;
+  });
+  castCache.set(key, entry);
+  return entry.value;
+}
+
+async function fetchCharacters(term: string): Promise<CastResult> {
+  const empty: CastResult = { people: [], total: 0, hasNext: false };
   try {
     const first = await characterPage(term, 1);
     const support = [...first.support];
@@ -156,9 +178,10 @@ export async function getAnimeCharacters(search: string, page = 1) {
     let current = 1;
     const lead = Math.max(0, ...first.main.map((person) => person.favourites), ...support.map((person) => person.favourites));
     const floor = Math.max(25, Math.round(lead * 0.012));
-    while (hasNext && current < 8 && support.length > 0 && support[support.length - 1].favourites >= floor) {
+    while (hasNext && current < 4 && support.length > 0 && support[support.length - 1].favourites >= floor) {
       current += 1;
-      const next = await characterPage(term, current);
+      const next = await characterPage(term, current).catch(() => null);
+      if (!next) break;
       support.push(...next.support);
       hasNext = next.hasNext;
     }

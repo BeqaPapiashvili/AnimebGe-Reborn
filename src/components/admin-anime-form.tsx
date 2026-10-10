@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { AdminMulti, AdminSelect } from "@/components/admin-menu";
 import { Field, SiteCta, areaClass, dangerClass, inputClass, quietClass } from "@/components/admin-ui";
 import type { AdminAnime } from "@/lib/admin";
@@ -85,6 +85,63 @@ function hostLabel(url: string) {
   } catch {
     return "";
   }
+}
+
+function useUpload(kind: "poster" | "cover" | "logo", onDone: (path: string) => void) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function upload(file: File | undefined) {
+    if (!file || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      const body = new FormData();
+      body.set("kind", kind);
+      body.set("file", file);
+      const res = await fetch("/api/admin/anime/upload", { method: "POST", body });
+      const data = (await res.json().catch(() => ({}))) as { path?: string; error?: string };
+      if (res.ok && data.path) onDone(data.path);
+      else setError(data.error || "ვერ აიტვირთა.");
+    } catch {
+      setError("ვერ აიტვირთა.");
+    } finally {
+      setBusy(false);
+    }
+  }
+  return { busy, error, upload };
+}
+
+function MediaField({ kind, label, value, onChange, hint, frame, placeholder }: { kind: "poster" | "cover" | "logo"; label: string; value: string; onChange: (value: string) => void; hint?: string; frame: (value: string) => ReactNode; placeholder: string }) {
+  const { busy, error, upload } = useUpload(kind, onChange);
+  const [over, setOver] = useState(false);
+  const picker = useRef<HTMLInputElement>(null);
+  return (
+    <div className="mt-5 first:mt-0">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <p className="text-sm font-semibold">{label}</p>
+        <button type="button" disabled={busy} onClick={() => picker.current?.click()} className="flex h-8 cursor-pointer items-center gap-1.5 rounded-lg bg-[#e93748]/15 px-3 text-xs font-semibold text-[#ff8a95] transition hover:bg-[#e93748]/25 disabled:cursor-wait disabled:opacity-60">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14" /></svg>
+          {busy ? "იტვირთება..." : "ატვირთვა"}
+        </button>
+      </div>
+      {hint ? <p className="mb-2 text-xs text-white/40">{hint}</p> : null}
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => picker.current?.click()}
+        onKeyDown={(event) => { if (event.key === "Enter") picker.current?.click(); }}
+        onDragOver={(event) => { event.preventDefault(); setOver(true); }}
+        onDragLeave={() => setOver(false)}
+        onDrop={(event) => { event.preventDefault(); setOver(false); void upload(event.dataTransfer.files?.[0]); }}
+        className={`relative cursor-pointer transition ${over ? "opacity-70 ring-2 ring-[#e93748] rounded-[2rem]" : ""} ${busy ? "animate-pulse" : ""}`}
+      >
+        {frame(value)}
+      </div>
+      <input ref={picker} type="file" accept="image/png,image/jpeg,image/webp,image/avif,image/gif" className="hidden" onChange={(event) => { void upload(event.target.files?.[0]); event.target.value = ""; }} />
+      <input value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} aria-label={label} className={`${inputClass} mt-3`} />
+      {error ? <p className="mt-2 text-xs text-[#e93748]">{error}</p> : null}
+    </div>
+  );
 }
 
 function Block({ title, text, action, className = "", children }: { title: string; text?: string; action?: ReactNode; className?: string; children: ReactNode }) {
@@ -287,22 +344,21 @@ export function AdminAnimeForm({
           <aside className="lg:col-span-4">
             <div className="lg:sticky lg:top-32">
               <Block title="მედია" text="პოსტერი, ქოვერი და სახელის ლოგო">
-                <p className="mb-2 text-sm font-semibold">პოსტერი</p>
-                <div className="aspect-[2/3] overflow-hidden rounded-[2rem] border-2 border-dashed border-white/10 bg-black/40">
-                  {poster ? <img src={poster} alt="" className="h-full w-full object-cover" /> : <div className="grid h-full place-items-center text-sm text-white/35">პოსტერი არ არის</div>}
-                </div>
-                <input value={poster} onChange={(event) => setPoster(event.target.value)} placeholder="სურათის ბმული" aria-label="პოსტერი" className={`${inputClass} mt-3`} />
-                <p className="mt-5 mb-2 text-sm font-semibold">ქოვერი</p>
-                <div className="aspect-video overflow-hidden rounded-[2rem] border-2 border-dashed border-white/10 bg-black/40">
-                  {cover ? <img src={cover} alt="" className="h-full w-full object-cover" /> : <div className="grid h-full place-items-center text-sm text-white/35">ქოვერი არ არის</div>}
-                </div>
-                <input value={cover} onChange={(event) => setCover(event.target.value)} placeholder="სურათის ბმული" aria-label="ქოვერი" className={`${inputClass} mt-3`} />
-                <p className="mt-5 mb-1 text-sm font-semibold">სახელის ლოგო</p>
-                <p className="mb-2 text-xs text-white/40">გამჭვირვალე PNG/WEBP სახელით. მთავარ სლაიდერზე სახელის ნაცვლად გამოჩნდება. თუ ცარიელია, სახელი ტექსტად ეწერება.</p>
-                <div className="relative grid h-32 place-items-center overflow-hidden rounded-[2rem] bg-cover bg-center" style={{ backgroundImage: cover ? `linear-gradient(90deg,rgba(10,10,10,0.8),rgba(10,10,10,0.35)),url('${cover}')` : undefined, backgroundColor: "#0f0f11" }}>
-                  {logo ? <img src={logo} alt="" className="max-h-24 max-w-[85%] object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]" /> : <span className="px-4 text-center text-lg font-bold text-white/80">{anime.title || "სახელი"}</span>}
-                </div>
-                <input value={logo} onChange={(event) => setLogo(event.target.value)} placeholder="ლოგოს ბმული (არასავალდებულო)" aria-label="სახელის ლოგო" className={`${inputClass} mt-3`} />
+                <MediaField kind="poster" label="პოსტერი" value={poster} onChange={setPoster} placeholder="ან ჩასვი სურათის ბმული" frame={(value) => (
+                  <div className="aspect-[2/3] overflow-hidden rounded-[2rem] border-2 border-dashed border-white/10 bg-black/40">
+                    {value ? <img src={value} alt="" className="h-full w-full object-cover" /> : <div className="grid h-full place-items-center px-6 text-center text-sm text-white/35">დააჭირე ან ჩააგდე სურათი</div>}
+                  </div>
+                )} />
+                <MediaField kind="cover" label="ქოვერი" value={cover} onChange={setCover} placeholder="ან ჩასვი სურათის ბმული" frame={(value) => (
+                  <div className="aspect-video overflow-hidden rounded-[2rem] border-2 border-dashed border-white/10 bg-black/40">
+                    {value ? <img src={value} alt="" className="h-full w-full object-cover" /> : <div className="grid h-full place-items-center px-6 text-center text-sm text-white/35">დააჭირე ან ჩააგდე სურათი</div>}
+                  </div>
+                )} />
+                <MediaField kind="logo" label="სახელის ლოგო" value={logo} onChange={setLogo} placeholder="ან ჩასვი ლოგოს ბმული (არასავალდებულო)" hint="გამჭვირვალე PNG/WEBP სახელით. მთავარ სლაიდერზე სახელის ნაცვლად გამოჩნდება. თუ ცარიელია, სახელი ტექსტად ეწერება." frame={(value) => (
+                  <div className="relative grid h-32 place-items-center overflow-hidden rounded-[2rem] bg-cover bg-center" style={{ backgroundImage: cover ? `linear-gradient(90deg,rgba(10,10,10,0.8),rgba(10,10,10,0.35)),url('${cover}')` : undefined, backgroundColor: "#0f0f11" }}>
+                    {value ? <img src={value} alt="" className="max-h-24 max-w-[85%] object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]" /> : <span className="px-4 text-center text-lg font-bold text-white/80">{anime.title || "სახელი"}</span>}
+                  </div>
+                )} />
               </Block>
             </div>
           </aside>

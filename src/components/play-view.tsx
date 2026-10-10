@@ -1,5 +1,6 @@
 "use client";
 
+import { CardImg, LazyVideo } from "@/components/live-media";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ArrowLeft, ArrowUpDown, ArrowUpRight, Check, ChevronRight, ChevronDown, CircleHelp, Crown, Eye, Gem, Layers, List as ListIcon, Lock, Plus, Leaf, Palette, RefreshCw, Shield, Trophy, Users, Flame, Heart, LayoutGrid, Map as MapIcon, Package, Search, Share2, SlidersHorizontal, Sparkles, User, X, Zap } from "lucide-react";
@@ -73,8 +74,8 @@ function art(src: string, name: string, rarity: string) {
   const video = /\.(webm|mp4)(\?|$)/i.test(src);
   return (
     <span className="relative block aspect-[3/4] overflow-hidden rounded-xl bg-[#101013]">
-      {src && video ? <video src={src} autoPlay muted loop playsInline className="h-full w-full object-cover" /> : null}
-      {src && !video ? <img src={src} alt={name} className="h-full w-full object-cover" /> : null}
+      {src && video ? <LazyVideo src={src} className="h-full w-full object-cover" /> : null}
+      {src && !video ? <img loading="lazy" decoding="async" src={src} alt={name} className="h-full w-full object-cover" /> : null}
       <span className="absolute top-1.5 left-1.5 rounded-md px-1.5 py-0.5 text-[10px] font-bold text-black" style={{ background: tone[rarity] ?? "#fff" }}>{rarity}</span>
     </span>
   );
@@ -176,8 +177,8 @@ function CardPage({ data }: { data: PlayData }) {
     <div className="grid items-start gap-5 lg:grid-cols-[360px_minmax(0,1fr)]">
       <aside className="rounded-[28px] bg-[#1a1b1f] p-3 pb-6 lg:sticky lg:top-24">
         <div className="overflow-hidden rounded-[20px] bg-black/20">
-          {card.image && video ? <video src={card.image} autoPlay muted loop playsInline className="aspect-[2/3] w-full object-cover" /> : null}
-          {card.image && !video ? <img src={card.image} alt={card.name} className="aspect-[2/3] w-full object-cover" /> : null}
+          {card.image && video ? <LazyVideo autoplay src={card.image} className="aspect-[2/3] w-full object-cover" /> : null}
+          {card.image && !video ? <CardImg src={card.image} alt={card.name} className="aspect-[2/3] w-full object-cover" /> : null}
         </div>
         <div className="mt-5 flex flex-col items-center gap-1.5 px-3 text-center">
           <h2 className="max-w-full text-[26px] leading-tight font-semibold tracking-tight">{card.name}</h2>
@@ -222,7 +223,7 @@ function CardPage({ data }: { data: PlayData }) {
             <div className="grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
               {list.map((person) => (
                 <a key={`${tab}-${person.id}`} href={`/profile/${encodeURIComponent(person.name)}`} className="group min-w-0 text-center">
-                  {person.avatar ? <img src={person.avatar} alt="" className="aspect-square w-full rounded-[20px] object-cover transition duration-200 group-hover:brightness-110" /> : <span className="grid aspect-square w-full place-items-center rounded-[20px] bg-white/8 text-base text-white/60">{firstLetter(person.name)}</span>}
+                  {person.avatar ? <img loading="lazy" decoding="async" src={person.avatar} alt="" className="aspect-square w-full rounded-[20px] object-cover transition duration-200 group-hover:brightness-110" /> : <span className="grid aspect-square w-full place-items-center rounded-[20px] bg-white/8 text-base text-white/60">{firstLetter(person.name)}</span>}
                   <p className="mt-2 truncate text-[13px] leading-tight text-white/90">{person.name}</p>
                   <p className="truncate text-[12px] leading-tight text-white/40">{person.text}</p>
                 </a>
@@ -387,8 +388,8 @@ function Mine({ data }: { data: PlayData }) {
             return (
               <button key={copy.id} type="button" className="block w-full cursor-pointer border-0 bg-transparent p-0" onClick={() => setOpen(copy)}>
                 <span className="relative block aspect-[2/3] overflow-hidden rounded-[10px] bg-[#101013]">
-                  {copy.image && moving ? <video src={copy.image} autoPlay muted loop playsInline className="h-full w-full object-cover" /> : null}
-                  {copy.image && !moving ? <img src={copy.image} alt={copy.name} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : null}
+                  {copy.image && moving ? <LazyVideo src={copy.image} className="h-full w-full object-cover" /> : null}
+                  {copy.image && !moving ? <CardImg src={copy.image} alt={copy.name} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : null}
                 </span>
               </button>
             );
@@ -468,8 +469,8 @@ function Mine({ data }: { data: PlayData }) {
             <div className="card-stage relative z-10 mx-auto w-[210px]">
               <a href={`/cards/${open.cardId}`} className="card-live relative block overflow-hidden rounded-[12px] bg-[#101013] shadow-[0_22px_40px_rgba(0,0,0,0.55)]">
                 <span className="block aspect-[2/3]">
-                  {open.image && video ? <video src={open.image} autoPlay muted loop playsInline className="h-full w-full object-cover" /> : null}
-                  {open.image && !video ? <img src={open.image} alt={open.name} className="h-full w-full object-cover" /> : null}
+                  {open.image && video ? <LazyVideo autoplay src={open.image} className="h-full w-full object-cover" /> : null}
+                  {open.image && !video ? <img loading="lazy" decoding="async" src={open.image} alt={open.name} className="h-full w-full object-cover" /> : null}
                 </span>
               </a>
             </div>
@@ -623,7 +624,7 @@ function AwakenShow({ show, energy, onClose }: { show: { cards: PlayData["copies
               const offset = (index - 1) * 150;
               return (
                 <span key={copy.id} className="awake-converge absolute inset-0" style={{ "--x": `${offset}px`, "--r": `${(index - 1) * 10}deg`, "--delay": `${index * 90}ms` } as React.CSSProperties}>
-                  <img src={copy.image} alt={copy.name} className="h-full w-full rounded-[14px] object-cover shadow-[0_18px_40px_rgba(0,0,0,0.6)]" />
+                  <img loading="lazy" decoding="async" src={copy.image} alt={copy.name} className="h-full w-full rounded-[14px] object-cover shadow-[0_18px_40px_rgba(0,0,0,0.6)]" />
                 </span>
               );
             })}
@@ -647,7 +648,7 @@ function AwakenShow({ show, energy, onClose }: { show: { cards: PlayData["copies
               <div className="awake-reveal card-stage relative mt-4 w-[200px]">
                 <a href={`/cards/${result.card.id}`} className="card-live relative block overflow-hidden rounded-[14px] bg-[#101013] shadow-[0_24px_50px_rgba(0,0,0,0.6)]">
                   <span className="block aspect-[2/3]">
-                    {/\.(webm|mp4)(\?|$)/i.test(result.card.image) ? <video src={result.card.image} autoPlay muted loop playsInline className="h-full w-full object-cover" /> : <img src={result.card.image} alt={result.card.name} className="h-full w-full object-cover" />}
+                    {/\.(webm|mp4)(\?|$)/i.test(result.card.image) ? <LazyVideo autoplay src={result.card.image} className="h-full w-full object-cover" /> : <img loading="lazy" decoding="async" src={result.card.image} alt={result.card.name} className="h-full w-full object-cover" />}
                   </span>
                   <span className="absolute top-2 left-2 rounded-md bg-black/75 px-2 py-0.5 text-xs font-bold" style={{ color }}>{result.card.rarity}</span>
                 </a>
@@ -779,7 +780,7 @@ function Awaken({ data }: { data: PlayData }) {
                   const angle = (index - (chosen.length - 1) / 2) * 9;
                   return (
                     <span key={copy.id} className="brick-pop absolute inset-0" style={{ zIndex: index }}>
-                      <img src={copy.image} alt={copy.name} className="absolute inset-0 h-full w-full rounded-[14px] object-cover shadow-[0_16px_32px_rgba(0,0,0,0.5)] transition-transform duration-300" style={{ transform: `translateX(${angle * 2.2}px) rotate(${angle}deg)` }} />
+                      <img loading="lazy" decoding="async" src={copy.image} alt={copy.name} className="absolute inset-0 h-full w-full rounded-[14px] object-cover shadow-[0_16px_32px_rgba(0,0,0,0.5)] transition-transform duration-300" style={{ transform: `translateX(${angle * 2.2}px) rotate(${angle}deg)` }} />
                     </span>
                   );
                 })}
@@ -880,8 +881,8 @@ function Awaken({ data }: { data: PlayData }) {
                 return (
                   <button key={copy.id} type="button" disabled={copy.featured} title={copy.featured ? `${copy.name} — ვიტრინაშია` : copy.name} onClick={() => toggle(copy)} className="group relative block cursor-pointer text-left disabled:cursor-not-allowed">
                     <span className={`relative block aspect-[2/3] overflow-hidden rounded-[10px] bg-[#1a1a1a] shadow-[0_10px_22px_rgba(0,0,0,0.35)] transition duration-300 ${copy.featured ? "opacity-40" : other ? "opacity-55 group-hover:opacity-100" : "group-hover:-translate-y-1"} ${on ? "ring-2 ring-[#e93748] ring-offset-2 ring-offset-[#121214]" : ""}`}>
-                      {copy.image && moving ? <video src={copy.image} autoPlay muted loop playsInline className="h-full w-full object-cover" /> : null}
-                      {copy.image && !moving ? <img src={copy.image} alt={copy.name} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : null}
+                      {copy.image && moving ? <LazyVideo src={copy.image} className="h-full w-full object-cover" /> : null}
+                      {copy.image && !moving ? <CardImg src={copy.image} alt={copy.name} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : null}
                       <span className="absolute top-1.5 left-1.5 rounded-md bg-black/70 px-1.5 py-0.5 text-[10px] font-bold" style={{ color: tone[key] ?? "#fff" }}>{key}</span>
                       {on ? <span className="absolute inset-0 bg-[#e93748]/15" /> : null}
                       {on ? <span className="brick-pop absolute bottom-1.5 left-1/2 grid size-6 -translate-x-1/2 place-items-center rounded-full bg-[#e93748] text-[11px] font-bold text-white">{picked.indexOf(copy.id) + 1}</span> : null}
@@ -914,7 +915,7 @@ function Awaken({ data }: { data: PlayData }) {
               const copy = chosen[slot];
               return copy ? (
                 <button key={copy.id} type="button" title={copy.name} onClick={() => toggle(copy)} className="brick-pop group relative block cursor-pointer overflow-hidden rounded-[10px]">
-                  <span className="block aspect-[2/3] bg-[#1a1a1a]">{copy.image && !/\.(webm|mp4)(\?|$)/i.test(copy.image) ? <img src={copy.image} alt={copy.name} className="h-full w-full object-cover" /> : null}</span>
+                  <span className="block aspect-[2/3] bg-[#1a1a1a]">{copy.image && !/\.(webm|mp4)(\?|$)/i.test(copy.image) ? <CardImg src={copy.image} alt={copy.name} className="h-full w-full object-cover" /> : null}</span>
                   <span className="absolute inset-0 grid place-items-center bg-black/0 text-transparent transition group-hover:bg-black/55 group-hover:text-white"><X className="size-4" /></span>
                 </button>
               ) : (
@@ -1168,8 +1169,8 @@ function SkyBrick({ data }: { data: PlayData }) {
                 return (
                   <button key={copy.id} type="button" disabled={copy.featured} title={copy.featured ? `${copy.name} — ვიტრინაშია` : copy.name} onClick={() => toggle(copy.id)} className="group relative block cursor-pointer text-left disabled:cursor-not-allowed">
                     <span className={`relative block aspect-[2/3] overflow-hidden rounded-[10px] bg-[#1a1a1a] shadow-[0_10px_22px_rgba(0,0,0,0.35)] transition duration-300 ${copy.featured ? "opacity-40" : "group-hover:-translate-y-1"} ${on ? "ring-2 ring-[#e93748] ring-offset-2 ring-offset-[#121214]" : ""}`}>
-                      {copy.image && moving ? <video src={copy.image} autoPlay muted loop playsInline className="h-full w-full object-cover" /> : null}
-                      {copy.image && !moving ? <img src={copy.image} alt={copy.name} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : null}
+                      {copy.image && moving ? <LazyVideo src={copy.image} className="h-full w-full object-cover" /> : null}
+                      {copy.image && !moving ? <CardImg src={copy.image} alt={copy.name} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : null}
                       <span className="absolute top-1.5 left-1.5 rounded-md bg-black/70 px-1.5 py-0.5 text-[10px] font-bold" style={{ color: tone[key] ?? "#fff" }}>{key}</span>
                       <span className={`absolute top-1.5 right-1.5 rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${on ? "bg-[#e93748] text-white" : "bg-black/70 text-white/85"}`}>+{rate(key)}</span>
                       {on ? <span className="absolute inset-0 bg-[#e93748]/15" /> : null}
@@ -1209,7 +1210,7 @@ function SkyBrick({ data }: { data: PlayData }) {
             <div className="mt-3 grid max-h-[248px] grid-cols-5 gap-1.5 overflow-y-auto rounded-[14px] bg-[#0f0f11] p-2">
               {chosen.map((copy) => (
                 <button key={copy.id} type="button" title={copy.name} onClick={() => toggle(copy.id)} className="brick-pop group relative block cursor-pointer overflow-hidden rounded-md">
-                  <span className="block aspect-[2/3] bg-[#1a1a1a]">{copy.image && !/\.(webm|mp4)(\?|$)/i.test(copy.image) ? <img src={copy.image} alt={copy.name} className="h-full w-full object-cover" /> : null}</span>
+                  <span className="block aspect-[2/3] bg-[#1a1a1a]">{copy.image && !/\.(webm|mp4)(\?|$)/i.test(copy.image) ? <CardImg src={copy.image} alt={copy.name} className="h-full w-full object-cover" /> : null}</span>
                   <span className="absolute inset-0 grid place-items-center bg-black/0 text-transparent transition group-hover:bg-black/55 group-hover:text-white"><X className="size-4" /></span>
                 </button>
               ))}
@@ -1272,8 +1273,8 @@ function MineCards({ title, empty, cards: initial }: { title: string; empty: str
             return (
               <button key={card.id} type="button" title={card.name} className="block w-full cursor-pointer" onClick={() => setPreview(card)}>
                 <span className="relative block aspect-[2/3] overflow-hidden rounded-[10px] bg-[#101013]">
-                  {card.image && moving ? <video src={card.image} autoPlay muted loop playsInline className="h-full w-full object-cover" /> : null}
-                  {card.image && !moving ? <img src={card.image} alt={card.name} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : null}
+                  {card.image && moving ? <LazyVideo src={card.image} className="h-full w-full object-cover" /> : null}
+                  {card.image && !moving ? <CardImg src={card.image} alt={card.name} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : null}
                 </span>
               </button>
             );
@@ -1430,8 +1431,8 @@ function Wishlist({ data }: { data: PlayData }) {
               const on = picked.has(card.id);
               const body = (
                 <span className={`relative block aspect-[2/3] overflow-hidden rounded-[10px] bg-[#1a1a1a] shadow-[0_10px_24px_rgba(0,0,0,0.35)] transition duration-300 ${selecting ? "" : "group-hover:-translate-y-1"} ${on ? "ring-2 ring-[#e93748] ring-offset-2 ring-offset-[#121214]" : ""}`}>
-                  {card.image && moving ? <video src={card.image} autoPlay muted loop playsInline className="h-full w-full object-cover" /> : null}
-                  {card.image && !moving ? <img src={card.image} alt={card.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]" /> : null}
+                  {card.image && moving ? <LazyVideo src={card.image} className="h-full w-full object-cover" /> : null}
+                  {card.image && !moving ? <CardImg src={card.image} alt={card.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]" /> : null}
                   {selecting ? <span className={`absolute inset-0 transition ${on ? "bg-[#e93748]/15" : "bg-black/0 group-hover:bg-black/20"}`} /> : null}
                 </span>
               );
@@ -1539,7 +1540,7 @@ function Progress({ data }: { data: PlayData }) {
           <div className="relative h-[190px] w-[220px] shrink-0 max-sm:mx-auto">
             {backs.map((angle, index) => (
               <span key={angle} className="album-rise absolute inset-0" style={{ zIndex: index, "--delay": `${index * 70}ms` } as React.CSSProperties}>
-                <img src="/card-mm.png" alt="" className="absolute top-1/2 left-1/2 h-[150px] w-[100px] rounded-[12px] object-cover shadow-[0_16px_32px_rgba(0,0,0,0.5)]" style={{ transform: `translate(calc(-50% + ${angle * 2.6}px), -50%) rotate(${angle}deg)` }} />
+                <img loading="lazy" decoding="async" src="/card-mm.png" alt="" className="absolute top-1/2 left-1/2 h-[150px] w-[100px] rounded-[12px] object-cover shadow-[0_16px_32px_rgba(0,0,0,0.5)]" style={{ transform: `translate(calc(-50% + ${angle * 2.6}px), -50%) rotate(${angle}deg)` }} />
               </span>
             ))}
           </div>
@@ -1638,7 +1639,7 @@ function Progress({ data }: { data: PlayData }) {
                         <a key={card.id} href={`/cards/${card.id}`} title={card.name} className="group relative block pt-1">
                           <span className="relative block aspect-[2/3] overflow-hidden rounded-[9px] bg-[#1a1a1a] shadow-[0_8px_18px_rgba(0,0,0,0.35)] transition duration-300 group-hover:-translate-y-1">
                             {card.image && moving ? <video src={card.image} muted loop playsInline className="h-full w-full object-cover" /> : null}
-                            {card.image && !moving ? <img src={card.image} alt={card.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]" /> : null}
+                            {card.image && !moving ? <CardImg src={card.image} alt={card.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]" /> : null}
                           </span>
                           {card.owned > 1 ? <span className="absolute bottom-1.5 left-1.5 rounded-md bg-black/75 px-1.5 py-0.5 text-[10px] font-semibold text-white">×{card.owned}</span> : null}
                         </a>
@@ -1673,8 +1674,8 @@ function CollectionTile({ card, index }: { card: AnimeCard; index: number }) {
   return (
     <a href={`/cards/${card.id}`} title={card.name} className="album-rise group relative block" style={{ "--delay": `${Math.min(index, 16) * 35}ms` } as React.CSSProperties}>
       <span className="relative block aspect-[2/3] overflow-hidden rounded-[10px] bg-[#1a1a1a] shadow-[0_10px_24px_rgba(0,0,0,0.35)] transition duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_18px_34px_rgba(0,0,0,0.5)]">
-        {card.image && moving ? <video src={card.image} muted loop playsInline autoPlay className="h-full w-full object-cover" /> : null}
-        {card.image && !moving ? <img src={card.image} alt={card.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]" /> : null}
+        {card.image && moving ? <LazyVideo src={card.image} className="h-full w-full object-cover" /> : null}
+        {card.image && !moving ? <CardImg src={card.image} alt={card.name} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]" /> : null}
       </span>
       {card.owned > 1 ? <span className="absolute bottom-2 left-2 rounded-md bg-black/75 px-1.5 py-0.5 text-[10px] font-semibold text-white">×{card.owned}</span> : null}
       {!card.owned && card.wished ? <span className="absolute top-2 right-2 grid size-6 place-items-center rounded-full bg-black/70 text-[#7ee0a8]"><Leaf className="size-3.5" /></span> : null}
@@ -1781,7 +1782,7 @@ function AnimeProgress({ anime }: { anime: NonNullable<PlayData["anime"]> }) {
               <span className="absolute -top-2 -left-2 size-6 rounded-tl-xl border-t-2 border-l-2 border-[#e93748]/80" />
               <span className="absolute -right-2 -bottom-2 size-6 rounded-br-xl border-r-2 border-b-2 border-[#e93748]/80" />
               <span className="block aspect-[2/3] overflow-hidden rounded-[12px] bg-[#1a1a1a] shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
-                {anime.poster ? <img src={anime.poster} alt={anime.title} className="h-full w-full object-cover transition duration-700 hover:scale-[1.04]" /> : null}
+                {anime.poster ? <img loading="lazy" decoding="async" src={anime.poster} alt={anime.title} className="h-full w-full object-cover transition duration-700 hover:scale-[1.04]" /> : null}
               </span>
             </div>
             {anime.slug ? (
@@ -1985,7 +1986,7 @@ function Clubs({ data }: { data: PlayData }) {
                 <div className="absolute inset-x-4 bottom-3 flex items-end gap-3">
                   <ClubAvatar club={club} size="size-12 text-lg" />
                   <span className="min-w-0">
-                    <span className="flex items-center gap-2"><span className={`truncate text-base font-semibold text-white ${clubName(club.style)}`}>{club.name}</span>{club.badge ? <img src={club.badge} alt="" className="size-5 shrink-0 object-contain" /> : null}{club.tag ? <span className="shrink-0 rounded-md bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold text-white/70">{club.tag}</span> : null}</span>
+                    <span className="flex items-center gap-2"><span className={`truncate text-base font-semibold text-white ${clubName(club.style)}`}>{club.name}</span>{club.badge ? <img loading="lazy" decoding="async" src={club.badge} alt="" className="size-5 shrink-0 object-contain" /> : null}{club.tag ? <span className="shrink-0 rounded-md bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold text-white/70">{club.tag}</span> : null}</span>
                     <span className="mt-0.5 flex items-center gap-1 truncate text-[11px] text-white/50"><Crown className="size-3" /> {club.owner || "—"}</span>
                   </span>
                 </div>
@@ -2065,7 +2066,7 @@ function Clubs({ data }: { data: PlayData }) {
                   <div className="flex items-start gap-3">
                     <ClubAvatar club={club} size="size-12 text-lg" />
                     <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-1.5"><span className={`truncate text-sm font-semibold text-white ${clubName(club.style)}`}>{club.name}</span>{club.badge ? <img src={club.badge} alt="" className="size-4 shrink-0 object-contain" /> : null}{club.tag ? <span className="shrink-0 rounded bg-white/[0.06] px-1 text-[9px] font-semibold text-white/55">{club.tag}</span> : null}</span>
+                      <span className="flex items-center gap-1.5"><span className={`truncate text-sm font-semibold text-white ${clubName(club.style)}`}>{club.name}</span>{club.badge ? <img loading="lazy" decoding="async" src={club.badge} alt="" className="size-4 shrink-0 object-contain" /> : null}{club.tag ? <span className="shrink-0 rounded bg-white/[0.06] px-1 text-[9px] font-semibold text-white/55">{club.tag}</span> : null}</span>
                       <span className="block text-[11px] text-white/40">კლუბი · {club.level} დონე</span>
                       {club.mine ? <span className="mt-1 inline-block rounded-md bg-[#e93748]/12 px-1.5 py-0.5 text-[10px] font-medium text-[#ff8a95]">შენი კლუბი</span> : null}
                     </span>
@@ -2089,7 +2090,7 @@ function Clubs({ data }: { data: PlayData }) {
                   <span className={`w-8 text-center text-lg font-semibold ${club.rank <= 3 ? "text-[#ff8a95]" : "text-white/70"}`}>{club.rank}</span>
                   <ClubAvatar club={club} size="size-10 text-sm" />
                   <span className="min-w-[160px] flex-1">
-                    <span className="flex items-center gap-1.5"><span className={`truncate text-sm font-semibold ${clubName(club.style)}`}>{club.name}</span>{club.badge ? <img src={club.badge} alt="" className="size-4 shrink-0 object-contain" /> : null}{club.tag ? <span className="rounded bg-white/[0.06] px-1 text-[9px] font-semibold text-white/55">{club.tag}</span> : null}{club.mine ? <span className="rounded-md bg-[#e93748]/12 px-1.5 py-0.5 text-[10px] text-[#ff8a95]">შენი</span> : null}</span>
+                    <span className="flex items-center gap-1.5"><span className={`truncate text-sm font-semibold ${clubName(club.style)}`}>{club.name}</span>{club.badge ? <img loading="lazy" decoding="async" src={club.badge} alt="" className="size-4 shrink-0 object-contain" /> : null}{club.tag ? <span className="rounded bg-white/[0.06] px-1 text-[9px] font-semibold text-white/55">{club.tag}</span> : null}{club.mine ? <span className="rounded-md bg-[#e93748]/12 px-1.5 py-0.5 text-[10px] text-[#ff8a95]">შენი</span> : null}</span>
                     <span className="flex items-center gap-1 text-[11px] text-white/40"><Crown className="size-3" /> {club.owner || "—"}</span>
                   </span>
                   <span className="w-20 text-xs text-white/50"><b className="text-white">{club.level}</b> დონე</span>
@@ -2194,8 +2195,8 @@ function ClubDonate({ copies, rates, busy, onClose, onDonate }: { copies: PlayDa
                 return (
                   <button key={copy.id} type="button" title={copy.name} onClick={() => toggle(copy.id)} className="group relative block cursor-pointer text-left">
                     <span className={`relative block aspect-[2/3] overflow-hidden rounded-[10px] bg-[#1a1a1a] transition duration-300 group-hover:-translate-y-1 ${on ? "ring-2 ring-[#e93748] ring-offset-2 ring-offset-[#121214]" : ""}`}>
-                      {copy.image && moving ? <video src={copy.image} autoPlay muted loop playsInline className="h-full w-full object-cover" /> : null}
-                      {copy.image && !moving ? <img src={copy.image} alt={copy.name} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : null}
+                      {copy.image && moving ? <LazyVideo src={copy.image} className="h-full w-full object-cover" /> : null}
+                      {copy.image && !moving ? <CardImg src={copy.image} alt={copy.name} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : null}
                       <span className="absolute top-1.5 left-1.5 rounded-md bg-black/70 px-1.5 py-0.5 text-[10px] font-bold" style={{ color: tone[key] ?? "#fff" }}>{key}</span>
                       <span className={`absolute top-1.5 right-1.5 rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${on ? "bg-[#e93748] text-white" : "bg-black/70 text-white/85"}`}>+{rates[key] ?? 5}</span>
                       {on ? <span className="absolute inset-0 bg-[#e93748]/15" /> : null}
@@ -2456,7 +2457,7 @@ function ClubView({ data }: { data: PlayData }) {
 
       <section className="album-rise relative overflow-hidden rounded-[20px] bg-[#121214]" style={{ "--delay": "40ms" } as React.CSSProperties}>
         <div className="relative h-[220px] overflow-hidden bg-[#1a1a1a] sm:h-[280px]">
-          {club.cover ? <img src={club.cover} alt="" className="h-full w-full object-cover" /> : <span className="absolute inset-0 bg-linear-to-br from-[#2a1418] via-[#161214] to-[#121214]" />}
+          {club.cover ? <img loading="lazy" decoding="async" src={club.cover} alt="" className="h-full w-full object-cover" /> : <span className="absolute inset-0 bg-linear-to-br from-[#2a1418] via-[#161214] to-[#121214]" />}
           <span className="absolute inset-0 bg-linear-to-t from-[#121214] via-[#121214]/35 to-black/20" />
           <span className="absolute top-4 left-4 flex items-center gap-2">
             {club.tag ? <span className="rounded-md bg-black/55 px-2 py-1 text-[11px] font-semibold tracking-wide text-white/85 backdrop-blur-sm">{club.tag}</span> : null}
@@ -2466,13 +2467,13 @@ function ClubView({ data }: { data: PlayData }) {
           <div className="absolute inset-x-5 bottom-5 flex items-end gap-4">
             <span className="relative grid size-20 shrink-0 place-items-center overflow-hidden rounded-2xl bg-[#1a1a1a] text-2xl font-semibold text-white/60 shadow-[0_12px_28px_rgba(0,0,0,0.5)] sm:size-24">
               {firstLetter(club.name)}
-              {club.avatar ? <img src={club.avatar} alt="" className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : null}
+              {club.avatar ? <img loading="lazy" decoding="async" src={club.avatar} alt="" className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : null}
             </span>
             <span className="min-w-0 flex-1 pb-1">
               <span className="block text-[11px] text-white/50">კლუბი</span>
               <span className="flex items-center gap-2">
                 <span className={`truncate text-[24px] leading-tight font-semibold tracking-tight sm:text-[30px] ${clubName(club.style)}`}>{club.name}</span>
-                {club.badge ? <img src={club.badge} alt="" className="size-8 shrink-0 object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]" /> : null}
+                {club.badge ? <img loading="lazy" decoding="async" src={club.badge} alt="" className="size-8 shrink-0 object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]" /> : null}
               </span>
             </span>
             <span className="hidden shrink-0 flex-col items-center rounded-[14px] bg-black/50 px-3 py-2 backdrop-blur-sm sm:flex">
@@ -2541,7 +2542,7 @@ function ClubView({ data }: { data: PlayData }) {
                   <div key={person.id} className="flex items-center gap-3 rounded-[14px] bg-[#18181b] p-3">
                     <a href={`/profile/${encodeURIComponent(person.name)}`} className="relative grid size-11 shrink-0 place-items-center overflow-hidden rounded-xl bg-[#232327] text-sm font-semibold text-white/60">
                       {firstLetter(person.name)}
-                      {person.avatar ? <img src={person.avatar} alt="" className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : null}
+                      {person.avatar ? <img loading="lazy" decoding="async" src={person.avatar} alt="" className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : null}
                     </a>
                     <span className="min-w-0 flex-1">
                       <a href={`/profile/${encodeURIComponent(person.name)}`} className="block truncate text-sm font-medium transition hover:text-[#ff8a95]">{person.name}</a>
@@ -2559,7 +2560,7 @@ function ClubView({ data }: { data: PlayData }) {
             <form onSubmit={saveInfo} className="mt-5 grid gap-5">
               <div>
                 <div className="relative h-36 overflow-hidden rounded-[16px] bg-[#18181b] sm:h-44">
-                  {info.cover ? <img src={info.cover} alt="" className="h-full w-full object-cover" /> : <span className="absolute inset-0 bg-linear-to-br from-[#2a1418] to-[#121214]" />}
+                  {info.cover ? <img loading="lazy" decoding="async" src={info.cover} alt="" className="h-full w-full object-cover" /> : <span className="absolute inset-0 bg-linear-to-br from-[#2a1418] to-[#121214]" />}
                   <span className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
                   <label className="absolute top-3 right-3 inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg bg-black/60 px-3 text-xs text-white/85 backdrop-blur-sm transition hover:bg-[#e93748] hover:text-white">
                     <Palette className="size-3.5" /> ქავერის შეცვლა
@@ -2568,7 +2569,7 @@ function ClubView({ data }: { data: PlayData }) {
                   <div className="absolute bottom-3 left-3 flex items-end gap-3">
                     <label className="group relative grid size-16 cursor-pointer place-items-center overflow-hidden rounded-xl bg-[#232327] text-lg font-semibold text-white/60 shadow-[0_8px_20px_rgba(0,0,0,0.5)]">
                       {firstLetter(draft.name || info.name)}
-                      {info.avatar ? <img src={info.avatar} alt="" className="absolute inset-0 h-full w-full object-cover" /> : null}
+                      {info.avatar ? <img loading="lazy" decoding="async" src={info.avatar} alt="" className="absolute inset-0 h-full w-full object-cover" /> : null}
                       <span className="absolute inset-0 grid place-items-center bg-black/55 text-[10px] text-white opacity-0 transition group-hover:opacity-100">შეცვლა</span>
                       <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" className="hidden" disabled={busy} onChange={(event) => { void upload("avatar", event.target.files?.[0]); event.target.value = ""; }} />
                     </label>
@@ -2609,13 +2610,13 @@ function ClubView({ data }: { data: PlayData }) {
               <div className="flex items-center gap-4 rounded-[16px] bg-linear-to-r from-[#1f1418] to-[#151517] p-4">
                 <span className="relative grid size-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-[#232327] text-lg font-semibold text-white/60">
                   {firstLetter(club.name)}
-                  {club.avatar ? <img src={club.avatar} alt="" className="absolute inset-0 h-full w-full object-cover" /> : null}
+                  {club.avatar ? <img loading="lazy" decoding="async" src={club.avatar} alt="" className="absolute inset-0 h-full w-full object-cover" /> : null}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-[11px] text-white/40">გადახედვა</span>
                   <span className="flex items-center gap-2">
                     <span className={`truncate text-xl font-semibold ${clubName(club.style)}`}>{club.name}</span>
-                    {club.badge ? <img src={club.badge} alt="" className="size-7 shrink-0 object-contain" /> : null}
+                    {club.badge ? <img loading="lazy" decoding="async" src={club.badge} alt="" className="size-7 shrink-0 object-contain" /> : null}
                   </span>
                 </span>
                 <span className="hidden shrink-0 text-right sm:block">
@@ -2691,7 +2692,7 @@ function ClubView({ data }: { data: PlayData }) {
                 <span className="inline-flex items-center gap-2 rounded-lg bg-white/[0.04] py-1.5 pr-3 pl-1.5">
                   <span className="relative grid size-6 place-items-center overflow-hidden rounded-md bg-[#232327] text-[10px] text-white/60">
                     {firstLetter(club.owner)}
-                    {club.ownerAvatar ? <img src={club.ownerAvatar} alt="" className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : null}
+                    {club.ownerAvatar ? <img loading="lazy" decoding="async" src={club.ownerAvatar} alt="" className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : null}
                   </span>
                   მფლობელი: <b className="font-medium text-white">{club.owner || "—"}</b>
                 </span>
@@ -2891,7 +2892,7 @@ function Collectors({ data }: { data: PlayData }) {
               {first ? <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-[#e93748] to-transparent" /> : null}
               <span className={`absolute -top-3 grid size-7 place-items-center rounded-full text-xs font-bold ${first ? "bg-[#e93748] text-white" : "border border-white/10 bg-[#1a1a1a] text-white/80"}`}>{index + 1}</span>
               <span className={`overflow-hidden rounded-full border-2 bg-[#1a1a1a] ${first ? "size-20 border-[#e93748]/60" : "size-16 border-white/10"}`}>
-                {person.avatar ? <img src={person.avatar} alt="" className="h-full w-full object-cover" /> : null}
+                {person.avatar ? <img loading="lazy" decoding="async" src={person.avatar} alt="" className="h-full w-full object-cover" /> : null}
               </span>
               <span className="mt-3 max-w-full truncate text-sm font-semibold text-white">{person.name}</span>
               <span className="mt-1 text-xs text-white/45"><b className="text-base font-semibold text-white">{person.unique}</b> უნიკალური</span>
@@ -3116,7 +3117,7 @@ function DeckCard({ deck, index }: { deck: PlayData["decks"][number]; index: num
           <span className="flex min-w-0 items-center gap-2">
             <span className="relative grid size-7 shrink-0 place-items-center overflow-hidden rounded-full bg-white/[0.06] text-[11px] font-semibold text-white/60 uppercase">
               {firstLetter(deck.author)}
-              {deck.avatar ? <img src={deck.avatar} alt="" className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : null}
+              {deck.avatar ? <img loading="lazy" decoding="async" src={deck.avatar} alt="" className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : null}
             </span>
             <span className="truncate text-sm text-white/80">{deck.author}</span>
           </span>
@@ -3241,12 +3242,12 @@ function DeckBuilder({ data }: { data: PlayData }) {
               return (
                 <span key={copy.id} className="album-toast absolute top-1/2 left-1/2 h-[150px] w-[100px] transition-transform duration-500" style={{ transform: `translate(calc(-50% + ${offset * 34}px), -50%) rotate(${offset * 6}deg)`, zIndex: index }}>
                   <span className="block h-full w-full overflow-hidden rounded-[12px] bg-[#1a1a1a] shadow-[0_16px_32px_rgba(0,0,0,0.5)]">
-                    {moving ? <video src={copy.image} autoPlay muted loop playsInline className="h-full w-full object-cover" /> : <img src={copy.image} alt="" className="h-full w-full object-cover" />}
+                    {moving ? <LazyVideo src={copy.image} className="h-full w-full object-cover" /> : <CardImg src={copy.image} alt="" className="h-full w-full object-cover" />}
                   </span>
                 </span>
               );
             }) : [-14, -5, 5, 14].map((angle, index) => (
-              <img key={angle} src="/card-mm.png" alt="" className="absolute top-1/2 left-1/2 h-[150px] w-[100px] rounded-[12px] object-cover opacity-60 shadow-[0_16px_32px_rgba(0,0,0,0.5)]" style={{ transform: `translate(calc(-50% + ${angle * 2.6}px), -50%) rotate(${angle}deg)`, zIndex: index }} />
+              <img loading="lazy" decoding="async" key={angle} src="/card-mm.png" alt="" className="absolute top-1/2 left-1/2 h-[150px] w-[100px] rounded-[12px] object-cover opacity-60 shadow-[0_16px_32px_rgba(0,0,0,0.5)]" style={{ transform: `translate(calc(-50% + ${angle * 2.6}px), -50%) rotate(${angle}deg)`, zIndex: index }} />
             ))}
           </div>
           <div className="min-w-[260px] flex-1">
@@ -3306,7 +3307,7 @@ function DeckBuilder({ data }: { data: PlayData }) {
                 return (
                   <button key={copy.id} type="button" title={copy.name} onClick={() => toggle(copy.id)} className="group relative block cursor-pointer text-left">
                     <span className={`block aspect-[2/3] overflow-hidden rounded-[10px] bg-[#1a1a1a] shadow-[0_10px_22px_rgba(0,0,0,0.35)] transition duration-200 ${on ? "ring-2 ring-[#e93748] ring-offset-2 ring-offset-[#121214]" : "group-hover:-translate-y-0.5"}`}>
-                      {moving ? <video src={copy.image} muted loop playsInline className="h-full w-full object-cover" /> : <img src={copy.image} alt={copy.name} loading="lazy" decoding="async" className="h-full w-full object-cover" />}
+                      {moving ? <video src={copy.image} muted loop playsInline className="h-full w-full object-cover" /> : <CardImg src={copy.image} alt={copy.name} loading="lazy" decoding="async" className="h-full w-full object-cover" />}
                     </span>
                     <span className={`absolute top-2 right-2 grid size-6 place-items-center rounded-full text-[10px] font-bold transition ${on ? "bg-[#e93748] text-white" : "bg-black/60 text-transparent group-hover:text-white/60"}`}><Check className="size-3.5" strokeWidth={3} /></span>
                     {copy.of > 1 ? <span className="absolute bottom-2 left-2 rounded-md bg-black/75 px-1.5 py-0.5 text-[10px] font-semibold text-white">{copy.nth}/{copy.of}</span> : null}
@@ -3523,7 +3524,7 @@ function Deck({ data }: { data: PlayData }) {
                 const moving = /\.(webm|mp4)(\?|$)/i.test(card.image);
                 return (
                   <span key={card.id} className="absolute inset-0 overflow-hidden rounded-[12px] bg-[#1a1a1a] shadow-[0_20px_40px_rgba(0,0,0,0.5)] transition duration-500" style={{ transform: `rotate(${angle}deg) scale(${index === cover.length - 1 ? 1 : 0.94})`, zIndex: index }}>
-                    {moving ? <video src={card.image} autoPlay muted loop playsInline className="h-full w-full object-cover" /> : <img src={card.image} alt={card.name} className="h-full w-full object-cover" />}
+                    {moving ? <LazyVideo src={card.image} className="h-full w-full object-cover" /> : <CardImg src={card.image} alt={card.name} className="h-full w-full object-cover" />}
                   </span>
                 );
               }) : <span className="grid h-full place-items-center rounded-[12px] bg-white/[0.04] text-white/30"><Layers className="size-8" /></span>}
@@ -3537,7 +3538,7 @@ function Deck({ data }: { data: PlayData }) {
             <p className="mt-2 flex items-center gap-2 text-sm text-white/45">
               <span className="relative grid size-6 place-items-center overflow-hidden rounded-full bg-white/[0.06] text-[10px] font-semibold text-white/60 uppercase">
                 {firstLetter(deck.author)}
-                {deck.avatar ? <img src={deck.avatar} alt="" className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : null}
+                {deck.avatar ? <img loading="lazy" decoding="async" src={deck.avatar} alt="" className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : null}
               </span>
               კოლექცია <b className="font-semibold text-white/85">{deck.author}</b>-ს მიერ
               {deck.created ? <span className="text-white/30">· {deck.created}</span> : null}
@@ -3644,8 +3645,8 @@ function TradeThumb({ card, label, accent }: { card: PlayData["trades"][number][
   const moving = /\.(webm|mp4)(\?|$)/i.test(card.image);
   const body = (
     <span className="relative block aspect-[2/3] w-[78px] overflow-hidden rounded-[10px] bg-[#1a1a1a] shadow-[0_10px_22px_rgba(0,0,0,0.4)] transition duration-300 group-hover:-translate-y-1 sm:w-[88px]">
-      {card.image && moving ? <video src={card.image} autoPlay muted loop playsInline className="h-full w-full object-cover" /> : null}
-      {card.image && !moving ? <img src={card.image} alt={card.name} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : null}
+      {card.image && moving ? <LazyVideo src={card.image} className="h-full w-full object-cover" /> : null}
+      {card.image && !moving ? <CardImg src={card.image} alt={card.name} loading="lazy" decoding="async" className="h-full w-full object-cover" /> : null}
       {card.image ? null : <span className="grid h-full place-items-center px-2 text-center text-[10px] text-white/35">წაშლილი</span>}
       <span className="absolute top-1.5 left-1.5 rounded-md bg-black/70 px-1.5 py-0.5 text-[10px] font-bold" style={{ color: tone[card.rarity] ?? "#fff" }}>{card.rarity}</span>
     </span>
@@ -3698,10 +3699,10 @@ function Trades({ data }: { data: PlayData }) {
         <div className="relative flex flex-wrap items-center gap-7">
           <div className="relative h-[170px] w-[220px] shrink-0 max-sm:mx-auto">
             <span className="album-rise absolute inset-0" style={{ "--delay": "0ms" } as React.CSSProperties}>
-              <img src="/card-mm.png" alt="" className="absolute top-1/2 left-1/2 h-[140px] w-[94px] rounded-[12px] object-cover shadow-[0_16px_32px_rgba(0,0,0,0.5)]" style={{ transform: "translate(calc(-50% - 52px), -50%) rotate(-10deg)" }} />
+              <img loading="lazy" decoding="async" src="/card-mm.png" alt="" className="absolute top-1/2 left-1/2 h-[140px] w-[94px] rounded-[12px] object-cover shadow-[0_16px_32px_rgba(0,0,0,0.5)]" style={{ transform: "translate(calc(-50% - 52px), -50%) rotate(-10deg)" }} />
             </span>
             <span className="album-rise absolute inset-0" style={{ "--delay": "90ms" } as React.CSSProperties}>
-              <img src="/card-mm.png" alt="" className="absolute top-1/2 left-1/2 h-[140px] w-[94px] rounded-[12px] object-cover shadow-[0_16px_32px_rgba(0,0,0,0.5)]" style={{ transform: "translate(calc(-50% + 52px), -50%) rotate(10deg)" }} />
+              <img loading="lazy" decoding="async" src="/card-mm.png" alt="" className="absolute top-1/2 left-1/2 h-[140px] w-[94px] rounded-[12px] object-cover shadow-[0_16px_32px_rgba(0,0,0,0.5)]" style={{ transform: "translate(calc(-50% + 52px), -50%) rotate(10deg)" }} />
             </span>
             <span className="album-rise absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2" style={{ "--delay": "180ms" } as React.CSSProperties}>
               <span className="grid size-11 place-items-center rounded-full bg-[#e93748] text-white shadow-[0_10px_24px_rgba(233,55,72,0.35)]"><RefreshCw className="size-5" /></span>
@@ -3753,7 +3754,7 @@ function Trades({ data }: { data: PlayData }) {
               <div className="flex min-w-[190px] flex-1 items-center gap-3">
                 <a href={`/profile/${encodeURIComponent(trade.who)}`} className="relative grid size-11 shrink-0 place-items-center overflow-hidden rounded-full bg-[#1a1a1a] text-sm font-semibold text-white/70">
                   {firstLetter(trade.who)}
-                  {trade.avatar ? <img src={trade.avatar} alt="" className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : null}
+                  {trade.avatar ? <img loading="lazy" decoding="async" src={trade.avatar} alt="" className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : null}
                 </a>
                 <span className="min-w-0">
                   <span className="block text-[11px] text-white/40">{trade.sent ? "შენ შესთავაზე" : "შემოგთავაზა"}</span>
@@ -3818,7 +3819,7 @@ function Battle({ data }: { data: PlayData }) {
     <form action={castVote} className="rounded-2xl bg-[#141417] p-3">
       <input type="hidden" name="battle" value={battle.id} />
       <input type="hidden" name="anime" value={item.id} />
-      {item.image ? <img src={item.image} alt="" className="mb-3 aspect-video w-full rounded-xl object-cover" /> : null}
+      {item.image ? <img loading="lazy" decoding="async" src={item.image} alt="" className="mb-3 aspect-video w-full rounded-xl object-cover" /> : null}
       <p className="text-lg">{item.title}</p>
       <p className="text-sm text-white/45">{item.votes} ხმა</p>
       <button disabled={battle.voted > 0} className="mt-3 h-10 cursor-pointer rounded-xl bg-[#e93748] px-4 text-sm disabled:opacity-40">{battle.voted === item.id ? "შენი ხმა" : "ხმა"}</button>
@@ -3832,7 +3833,7 @@ function Dubbers({ data }: { data: PlayData }) {
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {data.dubbers.map((item) => (
         <a key={item.id} href={`/dubbers/${encodeURIComponent(item.alt)}`} className="flex gap-3 rounded-2xl bg-[#141417] p-3">
-          {item.image ? <img src={item.image} alt="" className="size-16 rounded-xl object-cover" /> : null}
+          {item.image ? <img loading="lazy" decoding="async" src={item.image} alt="" className="size-16 rounded-xl object-cover" /> : null}
           <span>
             <span className="block">{item.name}</span>
             <span className="text-sm text-white/45">{item.rating.toFixed(1)} · {item.votes} ხმა · {item.anime} ანიმე</span>
@@ -3848,7 +3849,7 @@ function Dubber({ data }: { data: PlayData }) {
   return (
     <div className="grid gap-4">
       <div className="flex gap-4">
-        {item.image ? <img src={item.image} alt="" className="size-24 rounded-2xl object-cover" /> : null}
+        {item.image ? <img loading="lazy" decoding="async" src={item.image} alt="" className="size-24 rounded-2xl object-cover" /> : null}
         <div>
           <h2 className="text-2xl">{item.name}</h2>
           <p className="text-sm text-white/50">{item.rating.toFixed(2)} / 10 · {item.votes} შეფასება</p>

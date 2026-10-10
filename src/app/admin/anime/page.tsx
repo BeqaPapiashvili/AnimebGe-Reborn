@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Clapperboard, ExternalLink, Pencil, Plus, Search } from "lucide-react";
+import { Clapperboard, Eye, ExternalLink, Pencil, Plus, RefreshCw, Search } from "lucide-react";
 import { listAdminAnime } from "@/lib/admin";
+import { readHits } from "@/lib/views";
 
 export const metadata: Metadata = { title: "ანიმეები | ადმინპანელი" };
 export const dynamic = "force-dynamic";
@@ -13,6 +14,7 @@ export default async function AdminAnimePage({ searchParams }: Props) {
   const status = params.status === "visible" || params.status === "hidden" ? params.status : "";
   const page = Math.max(1, Number(params.page) || 1);
   const list = await listAdminAnime(q, page, status);
+  const hits = await readHits(list.items.map((item) => item.id));
   const href = (next: number, nextStatus = status) => {
     const query = new URLSearchParams();
     if (q) query.set("q", q);
@@ -62,6 +64,10 @@ export default async function AdminAnimePage({ searchParams }: Props) {
                 </a>
                 <div className="p-3">
                   <a href={`/admin/anime/${item.id}`} className="line-clamp-2 text-sm leading-5 group-hover:text-primary">{item.title}</a>
+                  <div className="mt-2 flex items-center gap-3 text-[11px] text-white/45">
+                    <span title="საიტზე (10 წუთში ერთხელ)" className="inline-flex items-center gap-1"><Eye className="size-3.5" />{(hits.get(item.id)?.views ?? 0).toLocaleString("en-US")}</span>
+                    <span title="ყველა გახსნა და რეფრეში" className="inline-flex items-center gap-1 text-[#ff8a95]"><RefreshCw className="size-3" />{(hits.get(item.id)?.hits ?? 0).toLocaleString("en-US")}</span>
+                  </div>
                   <div className="mt-3 flex items-center justify-between gap-2">
                     <p className="text-xs text-white/35">{item.year || "—"}</p>
                     <span className="flex gap-1">

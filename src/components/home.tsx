@@ -29,6 +29,7 @@ import type { FolderCard, FolderDetail } from "@/lib/folders";
 import type { AnimeDetail, CommentItem, ContinueItem, UserAnimeState } from "@/lib/catalog";
 import type { EmoteState } from "@/lib/emote";
 import { animeHref, art } from "@/lib/data";
+import { TopGeCounter } from "@/components/top-ge-counter";
 import type { HomePost } from "@/lib/community";
 import type { SiteList } from "@/lib/list-model";
 import type { Anime, SessionUser, SiteData } from "@/lib/types";
@@ -530,7 +531,7 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
       ) : null}
 
       {showDock && dockReady ? <nav
-        className={`fixed z-[45] hidden flex-col items-center shadow md:flex-[0_16px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 ease-out ${dockOpen ? "top-[245px] left-4 w-[70px] translate-y-0 gap-3 rounded-full border border-white/10 bg-[rgba(10,10,10,0.92)] p-3" : "top-1/2 left-0 w-10 -translate-y-1/2 gap-0.5 rounded-r-[16px] border border-l-0 border-white/10 bg-black/70 py-1.5"}`}
+        className={`fixed z-[45] hidden flex-col items-center shadow-[0_16px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl md:flex transition-all duration-300 ease-out ${dockOpen ? "top-[245px] left-4 w-[70px] translate-y-0 gap-3 rounded-full border border-white/10 bg-[rgba(10,10,10,0.92)] p-3" : "top-1/2 left-0 w-10 -translate-y-1/2 gap-0.5 rounded-r-[16px] border border-l-0 border-white/10 bg-black/70 py-1.5"}`}
         aria-label="ნავიგაცია"
         ref={dockRef}
       >
@@ -890,6 +891,7 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
           <p>© 2026 Animeb. ყველა უფლება დაცულია.</p>
           <p className="mt-2">Animeb ფაილებს საკუთარ სერვერზე არ ინახავს. ვიდეო მესამე მხარის სერვისებზეა განთავსებული.</p>
           <nav className="mt-3 flex gap-6 text-sm text-[#9ca3af]"><a href="/help">დახმარება</a><a href="/guide">გზამკვლევი</a><a href="/status">სტატუსი</a></nav>
+          <TopGeCounter className="mt-4 min-h-[31px]" />
         </div>
       </footer>}
       <div className="h-[calc(66px+env(safe-area-inset-bottom))] md:hidden" />

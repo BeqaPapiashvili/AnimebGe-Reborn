@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FrameOverlay } from "@/components/avatar";
 import { LiveMedia } from "@/components/live-media";
+import { MotionMedia } from "@/components/motion-media";
 import { LevelBar } from "@/components/profile-view";
 import type { ProfileCard } from "@/lib/profile-types";
 import type { ShopFilters } from "@/lib/shop";
@@ -142,6 +143,7 @@ export function ShopView({
   const router = useRouter();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(0);
+  const [hover, setHover] = useState(0);
   const [filterOpen, setFilterOpen] = useState(false);
   const [draft, setDraft] = useState(() => toDraft(filters));
   const [picked, setPicked] = useState<ShopItem | null>(null);
@@ -275,12 +277,12 @@ export function ShopView({
         </div>
         <div className="mt-4 flex items-center gap-3">
           <button type="button" className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-xl px-4 text-sm font-semibold ${filterOpen ? "bg-[#e93748] text-white" : "bg-[#141417] text-white/80"}`} onClick={() => setFilterOpen((open) => !open)}>
-            <img src="/assets/shop/filter.svg" alt="" width={16} height={16} />
+            <img loading="lazy" decoding="async" src="/assets/shop/filter.svg" alt="" width={16} height={16} />
             ფილტრი
           </button>
           <p className="ml-auto flex items-center gap-2 text-[13px] font-semibold text-white/70">
             ბალანსი:
-            <img src="/assets/shop/coin.svg" alt="" width={15} height={15} />
+            <img loading="lazy" decoding="async" src="/assets/shop/coin.svg" alt="" width={15} height={15} />
             <span className="text-lg font-extrabold tracking-[0.5px] text-white">{balance}</span>
           </p>
         </div>
@@ -340,26 +342,26 @@ export function ShopView({
         {list.length ? (
           <div className="mt-7 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {list.map((item, index) => (
-              <button key={item.id} type="button" title={item.limited ? (item.taken ? "გაყიდულია" : `${item.stock} ცალი`) : undefined} className={`${index >= wave ? "shop-card-in" : ""} cursor-pointer overflow-hidden rounded-2xl bg-[#141417] text-left ${item.worn ? "ring-1 ring-[#e93748]" : ""} ${item.taken ? "opacity-60" : ""}`} style={index >= wave ? { animationDelay: `${Math.min(index - wave, 14) * 50}ms` } : undefined} onClick={() => { setError(""); setPicked(item); }}>
+              <button key={item.id} type="button" title={item.limited ? (item.taken ? "გაყიდულია" : `${item.stock} ცალი`) : undefined} className={`${index >= wave ? "shop-card-in" : ""} cursor-pointer overflow-hidden rounded-2xl bg-[#141417] text-left ${item.worn ? "ring-1 ring-[#e93748]" : ""} ${item.taken ? "opacity-60" : ""}`} style={index >= wave ? { animationDelay: `${Math.min(index - wave, 14) * 50}ms` } : undefined} onMouseEnter={() => setHover(item.id)} onMouseLeave={() => setHover(0)} onClick={() => { setError(""); setPicked(item); }}>
                 <div className="p-3.5">
                   <div className="relative grid h-[154px] place-items-center overflow-hidden rounded-xl bg-[#0d0d10]">
                     {item.limited ? <RareMark taken={item.taken} /> : null}
                     {item.type === "frame" ? (
                       <span className="relative size-28">
                         <span className="absolute inset-4 rounded-full bg-white/10" />
-                        <img src={item.poster} alt="" className="absolute inset-0 size-full object-contain" />
+                        <img loading="lazy" decoding="async" src={item.poster} alt="" className="absolute inset-0 size-full object-contain" />
                       </span>
                     ) : item.type === "avatar" ? (
-                      <LiveMedia src={item.image} className="size-28 rounded-full object-cover" />
+                      <MotionMedia src={item.image} active={hover === item.id} className="size-28 rounded-full" />
                     ) : (
-                      <LiveMedia src={item.image} className="h-full w-full object-cover" />
+                      <MotionMedia src={item.image} active={hover === item.id} className="h-full w-full" />
                     )}
                   </div>
                 </div>
                 <div className="px-3.5 pt-1 pb-3.5">
                   <p className="font-bog truncate text-sm font-bold">{item.name}</p>
                   <p className="mt-1.5 flex items-center gap-1.5 text-sm font-bold">
-                    <img src="/assets/shop/coin.svg" alt="" width={15} height={15} />
+                    <img loading="lazy" decoding="async" src="/assets/shop/coin.svg" alt="" width={15} height={15} />
                     {item.worn ? "დაყენებულია" : item.taken ? "გაყიდულია" : item.owned ? "ჩაცმა" : item.price.toLocaleString("en-US")}
                   </p>
                 </div>
@@ -377,8 +379,8 @@ export function ShopView({
             <div className="auth-shell relative bg-[#0a0a0a]">
               <button type="button" className="auth-close absolute top-5 right-5 z-10 grid size-8 -skew-x-12 cursor-pointer place-items-center border border-white/10" aria-label="დახურვა" onClick={() => setPicked(null)}>
                 <span className="relative block size-4 skew-x-12">
-                  <img src="/assets/auth/close-a.svg" alt="" width={9.33333} height={9.33333} className="absolute top-[3.33px] left-[3.33px]" />
-                  <img src="/assets/auth/close-b.svg" alt="" width={9.33333} height={9.33333} className="absolute top-[3.33px] left-[3.33px]" />
+                  <img loading="lazy" decoding="async" src="/assets/auth/close-a.svg" alt="" width={9.33333} height={9.33333} className="absolute top-[3.33px] left-[3.33px]" />
+                  <img loading="lazy" decoding="async" src="/assets/auth/close-b.svg" alt="" width={9.33333} height={9.33333} className="absolute top-[3.33px] left-[3.33px]" />
                 </span>
               </button>
               <div className="px-7 pt-7 pr-16">
@@ -406,7 +408,7 @@ export function ShopView({
                 </button>
                 <button type="button" disabled={busy === picked.id || picked.worn || picked.taken} className="hero-cta relative h-9 -skew-x-12 cursor-pointer overflow-hidden bg-[#e93748] px-5 text-white disabled:cursor-default disabled:opacity-60" onClick={() => act(picked)}>
                   <span className="inline-flex skew-x-12 items-center gap-2 text-xs font-black tracking-[1px] uppercase">
-                    {picked.worn ? "დაყენებულია" : picked.taken ? "გაყიდულია" : picked.owned ? "ჩაცმა" : <>ყიდვა <img src="/assets/shop/coin.svg" alt="" width={15} height={15} /> {picked.price.toLocaleString("en-US")}</>}
+                    {picked.worn ? "დაყენებულია" : picked.taken ? "გაყიდულია" : picked.owned ? "ჩაცმა" : <>ყიდვა <img loading="lazy" decoding="async" src="/assets/shop/coin.svg" alt="" width={15} height={15} /> {picked.price.toLocaleString("en-US")}</>}
                   </span>
                 </button>
               </div>

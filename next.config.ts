@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   agentRules: false,
   distDir: process.env.NEXT_DIST_DIR || ".next",
+  experimental: { serverActions: { bodySizeLimit: "30mb" } },
   async rewrites() {
     return [
       { source: "/@:name/activity", destination: "/profile/:name/activity" },

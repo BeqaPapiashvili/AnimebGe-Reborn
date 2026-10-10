@@ -185,18 +185,25 @@ export function NotificationsView({ items }: { items: InboxItem[] }) {
               const on = live && picked.includes(item.id);
               return (
                 <li key={item.id} className={`notif-row border-b border-white/6 last:border-b-0 ${live && leaving.includes(item.id) ? "is-leaving" : ""}`}>
-                  <div className={`group relative flex items-center gap-3 px-3 py-3 transition-colors duration-200 ${on ? "bg-[#e93748]/8" : "hover:bg-white/[0.035]"}`}>
+                  <div className={`group relative flex items-start gap-3 px-3 py-3 transition-colors duration-200 ${on ? "bg-[#e93748]/8" : "hover:bg-white/[0.035]"}`}>
                     <span className={`absolute inset-y-3 left-0 w-0.5 rounded-full bg-[#e93748] transition-opacity duration-200 ${item.read ? "opacity-0" : "opacity-100"}`} />
                     <span className={`grid shrink-0 place-items-center overflow-hidden transition-all duration-200 ${showSelect ? "ml-1 w-5 opacity-100" : "w-0 opacity-0"}`}>
                       <button type="button" aria-pressed={on} aria-label="მონიშვნა" className={`grid size-4 cursor-pointer place-items-center rounded border transition-colors ${on ? "border-[#e93748] bg-[#e93748] text-white" : "border-white/30 text-transparent hover:border-white/60"}`} onClick={() => toggle(item.id)}>
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="m5 12 5 5L20 7" /></svg>
                       </button>
                     </span>
-                    <button type="button" className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 text-left" onClick={() => openItem(item)}>
+                    <button type="button" className="flex min-w-0 flex-1 cursor-pointer items-start gap-3 text-left" onClick={() => openItem(item)}>
                       {item.icon ? <img src={item.icon} alt="" className="size-12 shrink-0 rounded-md object-cover" /> : <span className="grid size-12 shrink-0 place-items-center rounded-md bg-white/6 text-[#9ca3af]"><TabIcon name={groupOf(item.type)} /></span>}
                       <span className="min-w-0 flex-1">
                         <span className="text-[10px] font-bold tracking-[0.7px] text-[#e93748] uppercase">{badge(item.type)}</span>
-                        <span className="mt-0.5 block truncate text-sm font-semibold text-white">{item.message || item.title}</span>
+                        {item.title && item.message && item.title !== item.message ? (
+                          <>
+                            <span className="mt-0.5 block text-sm font-semibold break-words text-white">{item.title}</span>
+                            <span className="mt-1 block text-[13px] leading-5 break-words whitespace-pre-line text-[#9f9fa9]">{item.message}</span>
+                          </>
+                        ) : (
+                          <span className="mt-0.5 block text-sm font-semibold break-words whitespace-pre-line text-white">{item.message || item.title}</span>
+                        )}
                       </span>
                     </button>
                     <span className="flex shrink-0 flex-col items-end gap-1.5">

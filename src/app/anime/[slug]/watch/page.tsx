@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Home } from "@/components/home";
+import { ViewPing } from "@/components/view-ping";
 import { getSession } from "@/lib/auth";
 import { getCommentPage, getUserAnimeState } from "@/lib/catalog";
 import { readEmotes } from "@/lib/emote";
@@ -31,5 +32,10 @@ export default async function WatchPage({ params, searchParams }: Props) {
     user ? getPrefs(user.id) : Promise.resolve(undefined),
     readEmotes(detail.id, user?.id),
   ]);
-  return <Home user={user} detail={{ ...detail, episodeList }} state={state} comments={comments.comments} commentStats={{ total: comments.total, roots: comments.roots }} lists={lists} watchEpisode={Number(ep) || 1} watchRoom={room || undefined} prefs={prefs} emotes={emotes} />;
+  return (
+    <>
+      <Home user={user} detail={{ ...detail, episodeList }} state={state} comments={comments.comments} commentStats={{ total: comments.total, roots: comments.roots }} lists={lists} watchEpisode={Number(ep) || 1} watchRoom={room || undefined} prefs={prefs} emotes={emotes} />
+      <ViewPing id={detail.id} />
+    </>
+  );
 }

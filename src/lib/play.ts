@@ -115,8 +115,7 @@ function hosted(url?: string | null) {
   const value = absUrl(url);
   if (!value) return "";
   const path = value.replace(/^https?:\/\/animeb\.ge/i, "");
-  if (path.startsWith("/uploads/")) return `/media${path}`;
-  return value;
+  return path.startsWith("/uploads/") ? path : value;
 }
 
 function face(row: { id: number; name: string; image: string; rarity: string; anime?: string; slug?: string; owned?: number; likes?: number; liked?: number | boolean; author?: string; holders?: number; drops?: string | null }): CardFace {

@@ -20,13 +20,14 @@ export async function saveAdminCard(id: number, name: string, rarity: string) {
   return "";
 }
 
-export async function addAdminCard(input: { name: string; rarity: string; newsId: number; description: string; image: string }) {
+export async function addAdminCard(input: { name: string; rarity: string; newsId: number; description: string; image: string; points?: number; author?: string }) {
   const name = input.name.trim().slice(0, 100);
   if (name.length < 2 || !input.image.startsWith("/uploads/")) return "სახელი და სურათი სჭირდება.";
   const rank = ranks.includes(input.rarity) ? input.rarity : "C";
+  const points = Math.min(100000, Math.max(0, Math.trunc(input.points ?? 0) || 0));
   await execute(
-    "INSERT INTO anime_cards (name, image, rarity, description, points_value, author, news_id, likes_count, status) VALUES (?, ?, ?, ?, 0, '', ?, 0, 1)",
-    [name, input.image, rank, input.description.trim().slice(0, 2000), input.newsId || 0],
+    "INSERT INTO anime_cards (name, image, rarity, description, points_value, author, news_id, likes_count, status) VALUES (?, ?, ?, ?, ?, ?, ?, 0, 1)",
+    [name, input.image, rank, input.description.trim().slice(0, 2000), points, (input.author ?? "").slice(0, 100), input.newsId || 0],
   );
   return "";
 }

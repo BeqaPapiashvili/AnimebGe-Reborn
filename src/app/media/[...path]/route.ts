@@ -25,8 +25,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ pat
     const body = await readFile(file);
     return new Response(body, { headers: { "content-type": type, "cache-control": cache } });
   } catch { /* ჯერ ლოკალურად არ არის */ }
-  if (root !== "uploads") return new Response(null, { status: 404 });
-  const remote = await fetch(`https://animeb.ge/${parts.join("/")}`).catch(() => null);
+  const origin = process.env.UPLOADS_FALLBACK ?? "https://animeb.ge";
+  if (root !== "uploads" || !origin) return new Response(null, { status: 404 });
+  const remote = await fetch(`${origin}/${parts.join("/")}`).catch(() => null);
   if (!remote?.ok) return new Response(null, { status: 404 });
   const body = Buffer.from(await remote.arrayBuffer());
   await mkdir(path.dirname(file), { recursive: true }).catch(() => undefined);

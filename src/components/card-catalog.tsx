@@ -1,5 +1,6 @@
 "use client";
 
+import { CardImg, LazyVideo } from "@/components/live-media";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ArrowLeft, ArrowUpDown, ArrowUpRight, ChevronRight, Heart, Info, Search, Share2, SlidersHorizontal, X } from "lucide-react";
@@ -23,9 +24,10 @@ function splitRanks(value: string) {
   return value.split(",").map((item) => item.trim().toUpperCase()).filter((item) => ranks.includes(item));
 }
 
-function picture(src: string, name: string, className: string) {
+function picture(src: string, name: string, className: string, tile = false) {
   if (!src) return null;
-  if (/\.(webm|mp4)(\?|$)/i.test(src)) return <video src={src} autoPlay muted loop playsInline className={className} />;
+  if (/\.(webm|mp4)(\?|$)/i.test(src)) return <LazyVideo src={src} className={className} autoplay={!tile} />;
+  if (tile) return <CardImg src={src} alt={name} className={className} />;
   return <img src={src} alt={name} loading="lazy" decoding="async" className={className} />;
 }
 
@@ -99,7 +101,7 @@ const CardTile = memo(function CardTile({ card, onOpen }: { card: CardFace; onOp
   return (
     <button type="button" className="block w-full cursor-pointer border-0 bg-transparent p-0" onClick={() => onOpen(card)}>
       <span className="relative block aspect-[2/3] overflow-hidden rounded-[10px] bg-[#101013]">
-        {picture(card.image, card.name, "h-full w-full object-cover")}
+        {picture(card.image, card.name, "h-full w-full object-cover", true)}
       </span>
     </button>
   );

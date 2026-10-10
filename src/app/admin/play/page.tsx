@@ -6,6 +6,9 @@ import { notFound, redirect } from "next/navigation";
 import { addAdminCard, addAdminGiveaway, adminCards, adminCases, adminDubbers, adminGiveaways, deleteAdminCard, saveAdminCard, saveAdminCase, saveAdminDubber } from "@/lib/play-admin";
 import { recordAudit } from "@/lib/audit";
 import { getSession, isAdmin } from "@/lib/auth";
+import { makeCardThumb } from "@/lib/card-thumbs";
+import { renderCard } from "@/lib/card-render";
+import { AdminCardCreator } from "@/components/admin-card-creator";
 import { storageFile } from "@/lib/storage";
 
 export const metadata: Metadata = { title: "თამაში | ადმინპანელი" };
@@ -42,25 +45,49 @@ async function createCard(formData: FormData) {
   const user = await gate();
   if (!user) return;
   const file = formData.get("file");
+  const cardName = String(formData.get("name") ?? "").trim();
+  const rarity = String(formData.get("rarity") ?? "C");
   let image = "";
-  if (file instanceof File && file.size > 0) {
+  let error = "";
+  if (!(file instanceof File) || file.size === 0) error = "სურათი აირჩიე.";
+  else if (file.size > 25 * 1024 * 1024) error = "ფაილი 25 MB-ზე დიდია.";
+  else {
     const raw = (file.name.split(".").pop() || "").toLowerCase();
-    const ext = ["webp", "png", "jpg", "jpeg", "gif", "webm", "mp4"].includes(raw) ? raw : "webp";
-    const name = `${Date.now().toString(36)}.${ext}`;
-    const target = storageFile("uploads", "anime_cards", name);
-    await mkdir(path.dirname(target), { recursive: true });
-    await writeFile(target, Buffer.from(await file.arrayBuffer()));
-    image = `/uploads/anime_cards/${name}`;
+    const ext = ["webp", "png", "jpg", "jpeg", "gif", "webm", "mp4"].includes(raw) ? raw : "";
+    const still = ["webp", "png", "jpg", "jpeg"].includes(ext);
+    const id = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+    let body: Buffer | null = Buffer.from(await file.arrayBuffer());
+    let name = `${id}.${ext}`;
+    if (!ext) error = "ფორმატი: PNG, JPG, WEBP, GIF, MP4 ან WEBM.";
+    else if (rarity !== "RE") {
+      if (!still) error = "ჩარჩოიანი ქარდისთვის სურათი უნდა იყოს (PNG, JPG, WEBP). ვიდეო მხოლოდ RE რანგზე.";
+      else {
+        body = await renderCard({ image: body, rarity, name: cardName, anime: String(formData.get("anime") ?? ""), withText: formData.get("caption") === "on" }).catch(() => null);
+        if (!body) error = "ქარდის გენერაცია ვერ მოხერხდა.";
+        name = `${id}.png`;
+      }
+    }
+    if (!error && body) {
+      const target = storageFile("uploads", "anime_cards", name);
+      await mkdir(path.dirname(target), { recursive: true });
+      await writeFile(target, body);
+      await makeCardThumb(name, body);
+      image = `/uploads/anime_cards/${name}`;
+    }
   }
-  const error = await addAdminCard({
-    name: String(formData.get("name") ?? ""),
-    rarity: String(formData.get("rarity") ?? "C"),
-    newsId: Number(formData.get("news") ?? 0),
-    description: String(formData.get("text") ?? ""),
-    image,
-  });
-  if (!error) await recordAudit(user, "ბარათი", `დამატება · ${String(formData.get("name") ?? "").slice(0, 40)}`);
-  redirect(`/admin/play?part=cards${error ? `&error=${encodeURIComponent(error)}` : ""}`);
+  if (!error) {
+    error = await addAdminCard({
+      name: cardName,
+      rarity,
+      newsId: Number(formData.get("news") ?? 0),
+      description: String(formData.get("text") ?? ""),
+      points: Number(formData.get("points") ?? 300),
+      author: user.name,
+      image,
+    });
+  }
+  if (!error) await recordAudit(user, "ბარათი", `დამატება · ${cardName.slice(0, 40)}`);
+  redirect(`/admin/play?part=cards${error ? `&error=${encodeURIComponent(error)}` : "&added=1"}`);
 }
 
 async function saveCase(formData: FormData) {
@@ -99,7 +126,7 @@ const parts = [
   ["dubbers", "გამხმოვანებლები"],
 ] as const;
 
-export default async function PlayAdmin({ searchParams }: { searchParams: Promise<{ part?: string; q?: string; error?: string }> }) {
+export default async function PlayAdmin({ searchParams }: { searchParams: Promise<{ part?: string; q?: string; error?: string; added?: string }> }) {
   const user = await getSession();
   if (!user || !isAdmin(user)) notFound();
   const query = await searchParams;
@@ -125,14 +152,7 @@ export default async function PlayAdmin({ searchParams }: { searchParams: Promis
             <input name="q" defaultValue={q} placeholder="ძებნა" className={`${field} flex-1`} />
             <button className="h-10 cursor-pointer rounded-xl bg-white/10 px-4 text-sm">ძებნა</button>
           </form>
-          <form action={createCard} className="grid gap-2 rounded-2xl bg-[#101013] p-4 md:grid-cols-2">
-            <input name="name" required placeholder="ახალი ბარათი" className={field} />
-            <select name="rarity" className={field} defaultValue="C">{["E", "D", "C", "B", "A", "S", "S+", "RE"].map((rank) => <option key={rank}>{rank}</option>)}</select>
-            <input name="news" type="number" min={0} placeholder="ანიმეს ნომერი" className={field} />
-            <input name="file" type="file" accept="image/*,video/webm,video/mp4" required className="text-sm" />
-            <textarea name="text" placeholder="აღწერა" className="min-h-20 rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm md:col-span-2" />
-            <button className="h-10 w-fit cursor-pointer rounded-xl bg-[#e93748] px-4 text-sm">დამატება</button>
-          </form>
+          <AdminCardCreator action={createCard} added={query.added === "1"} />
           {cards.map((card) => (
             <form key={card.id} action={saveCard} className="flex flex-wrap items-center gap-2 rounded-2xl bg-[#101013] p-3">
               <input type="hidden" name="id" value={card.id} />

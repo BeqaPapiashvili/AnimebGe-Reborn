@@ -411,7 +411,8 @@ async function castOf(raw: string, search: string) {
     });
     return { cast, castTotal: cast.length };
   }
-  const remote = await loadRemoteCast(search, 1);
+  const late = { cast: [] as AnimeDetail["cast"], total: 0, hasNext: false };
+  const remote = await Promise.race([loadRemoteCast(search, 1), new Promise<typeof late>((resolve) => setTimeout(() => resolve(late), 1200))]);
   return { cast: remote.cast, castTotal: remote.total || remote.cast.length, castQuery: remote.hasNext ? search : undefined };
 }
 

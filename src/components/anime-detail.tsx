@@ -1,5 +1,6 @@
 "use client";
 
+import { LazyVideo } from "@/components/live-media";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { AnimeDetail, UserAnimeState } from "@/lib/catalog";
 import { animeHref, formatCount } from "@/lib/data";
@@ -239,7 +240,7 @@ function AnimeCards({ cards, animeId, signedIn, onAuth }: { cards: AnimeCard[]; 
         style={slide ? undefined : { animationDelay: `${Math.min(index, 18) * 25}ms` }}
       >
         <span className={`relative block aspect-[2/3] overflow-hidden rounded-[12px] bg-[#1a1a1a] shadow-[0_10px_22px_rgba(0,0,0,0.35)] transition duration-300 ${grabbing ? "" : "group-hover:-translate-y-1 group-hover:shadow-[0_16px_30px_rgba(0,0,0,0.5)]"}`}>
-          {card.image && moving ? <video src={card.image} autoPlay muted loop playsInline className="pointer-events-none h-full w-full object-cover" /> : null}
+          {card.image && moving ? <LazyVideo src={card.image} className="pointer-events-none h-full w-full object-cover" /> : null}
           {card.image && !moving ? <img src={card.image} alt={card.name} loading="lazy" decoding="async" draggable={false} className={`pointer-events-none h-full w-full object-cover transition duration-500 ${grabbing ? "" : "group-hover:scale-105"} ${signedIn && !mine ? "opacity-60 grayscale-[0.5] group-hover:opacity-100 group-hover:grayscale-0" : ""}`} /> : null}
           {mine ? <span className="absolute top-1.5 right-1.5 rounded-md bg-[#e93748] px-1.5 py-0.5 text-[10px] font-semibold text-white">{(card.owned ?? 0) > 1 ? `×${card.owned}` : "გაქვს"}</span> : null}
           {wish ? <span className="absolute top-1.5 right-1.5 grid size-6 place-items-center rounded-md bg-black/70 text-[#ff8a95]" title="სურვილების სიაშია"><HeartIcon filled size={12} /></span> : null}

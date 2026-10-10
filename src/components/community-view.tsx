@@ -75,7 +75,7 @@ export function CommunityView({ page, topic = "all", onAuth }: { page: Community
     const q = query.trim().toLowerCase();
     const list = q
       ? rows.filter((item) => `${item.title} ${visibleBody(item.body)} ${item.name}`.toLowerCase().includes(q))
-      : filter === "all" ? rows.filter((item) => !item.pinned) : rows.filter((item) => item.category === filter && !item.pinned);
+      : filter === "all" ? rows : rows.filter((item) => item.category === filter);
     const copy = [...list];
     if (sort === "new") copy.sort((a, b) => b.id - a.id);
     else if (sort === "old") copy.sort((a, b) => a.id - b.id);
@@ -849,7 +849,7 @@ function renderInline(line: string) {
     if (part.startsWith("||") && part.endsWith("||")) return <Spoiler key={index} text={part.slice(2, -2)} />;
     if (part.startsWith("*") && part.endsWith("*") && part.length > 2) return <em key={index}>{part.slice(1, -1)}</em>;
     const image = part.match(/^!\[([^\]]*)\]\((https?:\/\/[^\s)]+|\/uploads\/community\/[\w.-]+)\)$/);
-    if (image) return <img key={index} src={image[2]} alt={image[1] || ""} className="my-2 block max-h-80 max-w-full rounded-[8px]" />;
+    if (image) return <img key={index} src={image[2]} alt={image[1] || ""} className="my-3 block max-h-[560px] max-w-full rounded-[10px]" />;
     const link = part.match(/^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/);
     if (link) return <a key={index} href={link[2]} target="_blank" rel="noreferrer" className="text-[#e93748] underline">{link[1]}</a>;
     return <span key={index}>{part}</span>;
@@ -937,7 +937,7 @@ function PostBody({ post, onPoll, compact }: { post: CommunityPost; onPoll: (ind
   return (
     <div className="mt-2 grid gap-3">
       {text && <RichText text={text} className={`font-mkhedruli text-base leading-6 font-light text-white/90 ${long ? "line-clamp-2" : ""}`} />}
-      {images.map((src) => <PostImage key={src} src={src} />)}
+      {(compact ? images.slice(0, 1) : images).map((src) => <PostImage key={src} src={src} />)}
       {post.anime && post.anime.length > 0 && <AnimeTags items={post.anime} />}
       {post.poll && <PollBox poll={post.poll} onVote={onPoll} />}
     </div>

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { MaintenanceScreen } from "@/components/maintenance-screen";
 import { PageProgress } from "@/components/page-progress";
+import { PresenceBeacon } from "@/components/presence-beacon";
 import { Toaster } from "@/components/toast";
 import { getSession, isAdmin } from "@/lib/auth";
 import { fontStyle } from "@/lib/fonts";
@@ -31,6 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <body className="antialiased" suppressHydrationWarning>
           <style dangerouslySetInnerHTML={{ __html: fonts }} />
           <MaintenanceScreen kind={maintenance.kind} title={maintenance.title || preset.title} text={maintenance.text || preset.text} until={maintenance.until} href={maintenance.href} label={maintenance.label} signedIn={!!user} />
+          <PresenceBeacon />
         </body>
       </html>
     );
@@ -44,6 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </Suspense>
         {children}
         <Toaster />
+        <PresenceBeacon />
       </body>
     </html>
   );

@@ -1,11 +1,12 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { AlertCircle, Clapperboard, ExternalLink, Folder, Home, Layers, Link2, LogOut, MessageCircle, MessageSquare, ScrollText, Shield, SlidersHorizontal, Store, Tags, Tv, Type, Users } from "lucide-react";
-import type { ReactNode } from "react";
+import { AlertCircle, Clapperboard, ExternalLink, Folder, Home, Layers, Link2, LogOut, MessageCircle, MessageSquare, Radio, ScrollText, Shield, SlidersHorizontal, Store, Tags, Tv, Type, Users } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
 
 const main = [
   { href: "/admin", label: "საწყისი გვერდი", icon: Home },
+  { href: "/admin/live", label: "ლაივი", icon: Radio },
   { href: "/admin/anime", label: "ანიმეები", icon: Clapperboard },
   { href: "/admin/slugs", label: "განმეორებული ბმულები", icon: Link2 },
   { href: "/admin/shop", label: "მაღაზია", icon: Store },
@@ -25,20 +26,46 @@ const manage = [
   { href: "/admin/folders", label: "სიები", icon: Folder },
 ];
 
-function Nav({ href, label, icon: Icon, on }: { href: string; label: string; icon: typeof Home; on: boolean }) {
+function Nav({ href, label, icon: Icon, on, badge }: { href: string; label: string; icon: typeof Home; on: boolean; badge?: number | null }) {
   return (
     <a href={href} className={`group relative flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-all duration-300 ${on ? "border border-white/5 bg-white/[0.04] text-white shadow-xl" : "text-white/40 hover:bg-white/[0.02] hover:text-white"}`}>
       {on ? <span className="absolute top-1/4 bottom-1/4 left-0 w-1 rounded-r-full bg-primary shadow-[0_0_15px_rgba(233,55,72,0.8)]" /> : null}
       <Icon className={`h-5 w-5 transition-all duration-300 ${on ? "scale-110 text-primary" : "group-hover:scale-110 group-hover:text-white"}`} />
       <span className={`text-sm tracking-tight ${on ? "translate-x-1" : ""}`}>{label}</span>
-      {on ? <span className="ml-auto size-1.5 rounded-full bg-primary shadow-[0_0_10px_rgba(233,55,72,0.5)]" /> : null}
+      {badge != null ? (
+        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-[#ff8a95] tabular-nums">
+          <span className="size-1.5 animate-pulse rounded-full bg-primary" />
+          {badge}
+        </span>
+      ) : on ? <span className="ml-auto size-1.5 rounded-full bg-primary shadow-[0_0_10px_rgba(233,55,72,0.5)]" /> : null}
     </a>
   );
+}
+
+function useOnline() {
+  const [count, setCount] = useState<number | null>(null);
+  useEffect(() => {
+    let stop = false;
+    async function load() {
+      const data = (await fetch("/api/presence", { cache: "no-store" }).then((res) => (res.ok ? res.json() : null)).catch(() => null)) as { people?: number } | null;
+      if (!stop && data && typeof data.people === "number") setCount(data.people);
+    }
+    void load();
+    const loop = window.setInterval(() => {
+      if (document.visibilityState === "visible") void load();
+    }, 15_000);
+    return () => {
+      stop = true;
+      window.clearInterval(loop);
+    };
+  }, []);
+  return count;
 }
 
 export function AdminShell({ name, children }: { name: string; children: ReactNode }) {
   const pathname = usePathname();
   const active = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname === href || pathname.startsWith(`${href}/`));
+  const online = useOnline();
   async function leave() {
     await fetch("/api/auth/logout", { method: "POST" });
     window.location.href = "/";
@@ -64,7 +91,7 @@ export function AdminShell({ name, children }: { name: string; children: ReactNo
               <span className="text-[10px] tracking-[0.2em] text-white/20 uppercase">საბაზისო ფუნქციები</span>
               <span className="h-px w-8 bg-white/5" />
             </div>
-            <div className="space-y-1.5">{main.map((item) => <Nav key={item.href} {...item} on={active(item.href)} />)}</div>
+            <div className="space-y-1.5">{main.map((item) => <Nav key={item.href} {...item} on={active(item.href)} badge={item.href === "/admin/live" ? online : null} />)}</div>
           </div>
           <div>
             <div className="mb-4 flex items-center justify-between px-4">
@@ -88,7 +115,7 @@ export function AdminShell({ name, children }: { name: string; children: ReactNo
         <div className="pointer-events-none absolute top-0 right-0 h-1/3 w-1/3 bg-blue-600/5 blur-[120px]" />
         <div className="flex gap-2 overflow-x-auto border-b border-white/5 px-4 py-3 lg:hidden">
           {[...main, ...manage].map((item) => (
-            <a key={item.href} href={item.href} className={`shrink-0 rounded-xl px-3 py-2 text-sm ${active(item.href) ? "bg-primary text-white" : "bg-white/5 text-white/60"}`}>{item.label}</a>
+            <a key={item.href} href={item.href} className={`shrink-0 rounded-xl px-3 py-2 text-sm ${active(item.href) ? "bg-primary text-white" : "bg-white/5 text-white/60"}`}>{item.label}{item.href === "/admin/live" && online != null ? ` · ${online}` : ""}</a>
           ))}
         </div>
         <div className="relative z-10">{children}</div>
