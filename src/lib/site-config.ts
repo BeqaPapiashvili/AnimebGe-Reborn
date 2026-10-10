@@ -112,6 +112,45 @@ export async function saveNotice(input: SiteNotice) {
   });
 }
 
+export type MaintenanceKind = "maintenance" | "update" | "offline";
+export type Maintenance = { on: boolean; kind: MaintenanceKind; title: string; text: string; until: string; href: string; label: string };
+
+export const maintenanceKinds: { id: MaintenanceKind; label: string; title: string; text: string }[] = [
+  { id: "maintenance", label: "ტექნიკური სამუშაოები", title: "ცოტა ხანში დავბრუნდებით", text: "სერვერებზე ტექნიკური სამუშაოები მიმდინარეობს. ყველაფერს ვასწორებთ, რომ ანიმე კიდევ უფრო სწრაფად და მშვიდად უყურო." },
+  { id: "update", label: "განახლება", title: "საიტი ახლდება", text: "ახალ ფუნქციებს ვამატებთ. რამდენიმე წუთში ყველაფერი ახალი სახით დაგხვდება." },
+  { id: "offline", label: "დროებით გამორთულია", title: "საიტი დროებით გათიშულია", text: "Animeb ამ ეტაპზე მიუწვდომელია. მადლობა მოთმინებისთვის, მალე დავბრუნდებით." },
+];
+
+const maintenanceIds = new Set<MaintenanceKind>(["maintenance", "update", "offline"]);
+let maintenanceCache: { at: number; value: Maintenance } | null = null;
+
+function cleanMaintenance(raw: Partial<Maintenance> | null): Maintenance {
+  const kind = maintenanceIds.has(raw?.kind as MaintenanceKind) ? raw!.kind as MaintenanceKind : "maintenance";
+  const until = String(raw?.until ?? "").trim().slice(0, 25);
+  return {
+    on: raw?.on === true,
+    kind,
+    title: text(raw?.title, 80),
+    text: String(raw?.text ?? "").trim().slice(0, 500),
+    until: until && Number.isFinite(new Date(until).getTime()) ? until : "",
+    href: safeHref(String(raw?.href ?? "")),
+    label: text(raw?.label, 24),
+  };
+}
+
+export async function getMaintenance(): Promise<Maintenance> {
+  if (maintenanceCache && Date.now() - maintenanceCache.at < 10_000) return maintenanceCache.value;
+  const value = cleanMaintenance(await readSetting("maintenance").catch(() => null) as Partial<Maintenance> | null);
+  maintenanceCache = { at: Date.now(), value };
+  return value;
+}
+
+export async function saveMaintenance(input: Partial<Maintenance>) {
+  const value = cleanMaintenance(input);
+  await writeSetting("maintenance", value);
+  maintenanceCache = { at: Date.now(), value };
+}
+
 function cleanHomeBlocks(input: unknown[]) {
   const known = new Map(defaultHomeBlocks.map((item) => [item.id, item]));
   const used = new Set<string>();

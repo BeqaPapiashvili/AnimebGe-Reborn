@@ -3,12 +3,13 @@ import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { SlidersHorizontal } from "lucide-react";
 import { AdminGuide, AdminHomeOrder, AdminLevels, AdminNotice } from "@/components/admin-site";
+import { AdminOffline } from "@/components/admin-offline";
 import { AdminFooter, AdminHelp, AdminSlides, AdminXp } from "@/components/admin-site-more";
 import { recordAudit } from "@/lib/audit";
 import { getSession, isAdmin } from "@/lib/auth";
 import type { HelpItem } from "@/lib/site-config";
 import { slideBoard } from "@/lib/catalog";
-import { defaultHomeBlocks, getFooterLinks, getGuide, getHelp, getHomeBlocks, readLevelSpans, readNotice, readRankNames, readXpRules, saveFooterLinks, saveGuide, saveHelp, saveHomeBlocks, saveLevelSpans, saveNotice, saveRankNames, saveSlides, saveXpRules, slideModes, type SlideMode } from "@/lib/site-config";
+import { defaultHomeBlocks, getFooterLinks, getGuide, getHelp, getHomeBlocks, getMaintenance, maintenanceKinds, readLevelSpans, readNotice, readRankNames, readXpRules, saveFooterLinks, saveGuide, saveHelp, saveHomeBlocks, saveLevelSpans, saveMaintenance, saveNotice, saveRankNames, saveSlides, saveXpRules, slideModes, type MaintenanceKind, type SlideMode } from "@/lib/site-config";
 
 export const metadata: Metadata = { title: "საიტი | ადმინპანელი" };
 export const dynamic = "force-dynamic";
@@ -22,6 +23,7 @@ const parts = [
   { id: "footer", label: "ფეხი" },
   { id: "help", label: "დახმარება" },
   { id: "xp", label: "ქულა" },
+  { id: "offline", label: "ოფლაინი" },
 ] as const;
 
 type Part = (typeof parts)[number]["id"];
@@ -133,14 +135,33 @@ async function saveXpForm(formData: FormData) {
   refresh();
 }
 
+async function saveOfflineForm(formData: FormData) {
+  "use server";
+  const user = await getSession();
+  if (!user || !isAdmin(user)) return;
+  const on = formData.get("on") === "1";
+  await saveMaintenance({
+    on,
+    kind: String(formData.get("kind") ?? "maintenance") as MaintenanceKind,
+    title: String(formData.get("title") ?? ""),
+    text: String(formData.get("text") ?? ""),
+    until: String(formData.get("until") ?? ""),
+    href: String(formData.get("href") ?? ""),
+    label: String(formData.get("label") ?? ""),
+  });
+  await recordAudit(user, "ოფლაინი", on ? "საიტი გათიშულია" : "საიტი ჩართულია");
+  refresh();
+}
+
 export default async function AdminSitePage({ searchParams }: { searchParams: Promise<{ part?: string }> }) {
   const user = await getSession();
   if (!user || !isAdmin(user)) notFound();
   const query = await searchParams;
   const part: Part = parts.some((item) => item.id === query.part) ? query.part as Part : "notice";
-  const [notice, blocks, guide, spans, ranks, links, help, rules, slides] = await Promise.all([
+  const [notice, blocks, guide, spans, ranks, links, help, rules, slides, offline] = await Promise.all([
     readNotice(), getHomeBlocks(), getGuide(), readLevelSpans(), readRankNames(), getFooterLinks(), getHelp(), readXpRules(),
     part === "slides" ? slideBoard() : Promise.resolve(null),
+    getMaintenance(),
   ]);
   return (
     <div className="min-h-screen bg-[#020202] pb-20 text-white">
@@ -151,7 +172,7 @@ export default async function AdminSitePage({ searchParams }: { searchParams: Pr
           </div>
           <div>
             <h1 className="text-2xl tracking-tight">საიტი</h1>
-            <p className="text-[11px] text-white/35">განცხადება, მთავარი, წესები, დონეები, სლაიდერი, ფეხი, დახმარება, ქულა</p>
+            <p className="text-[11px] text-white/35">განცხადება, მთავარი, წესები, დონეები, სლაიდერი, ფეხი, დახმარება, ქულა, ოფლაინი</p>
           </div>
         </div>
       </div>
@@ -169,6 +190,7 @@ export default async function AdminSitePage({ searchParams }: { searchParams: Pr
         {part === "footer" ? <AdminFooter links={links} save={saveFooterForm} /> : null}
         {part === "help" ? <AdminHelp items={help} save={saveHelpForm} /> : null}
         {part === "xp" ? <AdminXp rules={rules} save={saveXpForm} /> : null}
+        {part === "offline" ? <AdminOffline value={offline} kinds={maintenanceKinds} save={saveOfflineForm} /> : null}
       </div>
     </div>
   );

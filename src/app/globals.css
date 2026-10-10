@@ -1375,6 +1375,41 @@ textarea {
   animation: search-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.maint-petal {
+  opacity: 0;
+  animation: maint-fall linear infinite;
+}
+
+.maint-rise {
+  animation: maint-rise 0.9s cubic-bezier(0.19, 1, 0.22, 1) both;
+}
+
+.maint-bar {
+  animation: maint-bar 1.8s ease-in-out infinite;
+}
+
+@keyframes maint-fall {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.55; }
+  85% { opacity: 0.35; }
+  100% { transform: translate3d(var(--drift), 110vh, 0) rotate(540deg); opacity: 0; }
+}
+
+@keyframes maint-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes maint-bar {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .maint-petal { display: none; }
+  .maint-rise, .maint-bar { animation: none; }
+}
+
 @media (max-width: 767px) {
   .play-root .grid > * {
     min-width: 0;
