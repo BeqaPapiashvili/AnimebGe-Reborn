@@ -406,21 +406,21 @@ export function AnimeDetailView({ detail, user, state, lists = [], cards = [], o
         <div className="absolute inset-0 bg-linear-to-b from-[#0a0a0a]/30 via-[#0a0a0a]/70 to-[#0a0a0a]" />
       </div>
 
-      <div className="relative mx-auto flex max-w-[1536px] items-stretch gap-6 px-6 pt-[184px] max-[900px]:flex-col">
-        <aside className="rise-in flex w-[250px] shrink-0 flex-col gap-6 max-[900px]:w-full max-[900px]:flex-row" style={{ animationDelay: "100ms" }}>
-          <div className="h-[350px] w-[250px] shrink-0 overflow-hidden rounded-[7px] bg-[#1a1a1a] shadow-[0_10px_30px_rgba(0,0,0,0.5)] ring-1 ring-white/8">
+      <div className="relative mx-auto flex max-w-[1536px] items-stretch gap-6 px-6 pt-[184px] max-[900px]:flex-col max-md:gap-5 max-md:px-4 max-md:pt-24">
+        <aside className="rise-in flex w-[250px] shrink-0 flex-col gap-6 max-[900px]:w-full max-[900px]:flex-row max-md:contents" style={{ animationDelay: "100ms" }}>
+          <div className="h-[350px] w-[250px] shrink-0 overflow-hidden rounded-[7px] bg-[#1a1a1a] shadow-[0_10px_30px_rgba(0,0,0,0.5)] ring-1 ring-white/8 max-md:order-1 max-md:mx-auto max-md:h-[300px] max-md:w-[214px] max-md:rounded-xl">
             {detail.poster ? <img src={detail.poster} alt={detail.title} className="h-full w-full object-cover" /> : null}
           </div>
-          <div className="flex flex-1 flex-col rounded-[7px] border border-white/6 bg-[#141414]/80 p-4">
-            <dl className="flex flex-col gap-4">
+          <div className="flex flex-1 flex-col rounded-[7px] border border-white/6 bg-[#141414]/80 p-4 max-md:order-3 max-md:min-w-0 max-md:rounded-xl max-md:border-0 max-md:bg-[#121214] max-md:p-3">
+            <dl className="flex flex-col gap-4 max-md:flex-row max-md:gap-5 max-md:overflow-x-auto max-md:px-1 max-md:pb-1 max-md:[scrollbar-width:none]">
               {info.map(([label, value]) => (
-                <div key={label} className="flex flex-col gap-1">
-                  <dt className="text-xs leading-4 font-medium text-[#6a7282]">{label}</dt>
-                  <dd className="text-sm leading-5 text-[#d1d5dc]">{value}</dd>
+                <div key={label} className="flex flex-col gap-1 max-md:max-w-[160px] max-md:shrink-0">
+                  <dt className="text-xs leading-4 font-medium text-[#6a7282] max-md:text-[11px] max-md:whitespace-nowrap">{label}</dt>
+                  <dd className="text-sm leading-5 text-[#d1d5dc] max-md:truncate max-md:text-[13px] max-md:font-semibold max-md:text-white">{value}</dd>
                 </div>
               ))}
             </dl>
-            <div className="mt-auto flex flex-col gap-3 border-t border-white/8 pt-4 max-[900px]:mt-6">
+            <div className="mt-auto flex flex-col gap-3 border-t border-white/8 pt-4 max-[900px]:mt-6 max-md:mt-3 max-md:flex-row max-md:gap-5 max-md:border-white/5 max-md:pt-3 max-md:empty:hidden">
               {detail.anilistUrl ? (
                 <a href={detail.anilistUrl} target="_blank" rel="noreferrer" className="detail-link flex items-center gap-2 text-sm text-[#99a1af]">
                   <img src="/assets/detail/anilist.svg" alt="" width={14} height={14} />
@@ -439,15 +439,15 @@ export function AnimeDetailView({ detail, user, state, lists = [], cards = [], o
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-6">
-          <div className="rise-in relative z-20 flex flex-col gap-4" style={{ animationDelay: "200ms" }}>
-            <div className="flex flex-col gap-2">
-              <h1 className="font-bog text-2xl leading-8 font-bold text-white">{detail.title}</h1>
-              {detail.romaji ? <p className="font-bog text-lg leading-7 font-bold text-[#e93748] italic">{detail.romaji}</p> : null}
+        <div className="flex min-w-0 flex-1 flex-col gap-6 max-md:contents">
+          <div className="rise-in relative z-20 flex flex-col gap-4 max-md:order-2 max-md:items-center max-md:text-center" style={{ animationDelay: "200ms" }}>
+            <div className="flex flex-col gap-2 max-md:gap-1">
+              <h1 className="font-bog text-2xl leading-8 font-bold text-white max-md:text-[22px] max-md:leading-7">{detail.title}</h1>
+              {detail.romaji ? <p className="font-bog text-lg leading-7 font-bold text-[#e93748] italic max-md:text-[15px] max-md:leading-6">{detail.romaji}</p> : null}
             </div>
             {detail.description ? (
               <div>
-                <p className={`font-mkhedruli max-w-[900px] text-base leading-6 font-light whitespace-pre-line text-white/90 ${expanded ? "" : "line-clamp-3"}`}>{detail.description}</p>
+                <p className={`font-mkhedruli max-w-[900px] text-base leading-6 font-light whitespace-pre-line text-white/90 max-md:text-[15px] ${expanded ? "" : "line-clamp-3 max-md:line-clamp-4"}`}>{detail.description}</p>
                 {detail.description.length > 240 ? (
                   <button type="button" className="mt-1 cursor-pointer text-sm font-semibold text-[#e93748] hover:underline" onClick={() => setExpanded((value) => !value)}>
                     {expanded ? "ნაკლები" : "მეტის წაკითხვა"}
@@ -456,28 +456,28 @@ export function AnimeDetailView({ detail, user, state, lists = [], cards = [], o
               </div>
             ) : null}
             {detail.genres.length ? (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 max-md:justify-center">
                 {detail.genres.map((genre) => <span key={genre} className="rounded-full bg-[#e93748]/10 px-2 py-1 text-sm leading-5 text-[#e93748]">{genre}</span>)}
               </div>
             ) : null}
-            <div className="flex flex-wrap items-center gap-3">
-              <a href={`${animeHref(detail.slug)}/watch?ep=1`} className="detail-watch flex h-9 items-center gap-2 rounded-[5.76px] bg-[#e93748] px-4 text-sm font-medium text-white">
+            <div className="flex flex-wrap items-center gap-3 max-md:justify-center max-md:gap-2">
+              <a href={`${animeHref(detail.slug)}/watch?ep=1`} className="detail-watch flex h-9 items-center gap-2 rounded-[5.76px] bg-[#e93748] px-4 text-sm font-medium text-white max-md:px-3">
                 <img src="/assets/detail/play.svg" alt="" width={16} height={16} />
                 ყურება
               </a>
               <div ref={listRef} className="relative">
                 <div className="flex h-9 overflow-hidden rounded-[5.76px] border border-white/12">
-                  <button type="button" className={`detail-btn flex items-center gap-2 px-3 text-sm font-medium ${current ? "text-[#e93748]" : "text-white"}`} aria-haspopup="menu" aria-expanded={listOpen} onClick={() => setListOpen((value) => !value)}>
+                  <button type="button" className={`detail-btn flex items-center gap-2 px-3 text-sm font-medium max-md:gap-1.5 max-md:px-2.5 ${current ? "text-[#e93748]" : "text-white"}`} aria-haspopup="menu" aria-expanded={listOpen} onClick={() => setListOpen((value) => !value)}>
                     {current ? <span className="list-icon" style={{ "--icon": `url(${current.icon})` } as React.CSSProperties} /> : <img src="/assets/detail/bookmark.svg" alt="" width={16} height={16} />}
                     {current ? current.label : "სიაში დამატება"}
                     <img src="/assets/detail/chevron-down.svg" alt="" width={12} height={12} className={`transition-transform duration-200 ${listOpen ? "rotate-180" : ""}`} />
                   </button>
-                  <button type="button" className={`detail-btn grid w-[41px] place-items-center border-l border-white/12 ${notify ? "bg-[#e93748]" : ""}`} aria-label="რჩეულებში დამატება" aria-pressed={notify} onClick={toggleNotify}>
+                  <button type="button" className={`detail-btn grid w-[41px] place-items-center max-md:w-9 border-l border-white/12 ${notify ? "bg-[#e93748]" : ""}`} aria-label="რჩეულებში დამატება" aria-pressed={notify} onClick={toggleNotify}>
                     <img src="/assets/detail/bell.svg" alt="" width={16} height={16} />
                   </button>
                 </div>
                 {listOpen ? (
-                  <div className="list-menu absolute top-full left-0 z-40 mt-2 w-[248px] overflow-hidden rounded-[10px] border border-white/8 bg-[#0a0a0a] p-1.5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)]" role="menu">
+                  <div className="list-menu absolute top-full left-0 z-40 mt-2 w-[248px] text-left max-md:left-1/2 max-md:-translate-x-1/2 overflow-hidden rounded-[10px] border border-white/8 bg-[#0a0a0a] p-1.5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)]" role="menu">
                     <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-[#e93748] to-transparent" />
                     <div className="flex flex-col gap-0.5">
                       {lists.map((item) => (
@@ -511,16 +511,16 @@ export function AnimeDetailView({ detail, user, state, lists = [], cards = [], o
               </button>
             </div>
             {chips.length ? (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 max-md:justify-center">
                 {chips.map((chip) => <span key={chip} className="rounded-[5.76px] border border-white/12 bg-white/4 px-2 py-1 text-xs leading-4 font-medium text-white">{chip}</span>)}
               </div>
             ) : null}
           </div>
 
-          <div className="rise-in relative z-0 rounded-[10px] border border-white/6 bg-[#141414]/80" style={{ animationDelay: "400ms" }}>
+          <div className="rise-in relative z-0 rounded-[10px] border border-white/6 bg-[#141414]/80 max-md:order-4 max-md:min-w-0 max-md:rounded-xl max-md:border-0 max-md:bg-[#121214]" style={{ animationDelay: "400ms" }}>
             <div className="relative flex border-b border-white/8" role="tablist" aria-label="ანიმეს დეტალები">
               {tabs.map((name) => (
-                <button key={name} type="button" role="tab" aria-selected={tab === name} className={`detail-tab flex-1 cursor-pointer py-3 text-sm font-semibold ${tab === name ? "text-[#e93748]" : "text-[#9f9fa9]"}`} onClick={() => { if (name === tab) return; setSwitched(tabs.indexOf(name) > tabs.indexOf(tab) ? "forward" : "back"); setTab(name); }}>
+                <button key={name} type="button" role="tab" aria-selected={tab === name} className={`detail-tab min-w-0 flex-1 cursor-pointer truncate py-3 text-sm font-semibold max-md:px-1 max-md:text-xs ${tab === name ? "text-[#e93748]" : "text-[#9f9fa9]"}`} onClick={() => { if (name === tab) return; setSwitched(tabs.indexOf(name) > tabs.indexOf(tab) ? "forward" : "back"); setTab(name); }}>
                   {name}
                 </button>
               ))}
@@ -627,7 +627,7 @@ export function AnimeDetailView({ detail, user, state, lists = [], cards = [], o
             </div>
           </div>
 
-          {cards.length ? <AnimeCards cards={cards} animeId={detail.id} signedIn={Boolean(user)} onAuth={onAuth} /> : null}
+          {cards.length ? <div className="min-w-0 max-md:order-5"><AnimeCards cards={cards} animeId={detail.id} signedIn={Boolean(user)} onAuth={onAuth} /></div> : null}
         </div>
       </div>
       {folderOpen ? (

@@ -76,30 +76,30 @@ export function FriendsView({ page, tab }: { page: FriendsPageData; tab: Tab }) 
   const requestCount = page.incoming.length;
 
   return (
-    <div className="rise min-h-[70vh] bg-[#070707] px-4 pt-28 pb-16 text-white">
+    <div className="rise min-h-[70vh] bg-[#070707] px-4 pt-28 pb-16 text-white max-md:pt-24">
       <div className="mx-auto w-full max-w-[760px] text-center">
-        <h1 className="text-4xl font-extrabold tracking-[-0.8px]">მეგობრები</h1>
+        <h1 className="text-4xl font-extrabold tracking-[-0.8px] max-md:text-[32px]">მეგობრები</h1>
         <p className="mt-2 text-sm text-[#9ca3af]">{page.friends.length} / {page.limit} მეგობარი</p>
-        <div className="mt-6 flex justify-center gap-6 border-b border-white/8 text-sm">
+        <div className="mt-6 flex justify-center gap-6 border-b border-white/8 text-sm max-md:-mx-4 max-md:justify-start max-md:gap-2 max-md:overflow-x-auto max-md:border-0 max-md:px-4 max-md:[scrollbar-width:none]">
           {tabs.map((item) => (
-            <button key={item.id} type="button" className={`relative cursor-pointer pb-3 font-semibold transition-colors ${current === item.id ? "text-white" : "text-[#9ca3af] hover:text-white"}`} onClick={() => pick(item.id)}>
+            <button key={item.id} type="button" className={`relative cursor-pointer pb-3 font-semibold transition-colors max-md:flex max-md:h-9 max-md:shrink-0 max-md:items-center max-md:rounded-full max-md:px-4 max-md:pb-0 max-md:text-[13px] ${current === item.id ? "text-white max-md:bg-[#e93748]" : "text-[#9ca3af] hover:text-white max-md:bg-[#18181b]"}`} onClick={() => pick(item.id)}>
               {item.label}
-              {item.id === "requests" && requestCount ? <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[#e93748] px-1 text-[10px] text-white">{requestCount}</span> : null}
-              <span className={`absolute inset-x-0 -bottom-px h-0.5 origin-center bg-[#e93748] transition-transform duration-200 ${current === item.id ? "scale-x-100" : "scale-x-0"}`} />
+              {item.id === "requests" && requestCount ? <span className={`ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] text-white ${current === item.id ? "bg-[#e93748] max-md:bg-white/25" : "bg-[#e93748]"}`}>{requestCount}</span> : null}
+              <span className={`absolute inset-x-0 -bottom-px h-0.5 origin-center bg-[#e93748] transition-transform duration-200 max-md:hidden ${current === item.id ? "scale-x-100" : "scale-x-0"}`} />
             </button>
           ))}
         </div>
 
         {current === "friends" ? (
-          <form className="mx-auto mt-8 max-w-[520px]" onSubmit={(event) => { event.preventDefault(); if (name.trim()) act("request", { name }); }}>
+          <form className="mx-auto mt-8 max-w-[520px] max-md:mt-5" onSubmit={(event) => { event.preventDefault(); if (name.trim()) act("request", { name }); }}>
             <div className="relative flex gap-2">
               <label className="relative min-w-0 flex-1">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="absolute top-1/2 left-3 -translate-y-1/2 text-[#6a7282]"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
-                <input value={name} onChange={(event) => setName(event.target.value)} onFocus={() => hints.length && setOpen(true)} placeholder="მომხმარებლის სახელი" aria-label="მომხმარებლის სახელი" className="h-11 w-full rounded-lg border border-white/8 bg-[#14141a] pr-3 pl-9 text-sm text-white outline-none placeholder:text-[#6a7282]" />
+                <input value={name} onChange={(event) => setName(event.target.value)} onFocus={() => hints.length && setOpen(true)} placeholder="მომხმარებლის სახელი" aria-label="მომხმარებლის სახელი" className="h-11 w-full rounded-lg border border-white/8 bg-[#14141a] pr-3 pl-9 text-sm text-white outline-none placeholder:text-[#6a7282] max-md:border-0 max-md:bg-[#18181b] max-md:text-base" />
               </label>
-              <button type="submit" disabled={busy || !name.trim()} className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-lg bg-[#e93748] px-4 text-sm font-semibold text-white disabled:cursor-default disabled:opacity-50">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4z" /></svg>
-                გაგზავნა
+              <button type="submit" disabled={busy || !name.trim()} aria-label="გაგზავნა" className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-lg bg-[#e93748] px-4 text-sm font-semibold text-white disabled:cursor-default disabled:opacity-50 max-md:w-11 max-md:justify-center max-md:px-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="max-md:size-[17px]"><path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4z" /></svg>
+                <span className="max-md:hidden">გაგზავნა</span>
               </button>
               {open && hints.length ? (
                 <div className="filter-pop absolute top-full right-0 left-0 z-20 mt-1 overflow-hidden rounded-lg border border-white/8 bg-[#101014] text-left shadow-[0_16px_40px_rgba(0,0,0,0.45)]">
@@ -112,12 +112,12 @@ export function FriendsView({ page, tab }: { page: FriendsPageData; tab: Tab }) 
                 </div>
               ) : null}
             </div>
-            <p className="mt-2 text-xs text-[#6a7282]">ჩაწერე სახელი და დააჭირე Enter-ს, ან აირჩიე შემოთავაზება.</p>
+            <p className="mt-2 text-xs text-[#6a7282] max-md:text-left">ჩაწერე სახელი და დააჭირე Enter-ს, ან აირჩიე შემოთავაზება.</p>
             {error ? <p className="mt-2 text-sm text-[#e93748]">{error}</p> : null}
           </form>
         ) : null}
 
-        <div className="mx-auto mt-10 max-w-[560px] text-left">
+        <div className="mx-auto mt-10 max-w-[560px] text-left max-md:mt-6">
           {current === "friends" ? <People items={page.friends} empty="ჯერ მეგობრები არ გყავს" hint="დაამატე ვინმე სახელით. ამას სხვას არ ვეტყვით." actions={(item) => (
             <>
               <TextButton onClick={() => setConfirm(item)}>წაშლა</TextButton>
@@ -137,7 +137,7 @@ export function FriendsView({ page, tab }: { page: FriendsPageData; tab: Tab }) 
           ) : null}
           {current === "notices" ? (
             page.notices.length ? (
-              <ul className="divide-y divide-white/6 rounded-xl border border-white/8 bg-[#0c0c0c]">
+              <ul className="divide-y divide-white/6 rounded-xl border border-white/8 bg-[#0c0c0c] max-md:border-0 max-md:bg-[#121214]">
                 {page.notices.map((item) => (
                   <li key={item.id} className="px-4 py-3">
                     <p className="text-sm font-semibold">{item.title}</p>
@@ -156,9 +156,9 @@ export function FriendsView({ page, tab }: { page: FriendsPageData; tab: Tab }) 
           <div className="relative w-full max-w-sm rounded-2xl border border-white/10 bg-[#101114] p-6 text-center shadow-[0_30px_80px_rgba(0,0,0,0.65)]" role="dialog" aria-labelledby="remove-friend-title">
             <h2 id="remove-friend-title" className="text-lg font-bold">მეგობრის წაშლა</h2>
             <p className="mt-2 text-sm leading-6 text-[#c4c4c4]"><b className="font-semibold text-white">{confirm.name}</b> მეგობრებიდან წაიშალოს?</p>
-            <div className="mt-6 flex justify-center gap-2">
-              <button type="button" className="h-10 cursor-pointer rounded-md border border-white/15 px-4 text-sm font-semibold text-white" onClick={() => setConfirm(null)}>გაუქმება</button>
-              <button type="button" disabled={busy} className="h-10 cursor-pointer rounded-md bg-[#e93748] px-4 text-sm font-semibold text-white disabled:opacity-60" onClick={() => { const id = confirm.id; setConfirm(null); act("remove", { id }); }}>წაშლა</button>
+            <div className="mt-6 flex justify-center gap-2 max-md:grid max-md:grid-cols-2">
+              <button type="button" className="h-10 cursor-pointer rounded-md border border-white/15 px-4 text-sm font-semibold text-white max-md:h-11 max-md:border-0 max-md:bg-white/8" onClick={() => setConfirm(null)}>გაუქმება</button>
+              <button type="button" disabled={busy} className="h-10 cursor-pointer rounded-md bg-[#e93748] px-4 max-md:h-11 text-sm font-semibold text-white disabled:opacity-60" onClick={() => { const id = confirm.id; setConfirm(null); act("remove", { id }); }}>წაშლა</button>
             </div>
           </div>
         </div>
@@ -172,14 +172,14 @@ function People({ items, title, empty, hint, actions }: { items: FriendCard[]; t
     <section>
       {title ? <h2 className="mb-3 text-xs font-bold tracking-[0.8px] text-[#9ca3af] uppercase">{title}</h2> : null}
       {items.length ? (
-        <ul className="divide-y divide-white/6 rounded-xl border border-white/8 bg-[#0c0c0c]">
+        <ul className="divide-y divide-white/6 rounded-xl border border-white/8 bg-[#0c0c0c] max-md:divide-white/4 max-md:border-0 max-md:bg-[#121214]">
           {items.map((item) => (
-            <li key={item.id} className="flex items-center gap-3 px-3 py-2.5">
+            <li key={item.id} className="flex items-center gap-3 px-3 py-2.5 max-md:gap-2.5 max-md:py-3">
               <a href={`/@${encodeURIComponent(item.name)}`} className="flex min-w-0 flex-1 items-center gap-3">
                 <Avatar card={item} />
                 <span className="truncate text-sm font-semibold">{item.name}</span>
               </a>
-              <span className="flex shrink-0 items-center gap-2">{actions(item)}</span>
+              <span className="flex shrink-0 items-center gap-2 max-md:gap-1.5">{actions(item)}</span>
             </li>
           ))}
         </ul>
@@ -205,5 +205,5 @@ function Avatar({ card }: { card: FriendCard }) {
 }
 
 function TextButton({ children, onClick }: { children: string; onClick: () => void }) {
-  return <button type="button" className="cursor-pointer text-xs font-semibold text-[#9ca3af] hover:text-white" onClick={onClick}>{children}</button>;
+  return <button type="button" className="cursor-pointer text-xs font-semibold text-[#9ca3af] hover:text-white max-md:h-8 max-md:rounded-md max-md:bg-white/6 max-md:px-2.5 max-md:active:bg-white/10" onClick={onClick}>{children}</button>;
 }

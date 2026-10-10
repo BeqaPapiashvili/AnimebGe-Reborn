@@ -109,20 +109,20 @@ export function ProfileHero({ profile, banner, onAuth, quiet }: { profile: Publi
     <section className="relative overflow-hidden bg-[#070707]">
       {profile.cover ? <LiveMedia src={profile.cover} className="absolute inset-0 h-full w-full object-cover" /> : banner ? <img src={banner} alt="" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-md" /> : null}
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.38)_0%,rgba(0,0,0,0.05)_22%,rgba(7,7,7,0.2)_46%,rgba(7,7,7,0.78)_72%,#070707_100%)]" />
-      <div className="relative mx-auto w-full max-w-[1100px] px-4 pt-40 pb-2 sm:px-8 sm:pt-52">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="relative z-10 flex min-w-0 flex-1 items-end gap-4 sm:gap-5">
-            <div className="relative size-36 shrink-0">
-              <LiveMedia src={profile.avatar || "/assets/avatar.jpg"} className="size-36 rounded-full border-4 border-[#070707] object-cover" />
+      <div className="relative mx-auto w-full max-w-[1100px] px-4 pt-40 pb-2 max-md:pt-28 sm:px-8 sm:pt-52">
+        <div className="flex flex-col gap-6 max-md:gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="relative z-10 flex min-w-0 flex-1 items-end gap-4 max-md:flex-col max-md:items-center max-md:gap-5 max-md:text-center sm:gap-5">
+            <div className="relative size-36 shrink-0 max-md:size-32">
+              <LiveMedia src={profile.avatar || "/assets/avatar.jpg"} className="size-36 rounded-full border-4 border-[#070707] object-cover max-md:size-32" />
               <FrameOverlay src={profile.frame} className="pointer-events-none absolute top-1/2 left-1/2 size-[132%] max-w-none -translate-x-1/2 -translate-y-1/2 object-contain" />
-              <span className="absolute -right-1 bottom-3 flex h-7 -skew-x-12 items-center bg-[#111] px-2 shadow-[0_0_0_1px_#e93748]">
+              <span className="absolute -right-1 bottom-3 flex h-7 -skew-x-12 items-center bg-[#111] px-2 shadow-[0_0_0_1px_#e93748] max-md:right-auto max-md:-bottom-2 max-md:left-1/2 max-md:-translate-x-1/2">
                 <span className="skew-x-12 text-[10px] font-black tracking-wide text-[#e93748]">LV</span>
                 <span className="skew-x-12 ml-1 text-sm font-black text-white">{profile.level}</span>
               </span>
             </div>
-            <div className="min-w-[180px] flex-1 pb-1">
-              <div className={`flex items-center gap-2 ${quiet ? "pointer-events-none" : ""}`}>
-                <h1 className="text-3xl leading-9 font-extrabold tracking-[-0.75px] text-white">{profile.name}</h1>
+            <div className="min-w-[180px] flex-1 pb-1 max-md:w-full max-md:min-w-0">
+              <div className={`flex items-center gap-2 max-md:justify-center ${quiet ? "pointer-events-none" : ""}`}>
+                <h1 className="text-3xl leading-9 font-extrabold tracking-[-0.75px] text-white max-md:max-w-[60vw] max-md:truncate max-md:text-[28px]">{profile.name}</h1>
                 <div className="relative">
                   <IconButton label="პარამეტრები" onClick={() => setMenu((open) => !open)}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7" /><circle cx="12" cy="12" r="1.7" /><circle cx="19" cy="12" r="1.7" /></svg>
@@ -130,7 +130,7 @@ export function ProfileHero({ profile, banner, onAuth, quiet }: { profile: Publi
                   {menu && !quiet ? (
                     <>
                       <button type="button" className="fixed inset-0 z-40 cursor-default" aria-label="დახურვა" onClick={() => setMenu(false)} />
-                      <div className="absolute top-full left-0 z-50 mt-2 w-44 rounded-lg border border-white/10 bg-[#111] p-1 shadow-xl">
+                      <div className="absolute top-full left-0 z-50 mt-2 w-44 text-left max-md:left-1/2 max-md:-translate-x-1/2 rounded-lg border border-white/10 bg-[#111] p-1 shadow-xl">
                         <button type="button" className="block w-full rounded-md px-3 py-2 text-left text-sm text-white hover:bg-white/5" onClick={copyLink}>ბმულის კოპირება</button>
                         {id ? <a href={`/showcase/${id}`} className="block rounded-md px-3 py-2 text-sm text-white hover:bg-white/5">ვიტრინა</a> : null}
                         {id && !owner ? <a href={`/taste/${encodeURIComponent(profile.name)}`} className="block rounded-md px-3 py-2 text-sm text-white hover:bg-white/5">გემოვნება</a> : null}
@@ -146,7 +146,7 @@ export function ProfileHero({ profile, banner, onAuth, quiet }: { profile: Publi
                 {relation !== "self" && onAuth ? <FriendAction id={id} name={profile.name} relation={relation} onAuth={onAuth} /> : null}
               </div>
               <p className="mt-1 text-sm text-[#c5cad3]">@{profile.name}</p>
-              <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[#c5cad3]">
+              <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[#c5cad3] max-md:justify-center max-md:text-[13px]">
                 <span className="inline-flex items-center gap-1.5">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>
                   შემოუერთდა {profile.joined}
@@ -167,20 +167,20 @@ export function ProfileHero({ profile, banner, onAuth, quiet }: { profile: Publi
                   </span>
                 )}
               </p>
-              <div className="mt-4">
+              <div className="mt-4 max-md:flex max-md:justify-center">
                 <LevelBar level={profile.level} rank={profile.rank} xp={Math.max(0, profile.xp)} step={profile.xpStep} total={profile.totalXp} />
               </div>
             </div>
           </div>
-          <dl className="flex gap-8 pb-1">
+          <dl className="flex gap-8 pb-1 max-md:mx-auto max-md:grid max-md:w-full max-md:max-w-[340px] max-md:grid-cols-3 max-md:gap-2 max-md:text-center">
             {[
               [profile.stats.completed, "დასრულებული"],
               [profile.stats.watching, "ვუყურებ"],
               [profile.stats.planning, "ვგეგმავ"],
             ].map(([value, label]) => (
               <div key={label}>
-                <dt className="text-3xl font-extrabold text-white">{value}</dt>
-                <dd className="text-[11px] font-bold tracking-[0.8px] text-[#c5cad3] uppercase">{label}</dd>
+                <dt className="text-3xl font-extrabold text-white max-md:text-2xl">{value}</dt>
+                <dd className="text-[11px] font-bold tracking-[0.8px] text-[#c5cad3] uppercase max-md:mt-0.5 max-md:text-[10px] max-md:tracking-[0.4px]">{label}</dd>
               </div>
             ))}
           </dl>

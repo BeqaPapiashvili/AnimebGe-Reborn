@@ -6,9 +6,9 @@ import { AdminGuide, AdminHomeOrder, AdminLevels, AdminNotice } from "@/componen
 import { AdminFooter, AdminHelp, AdminSlides, AdminXp } from "@/components/admin-site-more";
 import { recordAudit } from "@/lib/audit";
 import { getSession, isAdmin } from "@/lib/auth";
-import type { HomeBlock, HelpItem } from "@/lib/site-config";
+import type { HelpItem } from "@/lib/site-config";
 import { slideBoard } from "@/lib/catalog";
-import { getFooterLinks, getGuide, getHelp, getHomeBlocks, readLevelSpans, readNotice, readRankNames, readXpRules, saveFooterLinks, saveGuide, saveHelp, saveHomeBlocks, saveLevelSpans, saveNotice, saveRankNames, saveSlides, saveXpRules, slideModes, type SlideMode } from "@/lib/site-config";
+import { defaultHomeBlocks, getFooterLinks, getGuide, getHelp, getHomeBlocks, readLevelSpans, readNotice, readRankNames, readXpRules, saveFooterLinks, saveGuide, saveHelp, saveHomeBlocks, saveLevelSpans, saveNotice, saveRankNames, saveSlides, saveXpRules, slideModes, type SlideMode } from "@/lib/site-config";
 
 export const metadata: Metadata = { title: "საიტი | ადმინპანელი" };
 export const dynamic = "force-dynamic";
@@ -55,11 +55,11 @@ async function saveHomeForm(formData: FormData) {
   "use server";
   const user = await getSession();
   if (!user || !isAdmin(user)) return;
-  let parsed: HomeBlock[] = [];
-  try { parsed = JSON.parse(String(formData.get("json") ?? "[]")) as HomeBlock[]; } catch { return; }
+  let parsed: unknown = [];
+  try { parsed = JSON.parse(String(formData.get("json") ?? "[]")); } catch { return; }
   if (!Array.isArray(parsed)) return;
   await saveHomeBlocks(parsed);
-  await recordAudit(user, "მთავარი", "სექციების რიგი");
+  await recordAudit(user, "მთავარი", `სექციები · ${parsed.length}`);
   refresh();
 }
 
@@ -162,7 +162,7 @@ export default async function AdminSitePage({ searchParams }: { searchParams: Pr
           ))}
         </nav>
         {part === "notice" ? <AdminNotice notice={notice} save={saveNoticeForm} /> : null}
-        {part === "home" ? <AdminHomeOrder blocks={blocks} save={saveHomeForm} /> : null}
+        {part === "home" ? <AdminHomeOrder blocks={blocks} defaults={defaultHomeBlocks} save={saveHomeForm} /> : null}
         {part === "guide" ? <AdminGuide doc={guide} save={saveGuideForm} /> : null}
         {part === "levels" ? <AdminLevels spans={spans} names={ranks} save={saveLevelsForm} /> : null}
         {part === "slides" && slides ? <AdminSlides mode={slides.mode} picks={slides.picks} pools={slides.pools} save={saveSlidesForm} /> : null}

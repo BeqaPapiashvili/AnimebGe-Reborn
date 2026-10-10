@@ -99,6 +99,7 @@ body {
   background: #0a0a0a;
   color: #fff;
   font-family: var(--font-sans), "BOG", sans-serif;
+  overflow-x: clip;
 }
 
 h1 {
@@ -1142,12 +1143,11 @@ textarea {
 
 .filter-trigger {
   cursor: pointer;
-  transition: border-color 160ms ease, background-color 160ms ease;
+  transition: background-color 160ms ease, filter 160ms ease;
 }
 
 .filter-trigger:hover {
-  border-color: rgba(255, 255, 255, 0.16);
-  background: #1a1a1a;
+  filter: brightness(1.18);
 }
 
 .filter-trigger.is-on {
@@ -1373,6 +1373,38 @@ textarea {
   backdrop-filter: blur(24px);
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
   animation: search-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (max-width: 767px) {
+  .play-root .grid > * {
+    min-width: 0;
+  }
+
+  .search-overlay {
+    background: #0a0a0a;
+    animation: none;
+  }
+
+  .search-panel {
+    box-shadow: none;
+    animation: search-sheet-in 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .search-panel .search-box {
+    border-color: transparent;
+    background: #18181b;
+  }
+}
+
+@keyframes search-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .search-box {

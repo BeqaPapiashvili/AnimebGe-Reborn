@@ -53,9 +53,9 @@ function PlayNav({ current }: { current: string }) {
         <ArrowLeft className="size-3.5" /> ქარდების კატალოგი
       </a>
     ) : null}
-    <nav className="mx-auto flex w-fit max-w-full flex-wrap items-center justify-center gap-1 rounded-[18px] border border-white/10 bg-[#121214] p-1.5" aria-label="ქარდების განყოფილებები">
+    <nav className="mx-auto flex w-fit max-w-full flex-wrap items-center justify-center gap-1 rounded-[18px] border border-white/10 bg-[#121214] p-1.5 max-md:-mx-6 max-md:w-auto max-md:max-w-none max-md:flex-nowrap max-md:justify-start max-md:gap-2 max-md:overflow-x-auto max-md:rounded-none max-md:border-0 max-md:bg-transparent max-md:px-6 max-md:py-0 max-md:[scrollbar-width:none]" aria-label="ქარდების განყოფილებები">
       {items.map(([href, label, key, Icon]) => (
-        <a key={href} href={href} className={`inline-flex h-9 items-center gap-2 rounded-xl px-3 text-sm transition ${key === current || (key === "progress" && current === "animeprogress") || (key === "mydecks" && current === "newdeck") || (key === "clubs" && current === "club") ? "bg-white/10 text-white" : "text-white/75 hover:bg-white/6 hover:text-white"}`}>
+        <a key={href} href={href} className={`inline-flex h-9 items-center gap-2 rounded-xl px-3 text-sm transition max-md:shrink-0 max-md:rounded-full max-md:text-[13px] max-md:whitespace-nowrap ${key === current || (key === "progress" && current === "animeprogress") || (key === "mydecks" && current === "newdeck") || (key === "clubs" && current === "club") ? "bg-white/10 text-white max-md:bg-[#e93748]" : "text-white/75 hover:bg-white/6 hover:text-white max-md:bg-[#18181b]"}`}>
           <Icon className="size-4 shrink-0" strokeWidth={1.75} />
           {label}
         </a>
@@ -83,7 +83,7 @@ function art(src: string, name: string, rarity: string) {
 export function PlayView({ data }: { data: PlayData }) {
   if (data.section === "card" && data.card) {
     return (
-      <div className="mx-auto w-full max-w-[1320px] px-6 py-8">
+      <div className="play-root mx-auto w-full max-w-[1320px] px-6 py-8">
         <a href="/cards" className="mb-4 inline-flex text-xs text-white/35 transition hover:text-white/70">კატალოგი</a>
         {data.note ? <p className="mb-4 rounded-xl bg-[#141417] px-4 py-3 text-sm">{data.note}</p> : null}
         <CardPage data={data} />
@@ -92,7 +92,7 @@ export function PlayView({ data }: { data: PlayData }) {
   }
   if (data.section === "catalog" || data.section === "mine") {
     return (
-      <div id="cards-top" className="mx-auto w-full max-w-[1400px] px-6 py-8">
+      <div id="cards-top" className="play-root mx-auto w-full max-w-[1400px] px-6 py-8">
         {data.note ? <p className="mb-4 rounded-xl bg-[#141417] px-4 py-3 text-sm">{data.note}</p> : null}
         <PlayNav current={data.section} />
         <div className="mt-8">
@@ -102,7 +102,7 @@ export function PlayView({ data }: { data: PlayData }) {
     );
   }
   return (
-    <div className="mx-auto w-full max-w-[1400px] px-6 py-8">
+    <div className="play-root mx-auto w-full max-w-[1400px] px-6 py-8">
       {data.note ? <p className="mb-4 rounded-xl bg-[#141417] px-4 py-3 text-sm">{data.note}</p> : null}
       {data.section === "club" ? null : <PlayNav current={data.section} />}
       {data.me && !["skybrick", "awaken", "clubs", "club", "faq"].includes(data.section) ? <p className="mt-4 text-center text-sm text-white/45">{data.coins} მონეტა · {data.energy} ენერგია</p> : null}
@@ -1961,8 +1961,8 @@ function Clubs({ data }: { data: PlayData }) {
   }
 
   return (
-    <div className="grid gap-6">
-      <section className="grid gap-4">
+    <div className="grid gap-6 max-md:grid-cols-[minmax(0,1fr)]">
+      <section className="grid gap-4 max-md:grid-cols-[minmax(0,1fr)]">
         <div className="album-rise flex flex-wrap items-end justify-between gap-3">
           <div className="flex items-end gap-3">
             <span className="text-[28px] leading-none font-semibold text-[#e93748]">01</span>
@@ -2023,7 +2023,7 @@ function Clubs({ data }: { data: PlayData }) {
         ) : null}
       </div>
 
-      <section id="club-list" className="grid gap-4">
+      <section id="club-list" className="grid gap-4 max-md:grid-cols-[minmax(0,1fr)]">
         <div className="album-rise flex flex-wrap items-end justify-between gap-3" style={{ "--delay": "240ms" } as React.CSSProperties}>
           <div className="flex items-end gap-3">
             <span className="text-[28px] leading-none font-semibold text-[#e93748]">02</span>
@@ -2059,7 +2059,7 @@ function Clubs({ data }: { data: PlayData }) {
 
         {visible.length ? (
           view === "grid" ? (
-            <div key={`${sort}-${tab}-${current}-${text}`} className="grid gap-3 min-[640px]:grid-cols-2 min-[1100px]:grid-cols-3">
+            <div key={`${sort}-${tab}-${current}-${text}`} className="grid gap-3 min-[640px]:grid-cols-2 min-[1100px]:grid-cols-3 max-[639px]:grid-cols-[minmax(0,1fr)]">
               {visible.map((club, index) => (
                 <a key={club.id} href={`/clubs/${club.id}`} className="album-rise block rounded-[16px] bg-[#121214] p-4 transition hover:bg-[#151518]" style={{ "--delay": `${Math.min(index, 12) * 35}ms` } as React.CSSProperties}>
                   <div className="flex items-start gap-3">
@@ -2895,18 +2895,18 @@ function Collectors({ data }: { data: PlayData }) {
               </span>
               <span className="mt-3 max-w-full truncate text-sm font-semibold text-white">{person.name}</span>
               <span className="mt-1 text-xs text-white/45"><b className="text-base font-semibold text-white">{person.unique}</b> უნიკალური</span>
-              <span className="mt-0.5 text-[11px] text-white/35">{person.total} ქარდი · უმაღლესი {person.top}</span>
+              <span className="mt-0.5 text-[11px] text-white/35 max-md:text-[10px] max-md:leading-4">{person.total} ქარდი · უმაღლესი {person.top}</span>
             </a>
           );
         })}
       </div>
       {rest.length ? (
         <div className="mx-auto mt-6 max-w-[860px] overflow-hidden rounded-[18px] border border-white/10 bg-[#121214]">
-          <div className="grid grid-cols-[48px_minmax(0,1fr)_90px_90px] gap-3 border-b border-white/[0.06] px-4 py-3 text-xs text-white/35 sm:grid-cols-[56px_minmax(0,1fr)_110px_110px_90px]">
-            <span>#</span><span>მომხმარებელი</span><span className="text-right">უნიკალური</span><span className="text-right">სულ</span><span className="hidden text-right sm:block">უმაღლესი</span>
+          <div className="grid grid-cols-[48px_minmax(0,1fr)_90px_90px] gap-3 border-b border-white/[0.06] px-4 py-3 text-xs text-white/35 sm:grid-cols-[56px_minmax(0,1fr)_110px_110px_90px] max-md:grid-cols-[24px_minmax(0,1fr)_70px_40px] max-md:gap-2 max-md:px-3 max-md:text-[11px]">
+            <span>#</span><span>მომხმარებელი</span><span className="text-right">უნიკალური</span><span className="text-right">სულ</span><span className="hidden text-right sm:block max-md:!hidden">უმაღლესი</span>
           </div>
           {rest.map((person, index) => (
-            <a key={person.id} href={`/profile/${encodeURIComponent(person.name)}`} className={`grid grid-cols-[48px_minmax(0,1fr)_90px_90px] items-center gap-3 border-b border-white/[0.04] px-4 py-2.5 text-sm transition last:border-0 hover:bg-white/[0.03] sm:grid-cols-[56px_minmax(0,1fr)_110px_110px_90px] ${person.me ? "bg-[#e93748]/[0.07]" : ""}`}>
+            <a key={person.id} href={`/profile/${encodeURIComponent(person.name)}`} className={`grid grid-cols-[48px_minmax(0,1fr)_90px_90px] items-center gap-3 border-b border-white/[0.04] px-4 py-2.5 text-sm transition last:border-0 hover:bg-white/[0.03] sm:grid-cols-[56px_minmax(0,1fr)_110px_110px_90px] max-md:grid-cols-[24px_minmax(0,1fr)_70px_40px] max-md:gap-2 max-md:px-3 ${person.me ? "bg-[#e93748]/[0.07]" : ""}`}>
               <span className="text-white/40">{index + 4}</span>
               <span className="flex min-w-0 items-center gap-3">
                 <span className="size-8 shrink-0 overflow-hidden rounded-full bg-[#1a1a1a]">{person.avatar ? <img src={person.avatar} alt="" loading="lazy" className="h-full w-full object-cover" /> : null}</span>
@@ -2914,7 +2914,7 @@ function Collectors({ data }: { data: PlayData }) {
               </span>
               <span className="text-right font-semibold text-white">{person.unique}</span>
               <span className="text-right text-white/55">{person.total}</span>
-              <span className="hidden text-right text-white/55 sm:block">{person.top}</span>
+              <span className="hidden text-right text-white/55 sm:block max-md:!hidden">{person.top}</span>
             </a>
           ))}
         </div>
@@ -3503,7 +3503,7 @@ function Deck({ data }: { data: PlayData }) {
           <span className="h-4 w-px bg-white/10" />
           <span className="text-xs text-white/40">კოლექციონერის ალბომი</span>
         </div>
-        <a href="/decks" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-white/[0.05] px-3 text-xs text-white/75 transition hover:bg-white/[0.09] hover:text-white">
+        <a href="/decks" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-white/[0.05] px-3 text-xs text-white/75 transition hover:bg-white/[0.09] hover:text-white max-md:hidden">
           <Layers className="size-3.5" /> ყველა კოლექცია
         </a>
       </div>

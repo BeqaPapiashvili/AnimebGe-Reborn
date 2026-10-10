@@ -11,16 +11,51 @@ const field = "h-10 w-full rounded-xl border border-white/8 bg-black/30 px-3 tex
 const area = "min-h-20 w-full resize-y rounded-xl border border-white/8 bg-black/30 px-3 py-2 text-sm leading-6 outline-none transition focus:border-[#e93748]/50";
 const saveBtn = "h-10 cursor-pointer rounded-xl bg-[#e93748] px-4 text-sm text-white shadow-[0_8px_24px_rgba(233,55,72,0.22)]";
 
-type Slide = { id: number; title: string };
-type Pool = { id: string; label: string; hint: string; items: { id: number; title: string; note: string }[] };
+type Slide = { id: number; title: string; poster: string; banner: string; note: string; noBanner: boolean };
+type Pool = { id: string; label: string; hint: string; items: Slide[] };
 
-export function AdminSlides({ mode, picks, pools, save }: { mode: string; picks: Slide[]; pools: Pool[]; save: (formData: FormData) => void }) {
+function SlideThumb({ item }: { item: Slide }) {
+  const src = item.banner || item.poster;
+  return (
+    <div className="relative aspect-video w-28 shrink-0 overflow-hidden rounded-lg bg-[#0f0f11]">
+      {src ? <img src={src} alt="" loading="lazy" className="size-full object-cover" /> : null}
+      {item.noBanner ? <span className="absolute inset-x-0 bottom-0 bg-black/75 py-0.5 text-center text-[10px] text-[#ff8a95]">ბანერი არ აქვს</span> : null}
+    </div>
+  );
+}
+
+function SlideHero({ item }: { item: Slide }) {
+  const src = item.banner || item.poster;
+  return (
+    <div className="relative aspect-[21/8] overflow-hidden rounded-2xl bg-[#0f0f11]">
+      {src ? <img src={src} alt="" className="absolute inset-0 size-full object-cover" /> : null}
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,10,10,0.85),rgba(10,10,10,0.3)_55%,transparent),linear-gradient(0deg,rgba(10,10,10,0.8),transparent_60%)]" />
+      <div className="absolute bottom-5 left-6 max-w-[70%]">
+        <span className="rounded bg-[#e93748] px-2 py-0.5 text-[11px] font-semibold text-white">პირველი სლაიდი</span>
+        <p className="mt-2 line-clamp-2 text-2xl leading-tight font-bold text-white">{item.title}</p>
+        <p className="mt-1 text-xs text-white/50">{item.note}</p>
+      </div>
+    </div>
+  );
+}
+
+const iconBtn = "grid size-8 cursor-pointer place-items-center rounded-lg text-white/40 transition hover:bg-white/8 hover:text-white disabled:cursor-default disabled:opacity-20 disabled:hover:bg-transparent";
+
+export function AdminSlides({ mode, picks, pools, save }: { mode: string; picks: Slide[]; pools: Pool[]; save: (formData: FormData) => void | Promise<void> }) {
   const [source, setSource] = useState(mode);
   const [picked, setPicked] = useState(picks);
   const [query, setQuery] = useState("");
   const [found, setFound] = useState<Slide[]>([]);
-  const [browse, setBrowse] = useState(pools.find((item) => item.id === "popular")?.id ?? pools[0]?.id ?? "");
+  const [browse, setBrowse] = useState(pools.find((item) => item.id === "updated")?.id ?? pools[0]?.id ?? "");
+  const [saved, setSaved] = useState(() => JSON.stringify({ mode, ids: picks.map((item) => item.id) }));
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
   const pool = pools.find((item) => item.id === (source === "manual" ? browse : source));
+  const effective = source === "manual" && !picked.length ? "auto" : source;
+  const current = JSON.stringify({ mode: effective, ids: effective === "manual" ? picked.map((item) => item.id) : [] });
+  const dirty = current !== saved;
+  const liveLabel = mode === "manual" ? "ხელით" : pools.find((item) => item.id === mode)?.label ?? mode;
+  const preview = source === "manual" ? picked : pool?.items ?? [];
 
   async function search(value: string) {
     setQuery(value);
@@ -30,8 +65,15 @@ export function AdminSlides({ mode, picks, pools, save }: { mode: string; picks:
     }
     const res = await fetch(`/api/search?q=${encodeURIComponent(value.trim())}`);
     const body = await res.json();
-    const rows = Array.isArray(body?.results) ? body.results as { id: number; title: string }[] : [];
-    setFound(rows.slice(0, 8).map((row) => ({ id: row.id, title: row.title })));
+    const rows = Array.isArray(body?.results) ? body.results as { id: number; title: string; poster?: string; banner?: string; score?: string; year?: string }[] : [];
+    setFound(rows.slice(0, 8).map((row) => ({
+      id: row.id,
+      title: row.title,
+      poster: row.poster ?? "",
+      banner: row.banner ?? "",
+      note: [row.score ? `★ ${row.score}` : "", row.year].filter(Boolean).join(" · "),
+      noBanner: !row.banner,
+    })));
   }
 
   function add(item: Slide) {
@@ -47,78 +89,135 @@ export function AdminSlides({ mode, picks, pools, save }: { mode: string; picks:
     setPicked(next);
   }
 
+  async function submit(formData: FormData) {
+    setBusy(true);
+    setError("");
+    try {
+      await save(formData);
+      setSaved(current);
+      if (effective !== source) setSource(effective);
+    } catch {
+      setError("ვერ შეინახა, სცადე თავიდან.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
-    <form action={save} className="max-w-4xl space-y-4">
-      <input type="hidden" name="mode" value={source} />
+    <form action={submit} className="max-w-[1200px] space-y-5">
+      <input type="hidden" name="mode" value={effective} />
       <input type="hidden" name="json" value={JSON.stringify(picked.map((item) => item.id))} />
-      <div className="flex flex-wrap gap-1 rounded-2xl border border-white/8 bg-white/[0.03] p-1">
-        <button type="button" onClick={() => setSource("manual")} className={`h-9 cursor-pointer rounded-xl px-3 text-sm ${source === "manual" ? "bg-[#e93748] text-white" : "text-white/45"}`}>ხელით</button>
-        {pools.map((item) => (
-          <button key={item.id} type="button" onClick={() => setSource(item.id)} className={`h-9 cursor-pointer rounded-xl px-3 text-sm ${source === item.id ? "bg-[#e93748] text-white" : "text-white/45"}`}>{item.label}</button>
-        ))}
-      </div>
-      <p className="text-sm text-white/45">{source === "manual" ? "აირჩიე კონკრეტული ანიმეები და დაალაგე. მაქსიმუმ 12. ცარიელი სია ბანერებზე ბრუნდება." : `${pool?.hint ?? ""}. სია თავისით ახლდება, შენახვის შემდეგ მთავარზე ეს ანიმეები გამოვა.`}</p>
-      {source !== "manual" ? (
-        <div className="overflow-hidden rounded-2xl border border-white/8 bg-[#101013]">
-          {pool?.items.length ? pool.items.map((item, index) => (
-            <div key={item.id} className="flex items-center gap-3 border-b border-white/6 px-4 py-3 last:border-0">
-              <span className="w-6 text-xs text-white/30">{index + 1}</span>
-              <span className="min-w-0 flex-1 text-sm">{item.title}</span>
-              <span className="text-xs text-white/35">{item.note}</span>
-            </div>
-          )) : <p className="px-4 py-6 text-sm text-white/40">ამ სიაში ანიმე არ ჩანს.</p>}
+
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-[#121214] px-5 py-4">
+        <div className="min-w-0 flex-1">
+          <p className="text-xs text-white/40">ახლა საიტზე</p>
+          <p className="text-base font-semibold">{liveLabel}</p>
         </div>
-      ) : (
-        <>
-          <input className={field} value={query} placeholder="მოძებნე კონკრეტული ანიმე" onChange={(event) => search(event.target.value)} />
-          {found.length ? (
-            <div className="overflow-hidden rounded-2xl border border-white/8 bg-[#101013]">
-              {found.map((item) => (
-                <button key={item.id} type="button" className="flex w-full cursor-pointer items-center justify-between px-4 py-3 text-left text-sm hover:bg-white/5" onClick={() => { add(item); setFound([]); setQuery(""); }}>
-                  <span>{item.title}</span>
-                  <span className="text-xs text-white/35">დამატება</span>
-                </button>
-              ))}
-            </div>
-          ) : null}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-white/40">სიიდან დამატება</span>
-            {pools.filter((item) => item.id !== "auto").map((item) => (
-              <button key={item.id} type="button" onClick={() => setBrowse(item.id)} className={`h-8 cursor-pointer rounded-lg px-3 text-xs ${browse === item.id ? "bg-white/10 text-white" : "text-white/40"}`}>{item.label}</button>
-            ))}
-            <button type="button" className="h-8 cursor-pointer rounded-lg border border-white/10 px-3 text-xs text-white/70" onClick={() => {
-              const next = [...picked];
-              for (const item of pool?.items ?? []) {
-                if (next.length >= 12) break;
-                if (!next.some((row) => row.id === item.id)) next.push({ id: item.id, title: item.title });
-              }
-              setPicked(next);
-            }}>ამ სიის ჩასმა</button>
+        <span className={`rounded-lg px-3 py-1.5 text-xs ${error ? "bg-[#e93748]/15 text-[#ff8a95]" : dirty ? "bg-amber-400/10 text-amber-300" : "bg-emerald-400/10 text-emerald-300"}`}>
+          {error || (busy ? "ინახება..." : dirty ? "შეუნახავი ცვლილებები" : "შენახულია, მთავარზე ესე ჩანს")}
+        </span>
+        <button disabled={busy || !dirty} className={`${saveBtn} disabled:cursor-default disabled:opacity-40 disabled:shadow-none`}>{busy ? "ინახება..." : "შენახვა"}</button>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        {[{ id: "manual", label: "ხელით", hint: "თვითონ ირჩევ და ალაგებ, მაქსიმუმ 12" }, ...pools].map((item) => {
+          const on = source === item.id;
+          return (
+            <button key={item.id} type="button" onClick={() => setSource(item.id)} className={`relative cursor-pointer rounded-2xl px-4 py-3 text-left transition ${on ? "bg-[#e93748] text-white shadow-[0_10px_30px_rgba(233,55,72,0.25)]" : "bg-[#18181b] text-white/80 hover:bg-[#1f1f23]"}`}>
+              <span className="block text-sm font-semibold">{item.label}</span>
+              <span className={`mt-0.5 block text-xs leading-5 ${on ? "text-white/80" : "text-white/40"}`}>{item.hint}</span>
+              {mode === item.id ? <span className={`absolute top-3 right-3 size-2 rounded-full ${on ? "bg-white" : "bg-emerald-400"}`} title="ახლა საიტზე" /> : null}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className={`grid gap-5 ${source === "manual" ? "lg:grid-cols-[minmax(0,1fr)_420px]" : ""}`}>
+        <div className="space-y-3">
+          <div className="flex items-baseline justify-between">
+            <p className="text-sm font-semibold">{source === "manual" ? `სლაიდერის რიგი · ${picked.length}/12` : `მთავარზე გამოჩნდება · ${preview.length}`}</p>
+            {source === "manual" && picked.length ? <button type="button" className="cursor-pointer text-xs text-white/40 hover:text-[#ff8a95]" onClick={() => setPicked([])}>ყველას მოშორება</button> : null}
           </div>
-          {pool && browse ? (
-            <div className="overflow-hidden rounded-2xl border border-white/8 bg-[#101013]">
-              {pool.items.map((item) => (
-                <button key={item.id} type="button" className="flex w-full cursor-pointer items-center justify-between border-b border-white/6 px-4 py-3 text-left last:border-0 hover:bg-white/5" onClick={() => add(item)}>
-                  <span className="text-sm">{item.title}</span>
-                  <span className="text-xs text-white/35">{picked.some((row) => row.id === item.id) ? "უკვე არის" : item.note || "დამატება"}</span>
-                </button>
+          {preview[0] ? <SlideHero item={preview[0]} /> : null}
+          {preview.length ? (
+            <div className="space-y-1.5">
+              {preview.map((item, index) => (
+                <div key={item.id} className="flex items-center gap-3 rounded-xl bg-[#121214] p-2 pr-3">
+                  <span className="w-6 text-center text-xs text-white/30">{index + 1}</span>
+                  <SlideThumb item={item} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm">{item.title}</p>
+                    <p className="text-xs text-white/35">{item.note}</p>
+                  </div>
+                  {source === "manual" ? (
+                    <div className="flex shrink-0 gap-0.5">
+                      <button type="button" className={iconBtn} disabled={index === 0} onClick={() => move(index, -1)} aria-label="ზემოთ"><ChevronUp className="size-4" /></button>
+                      <button type="button" className={iconBtn} disabled={index === picked.length - 1} onClick={() => move(index, 1)} aria-label="ქვემოთ"><ChevronDown className="size-4" /></button>
+                      <button type="button" className={`${iconBtn} hover:text-[#ff8a95]`} onClick={() => setPicked(picked.filter((row) => row.id !== item.id))} aria-label="წაშლა"><Trash2 className="size-4" /></button>
+                    </div>
+                  ) : null}
+                </div>
               ))}
             </div>
-          ) : null}
-          <div className="space-y-2">
-            {picked.map((item, index) => (
-              <div key={item.id} className="flex items-center gap-2 rounded-2xl border border-white/8 bg-[#101013] px-4 py-3">
-                <span className="w-6 text-xs text-white/30">{index + 1}</span>
-                <span className="min-w-0 flex-1 text-sm">{item.title}</span>
-                <button type="button" className="grid size-8 cursor-pointer place-items-center rounded-lg text-white/40 hover:bg-white/5" onClick={() => move(index, -1)} aria-label="ზემოთ"><ChevronUp className="size-4" /></button>
-                <button type="button" className="grid size-8 cursor-pointer place-items-center rounded-lg text-white/40 hover:bg-white/5" onClick={() => move(index, 1)} aria-label="ქვემოთ"><ChevronDown className="size-4" /></button>
-                <button type="button" className="grid size-8 cursor-pointer place-items-center rounded-lg text-white/40 hover:bg-white/5" onClick={() => setPicked(picked.filter((row) => row.id !== item.id))} aria-label="წაშლა"><Trash2 className="size-4" /></button>
+          ) : (
+            <p className="rounded-2xl bg-[#121214] px-5 py-10 text-center text-sm text-white/40">
+              {source === "manual" ? "ჯერ არაფერია არჩეული. მარჯვნიდან დაამატე. ცარიელი სია შენახვისას ბანერებზე გადავა." : "ამ სიაში ანიმე არ ჩანს."}
+            </p>
+          )}
+        </div>
+
+        {source === "manual" ? (
+          <div className="space-y-3 lg:sticky lg:top-28 lg:self-start">
+            <div className="rounded-2xl bg-[#121214] p-3">
+              <input className={field} value={query} placeholder="მოძებნე ანიმე სახელით" onChange={(event) => search(event.target.value)} />
+              {found.length ? (
+                <div className="mt-2 space-y-1">
+                  {found.map((item) => {
+                    const has = picked.some((row) => row.id === item.id);
+                    return (
+                      <button key={item.id} type="button" disabled={has || picked.length >= 12} className="flex w-full cursor-pointer items-center gap-3 rounded-xl p-1.5 text-left hover:bg-white/5 disabled:cursor-default disabled:opacity-40" onClick={() => { add(item); setFound([]); setQuery(""); }}>
+                        <SlideThumb item={item} />
+                        <span className="min-w-0 flex-1 truncate text-sm">{item.title}</span>
+                        <span className="text-xs text-white/35">{has ? "არის" : "+"}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : null}
+            </div>
+            <div className="rounded-2xl bg-[#121214] p-3">
+              <div className="flex flex-wrap gap-1">
+                {pools.filter((item) => item.id !== "auto").map((item) => (
+                  <button key={item.id} type="button" onClick={() => setBrowse(item.id)} className={`h-8 cursor-pointer rounded-lg px-3 text-xs transition ${browse === item.id ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70"}`}>{item.label}</button>
+                ))}
               </div>
-            ))}
+              <button type="button" className="mt-2 h-9 w-full cursor-pointer rounded-xl bg-[#18181b] text-xs text-white/70 transition hover:bg-[#1f1f23] hover:text-white" onClick={() => {
+                const next = [...picked];
+                for (const item of pool?.items ?? []) {
+                  if (next.length >= 12) break;
+                  if (!next.some((row) => row.id === item.id)) next.push(item);
+                }
+                setPicked(next);
+              }}>მთელი სიის ჩასმა</button>
+              <div className="mt-2 max-h-[520px] space-y-1 overflow-y-auto pr-1">
+                {(pool?.items ?? []).map((item) => {
+                  const has = picked.some((row) => row.id === item.id);
+                  return (
+                    <button key={item.id} type="button" disabled={has || picked.length >= 12} className="flex w-full cursor-pointer items-center gap-3 rounded-xl p-1.5 text-left hover:bg-white/5 disabled:cursor-default disabled:opacity-40" onClick={() => add(item)}>
+                      <SlideThumb item={item} />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm">{item.title}</p>
+                        <p className="text-xs text-white/35">{item.note}</p>
+                      </div>
+                      <span className="text-xs text-white/35">{has ? "არის" : "+"}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
-        </>
-      )}
-      <button className={saveBtn}>შენახვა</button>
+        ) : null}
+      </div>
     </form>
   );
 }

@@ -236,9 +236,9 @@ export function CardCatalog({ data }: { data: PlayData }) {
           <Info className="size-4" strokeWidth={2.25} />
         </button>
       </h1>
-      <div ref={box} className="relative mb-7 flex flex-wrap items-center justify-center gap-2">
-        <div className="relative">
-        <button type="button" className={`filter-trigger inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg px-3.5 text-sm ${sortOpen ? "is-on" : "bg-[#1a1a1a] text-[#d1d5dc] hover:text-white"}`} onClick={() => { setSortOpen((value) => !value); setFilters(false); }}>
+      <div ref={box} className="relative mb-7 flex flex-wrap items-center justify-center gap-2 max-md:mb-5">
+        <div className="relative max-md:flex-1">
+        <button type="button" className={`filter-trigger inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg px-3.5 text-sm max-md:w-full max-md:justify-center ${sortOpen ? "is-on" : "bg-[#1a1a1a] text-[#d1d5dc] hover:text-white"}`} onClick={() => { setSortOpen((value) => !value); setFilters(false); }}>
           {sortLabel}
           <ArrowUpDown className="size-3.5 text-white/55" />
         </button>
@@ -258,11 +258,13 @@ export function CardCatalog({ data }: { data: PlayData }) {
           </div>
         ) : null}
         </div>
+        <div className="contents max-md:order-3 max-md:-mx-6 max-md:flex max-md:w-[calc(100%+48px)] max-md:gap-2 max-md:overflow-x-auto max-md:px-6 max-md:[scrollbar-width:none]">
         {ranks.map((rank) => (
-          <button key={rank} type="button" className={`filter-trigger inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg px-3.5 text-sm ${chosen.includes(rank) ? "is-on" : "bg-[#1a1a1a] text-[#d1d5dc] hover:text-white"}`} onClick={() => toggleRank(rank)}>            რანგი {rank}
+          <button key={rank} type="button" className={`filter-trigger inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg px-3.5 text-sm max-md:h-9 max-md:shrink-0 max-md:rounded-full max-md:px-3.5 max-md:text-[13px] ${chosen.includes(rank) ? "is-on" : "bg-[#1a1a1a] text-[#d1d5dc] hover:text-white"}`} onClick={() => toggleRank(rank)}>            რანგი {rank}
           </button>
         ))}
-        <button type="button" className={`filter-trigger relative inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg px-3.5 text-sm ${filters ? "is-on" : "bg-[#1a1a1a] text-[#d1d5dc] hover:text-white"}`} onClick={() => { setFilters((value) => !value); setPane(""); setSortOpen(false); }}>
+        </div>
+        <button type="button" className={`filter-trigger relative inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg px-3.5 text-sm max-md:order-2 max-md:flex-1 max-md:justify-center ${filters ? "is-on" : "bg-[#1a1a1a] text-[#d1d5dc] hover:text-white"}`} onClick={() => { setFilters((value) => !value); setPane(""); setSortOpen(false); }}>
           <SlidersHorizontal className="size-4" />
           ფილტრი
           {filterCount ? <span className={`grid size-4 place-items-center rounded-full text-[10px] ${filters ? "bg-white text-[#e93748]" : "bg-[#e93748] text-white"}`}>{filterCount}</span> : null}
@@ -277,7 +279,7 @@ export function CardCatalog({ data }: { data: PlayData }) {
             </div>
           ) : <p className="text-center text-sm text-white/45">არაფერი მოიძებნა.</p>}
         </div>
-        <aside className={`shrink-0 overflow-hidden transition-[width,opacity,max-height] duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${filters ? "w-full max-w-full opacity-100 min-[861px]:w-[250px]" : "pointer-events-none w-0 max-h-0 opacity-0 min-[861px]:max-h-[640px]"}`}>
+        <aside className={`shrink-0 overflow-hidden max-md:order-first transition-[width,opacity,max-height] duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${filters ? "w-full max-w-full opacity-100 min-[861px]:w-[250px]" : "pointer-events-none w-0 max-h-0 opacity-0 max-md:hidden min-[861px]:max-h-[640px]"}`}>
           <div className="w-full min-[861px]:w-[250px]">
             {pane ? (
               <div className="card-menu">

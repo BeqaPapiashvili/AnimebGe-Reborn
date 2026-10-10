@@ -71,7 +71,7 @@ export function AnimeCard({ item, lists = [], listId = null, onList, onOpen, den
               type="button"
               aria-label={picked ? `სიის შეცვლა: ${picked}` : "სიაში დამატება"}
               aria-expanded={menu}
-              className={`absolute top-2 right-2 z-30 grid size-8 place-items-center rounded-full border border-white/15 bg-black/70 text-white shadow-sm backdrop-blur-sm transition duration-300 ease-out motion-reduce:transition-none ${menu ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"}`}
+              className={`absolute top-2 right-2 z-30 grid size-8 place-items-center rounded-full border border-white/15 bg-black/70 text-white shadow-sm backdrop-blur-sm transition duration-300 ease-out motion-reduce:transition-none ${menu ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 max-md:translate-y-0 max-md:opacity-100 pointer-coarse:translate-y-0 pointer-coarse:opacity-100"}`}
               onClick={(event) => {
                 event.stopPropagation();
                 setMenu(true);

@@ -44,6 +44,9 @@ function IndexScreen({ folders }: { folders: FolderCard[] }) {
   const [size, setSize] = useState("any");
   const [updated, setUpdated] = useState("any");
   const [sort, setSort] = useState("updated");
+  const [more, setMore] = useState(false);
+  const results = useRef<HTMLDivElement>(null);
+  const extra = more ? "" : "max-md:hidden";
 
   const shown = useMemo(() => {
     const now = Date.now();
@@ -92,21 +95,39 @@ function IndexScreen({ folders }: { folders: FolderCard[] }) {
         </header>
         {folders.length ? (
           <>
-            <div ref={panel} className="mt-10 grid grid-cols-1 gap-x-3 gap-y-4 border-b border-white/5 pb-4 sm:grid-cols-2 xl:grid-cols-4">
-              <Field label="ძებნა" className="xl:col-span-2">
+            <div ref={panel} className="mt-10 grid grid-cols-1 gap-x-3 gap-y-4 border-b border-white/5 pb-4 sm:grid-cols-2 xl:grid-cols-4 max-md:grid-cols-2">
+              <Field label="ძებნა" className="xl:col-span-2 max-md:order-1">
                 <label className="relative block">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="absolute top-1/2 left-3 -translate-y-1/2 text-[#6a7282]" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
                   <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="ჩაწერე საძიებოდ..." aria-label="საქაღალდის ძებნა" className="h-10 w-full rounded-md bg-[#141414] pr-3 pl-9 text-sm text-white outline-none placeholder:text-[#6a7282]" />
                 </label>
               </Field>
-              <Drop id="visibility" menu={menu} setMenu={setMenu} label="ხილვადობა" value={visibility} onChange={setVisibility} options={[["any", "ნებისმიერი"], ["public", "საჯარო"], ["unlisted", "ბმულით"], ["private", "პირადი"]]} />
-              <Drop id="pinned" menu={menu} setMenu={setMenu} label="ჩამაგრებული" value={pinned} onChange={setPinned} options={[["any", "ნებისმიერი"], ["yes", "ჩამაგრებული"], ["no", "ჩაუმაგრებელი"]]} />
-              <Drop id="content" menu={menu} setMenu={setMenu} label="შიგთავსი" value="anime" onChange={() => undefined} options={[["anime", "ანიმე"]]} />
-              <Drop id="size" menu={menu} setMenu={setMenu} label="ზომა" value={size} onChange={setSize} options={[["any", "ნებისმიერი"], ["empty", "ცარიელი"], ["small", "1–10"], ["large", "11+"]]} />
-              <Drop id="updated" menu={menu} setMenu={setMenu} label="განახლება" value={updated} onChange={setUpdated} options={[["any", "ნებისმიერ დროს"], ["day", "დღეს"], ["week", "კვირა"], ["month", "თვე"], ["year", "წელი"]]} />
-              <Drop id="sort" menu={menu} setMenu={setMenu} label="დალაგება" value={sort} onChange={setSort} options={[["updated", "განახლებული"], ["name", "სახელი"], ["size", "ზომა"], ["created", "შექმნილი"]]} />
+              <Drop className="max-md:order-2" id="visibility" menu={menu} setMenu={setMenu} label="ხილვადობა" value={visibility} onChange={setVisibility} options={[["any", "ნებისმიერი"], ["public", "საჯარო"], ["unlisted", "ბმულით"], ["private", "პირადი"]]} />
+              <Drop className="max-md:order-3" id="pinned" menu={menu} setMenu={setMenu} label="ჩამაგრებული" value={pinned} onChange={setPinned} options={[["any", "ნებისმიერი"], ["yes", "ჩამაგრებული"], ["no", "ჩაუმაგრებელი"]]} />
+              <Drop className={`max-md:order-6 ${extra}`} id="content" menu={menu} setMenu={setMenu} label="შიგთავსი" value="anime" onChange={() => undefined} options={[["anime", "ანიმე"]]} />
+              <Drop className={`max-md:order-4 ${extra}`} id="size" menu={menu} setMenu={setMenu} label="ზომა" value={size} onChange={setSize} options={[["any", "ნებისმიერი"], ["empty", "ცარიელი"], ["small", "1–10"], ["large", "11+"]]} />
+              <Drop className={`max-md:order-7 ${extra}`} id="updated" menu={menu} setMenu={setMenu} label="განახლება" value={updated} onChange={setUpdated} options={[["any", "ნებისმიერ დროს"], ["day", "დღეს"], ["week", "კვირა"], ["month", "თვე"], ["year", "წელი"]]} />
+              <Drop className={`max-md:order-8 ${extra}`} id="sort" menu={menu} setMenu={setMenu} label="დალაგება" value={sort} onChange={setSort} options={[["updated", "განახლებული"], ["name", "სახელი"], ["size", "ზომა"], ["created", "შექმნილი"]]} />
+              {more ? <div className="col-span-2 hidden h-px bg-white/6 max-md:order-5 max-md:block" /> : null}
+              <div className="hidden min-w-0 max-md:order-9 max-md:block">
+                <p className="pl-1 text-[13px] font-bold tracking-[0.3px] text-white">მოქმედება</p>
+                <div className="mt-1.5 grid h-10 grid-cols-3 gap-px overflow-hidden rounded-md bg-white/5">
+                  <button type="button" className="flex cursor-pointer flex-col items-center justify-center gap-0.5 bg-[#141414] text-[#d1d5dc] active:bg-[#1f1f23]" aria-label="შედეგები" onClick={() => { setMenu(""); results.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"><path d="M4 5h16l-6 7.5V19l-4-2v-4.5z" /></svg>
+                    <span className="text-[9px] leading-none text-[#9ca3af]">შედეგი</span>
+                  </button>
+                  <button type="button" className="flex cursor-pointer flex-col items-center justify-center gap-0.5 bg-[#141414] text-[#d1d5dc] active:bg-[#1f1f23]" aria-label="გასუფთავება" onClick={() => { setMenu(""); setQ(""); setVisibility("any"); setPinned("any"); setSize("any"); setUpdated("any"); setSort("updated"); }}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M4 12a8 8 0 1 0 2.4-5.7" /><path d="M4 4v4h4" /></svg>
+                    <span className="text-[9px] leading-none text-[#9ca3af]">წაშლა</span>
+                  </button>
+                  <button type="button" className={`flex cursor-pointer flex-col items-center justify-center gap-0.5 bg-[#141414] active:bg-[#1f1f23] ${more ? "text-[#ff8a95]" : "text-[#d1d5dc]"}`} aria-label={more ? "ნაკლები ფილტრი" : "ყველა ფილტრი"} aria-expanded={more} onClick={() => { setMenu(""); setMore(!more); }}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform duration-300 ${more ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6" /></svg>
+                    <span className={`text-[9px] leading-none ${more ? "text-[#ff8a95]" : "text-[#9ca3af]"}`}>{more ? "ნაკლები" : "მეტი"}</span>
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="mt-6 flex items-center justify-between gap-4">
+            <div ref={results} className="mt-6 flex scroll-mt-20 items-center justify-between gap-4">
               <p className="text-sm text-white/55">{folders.length} საქაღალდე · {publics} საჯარო · {views} ნახვა</p>
               <button type="button" className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg bg-[#e93748] px-4 text-xs font-bold tracking-wide whitespace-nowrap text-white uppercase" onClick={() => setFormOpen(true)}>
                 <Plus /> ახალი საქაღალდე
@@ -330,10 +351,10 @@ function optionClass(on: boolean) {
   return `flex w-full cursor-pointer items-center gap-2 rounded px-2.5 py-2 text-left text-sm transition-colors duration-150 ${on ? "bg-[#e93748]/10 text-[#e93748]" : "text-[#d1d5dc] hover:bg-white/5"}`;
 }
 
-function Drop({ id, menu, setMenu, label, value, onChange, options }: { id: string; menu: string; setMenu: (id: string) => void; label: string; value: string; onChange: (value: string) => void; options: [string, string][] }) {
+function Drop({ className, id, menu, setMenu, label, value, onChange, options }: { className?: string; id: string; menu: string; setMenu: (id: string) => void; label: string; value: string; onChange: (value: string) => void; options: [string, string][] }) {
   const current = options.find((option) => option[0] === value)?.[1] ?? options[0][1];
   return (
-    <Field label={label}>
+    <Field label={label} className={className}>
       <div className="relative">
         <button type="button" className="filter-trigger flex h-10 w-full items-center justify-between rounded-md border border-white/5 bg-[#141414] px-3 text-sm text-[#d1d5dc]" aria-expanded={menu === id} onClick={() => setMenu(menu === id ? "" : id)}>
           <span className="truncate">{current}</span>

@@ -7,6 +7,7 @@ export type Anime = {
   year?: string;
   poster?: string;
   banner?: string;
+  logo?: string;
   desc?: string;
   rating?: string;
   sub?: string;

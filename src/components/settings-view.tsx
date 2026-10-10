@@ -36,8 +36,8 @@ function Toggle({ on, label, onClick }: { on: boolean; label: string; onClick: (
 
 function Row({ title, text, on, set }: { title: string; text: string; on: boolean; set: (value: boolean) => void }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-white/6 py-4 last:border-0">
-      <div>
+    <div className="flex items-center justify-between gap-4 border-b border-white/6 py-4 last:border-0 [&>button]:shrink-0">
+      <div className="min-w-0">
         <p className="text-sm font-bold text-white">{title}</p>
         <p className="mt-1 text-sm text-[#99a1af]">{text}</p>
       </div>
@@ -125,10 +125,10 @@ export function SettingsView({ section, account }: { section: SettingsSection; a
         </div>
       </aside>
       <div className="min-w-0 flex-1">
-        <div className="mx-auto w-full max-w-[960px] px-6 py-12">
-          <div className="mb-6 flex gap-2 overflow-x-auto lg:hidden">
+        <div className="mx-auto w-full max-w-[960px] px-6 py-12 max-md:px-4 max-md:py-6">
+          <div className="mb-6 flex gap-2 overflow-x-auto lg:hidden max-md:mb-5 max-md:grid max-md:grid-cols-3 max-md:gap-1 max-md:rounded-xl max-md:bg-[#121214] max-md:p-1">
             {sections.map((item) => (
-              <a key={item.id} href={item.href} className={`shrink-0 rounded-lg px-3 py-2 text-sm font-semibold ${section === item.id ? "bg-[#e93748] text-white" : "bg-white/5 text-white/75"}`}>{item.label}</a>
+              <a key={item.id} href={item.href} className={`shrink-0 rounded-lg px-3 py-2 text-sm font-semibold max-md:truncate max-md:px-1 max-md:text-center max-md:text-xs ${section === item.id ? "bg-[#e93748] text-white" : "bg-white/5 text-white/75 max-md:bg-transparent"}`}>{item.label}</a>
             ))}
           </div>
           {message ? <p className="mb-4 text-sm text-white">{message}</p> : null}
@@ -145,7 +145,7 @@ export function SettingsView({ section, account }: { section: SettingsSection; a
 function NavIcon({ name }: { name: "user" | "gear" | "lock" }) {
   const common = { width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8 };
   if (name === "user") return <svg {...common}><circle cx="12" cy="8" r="3.2" /><path d="M5.5 19.2c1.4-3 3.6-4.4 6.5-4.4s5.1 1.4 6.5 4.4" /></svg>;
-  if (name === "gear") return <svg {...common}><circle cx="12" cy="12" r="3" /><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4 18 18M18 6l-1.6 1.6M7.6 16.4 6 18" /></svg>;
+  if (name === "gear") return <svg {...common}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" strokeLinejoin="round" /><circle cx="12" cy="12" r="3" /></svg>;
   return <svg {...common}><rect x="6" y="11" width="12" height="8.5" rx="1.6" /><path d="M8.5 11V8.5a3.5 3.5 0 0 1 7 0V11" /></svg>;
 }
 
@@ -200,10 +200,10 @@ function AccountPane({ form, setForm, onSave, onMedia, onSignOut }: { form: Acco
   }
   return (
     <form onSubmit={onSave}>
-      <h1 className="text-[56px] leading-none font-bold tracking-tight text-white">ანგარიში</h1>
-      <div className="relative mt-8 flex items-center justify-between gap-6 rounded-2xl border border-white/8 bg-[#121212] px-8 py-7">
+      <h1 className="text-[56px] leading-none font-bold tracking-tight text-white max-md:text-[34px]">ანგარიში</h1>
+      <div className="relative mt-8 flex items-center justify-between gap-6 rounded-2xl border border-white/8 bg-[#121212] px-8 py-7 max-md:mt-5 max-md:flex-col max-md:gap-5 max-md:border-0 max-md:px-5 max-md:py-6">
         {form.cover ? <img src={stillSrc(form.cover) || form.cover} alt="" className="pointer-events-none absolute inset-0 h-full w-full rounded-2xl object-cover opacity-25" /> : null}
-        <div className="relative flex min-w-0 items-center gap-[22px]">
+        <div className="relative flex min-w-0 items-center gap-[22px] max-md:w-full max-md:flex-col max-md:gap-4 max-md:text-center">
           <div ref={box} className="relative size-[72px] shrink-0">
             <LiveMedia src={form.avatar || "/assets/avatar.jpg"} className="size-[72px] rounded-full object-cover" />
             <FrameOverlay src={form.frame} className="pointer-events-none absolute top-1/2 left-1/2 size-[132%] max-w-none -translate-x-1/2 -translate-y-1/2 object-contain" />
@@ -211,7 +211,7 @@ function AccountPane({ form, setForm, onSave, onMedia, onSignOut }: { form: Acco
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M4 20h4l10-10-4-4L4 16v4z" /><path d="m13 7 4 4" /></svg>
             </button>
             {menu ? (
-              <div className="absolute top-[78px] left-0 z-20 w-[210px] rounded-xl border border-white/10 bg-[#1a1a1a] py-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.55)]">
+              <div className="absolute top-[78px] left-0 z-20 w-[210px] text-left max-md:left-1/2 max-md:-translate-x-1/2 rounded-xl border border-white/10 bg-[#1a1a1a] py-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.55)]">
                 <MenuPick label="ავატარის შეცვლა" icon="avatar" onClick={() => openPicker("avatar")} />
                 <MenuPick label="ჩარჩოს შეცვლა" icon="frame" onClick={() => openPicker("frame")} />
                 <MenuPick label="ქოვერის შეცვლა" icon="cover" onClick={() => openPicker("cover")} />
@@ -227,20 +227,20 @@ function AccountPane({ form, setForm, onSave, onMedia, onSignOut }: { form: Acco
             <FramePicker open={picker === "frame"} avatar={form.avatar ?? ""} frame={form.frame} locked={form.locked} onClose={() => setPicker(null)} onPick={(file) => onMedia("frame", file)} />
             <CoverPicker open={picker === "cover"} cover={form.cover} locked={form.locked} onClose={() => setPicker(null)} onPick={(file) => onMedia("cover", file)} />
           </div>
-          <div className="min-w-0">
-            <p className="text-[28px] leading-9 font-bold text-white">{form.name}</p>
-            <p className="mt-0.5 flex items-center gap-1.5 text-sm text-white/55">
+          <div className="min-w-0 max-md:w-full">
+            <p className="truncate text-[28px] leading-9 font-bold text-white max-md:text-2xl">{form.name}</p>
+            <p className="mt-0.5 flex items-center gap-1.5 text-sm text-white/55 max-md:mt-1 max-md:flex-wrap max-md:justify-center max-md:gap-x-1.5 max-md:gap-y-0.5 max-md:text-[13px]">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M8 3v4M16 3v4M4 10h16" /></svg>
               შემოუერთდა {form.joined}
               <span className="text-white/35">· {daysAgo(form.joinedAt)}</span>
             </p>
-            <p className="mt-1.5 flex items-center gap-1.5 text-[13px] text-white/40">
+            <p className="mt-1.5 flex items-center gap-1.5 text-[13px] text-white/40 max-md:justify-center max-md:text-[11px]">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 16V6" /><path d="m8 10 4-4 4 4" /><path d="M5 20h14" /></svg>
               მაქსიმალური ზომა 1 მბ (JPEG, PNG, GIF, WEBP)
             </p>
           </div>
         </div>
-        <button type="button" className="relative h-[37px] shrink-0 rounded-lg bg-[#e93748] px-4 text-sm font-semibold text-white" onClick={onSignOut}>გასვლა</button>
+        <button type="button" className="relative h-[37px] shrink-0 rounded-lg bg-[#e93748] px-4 text-sm font-semibold text-white max-md:h-11 max-md:w-full" onClick={onSignOut}>გასვლა</button>
       </div>
       <div className="mt-8 grid gap-6 sm:grid-cols-2">
         <Field label="მომხმარებელი" hint="3–10 სიმბოლო, მხოლოდ ასოები და ციფრები.">
@@ -262,7 +262,7 @@ function AccountPane({ form, setForm, onSave, onMedia, onSignOut }: { form: Acco
         </Field>
       </div>
       <div className="mt-6 flex justify-end">
-        <button type="submit" className="inline-flex h-[41px] items-center gap-2 rounded-lg bg-[#e93748] px-6 text-sm font-semibold text-white">
+        <button type="submit" className="inline-flex h-[41px] items-center gap-2 rounded-lg bg-[#e93748] px-6 text-sm font-semibold text-white max-md:h-11 max-md:w-full max-md:justify-center">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M5 4h11l3 3v13H5z" /><path d="M8 4v5h7" /><path d="M8 20v-6h8v6" /></svg>
           ცვლილებების შენახვა
         </button>
@@ -275,7 +275,7 @@ function PreferencesPane({ prefs, setFlag, setPrefs, onSave }: { prefs: Prefs; s
   const audience = [{ id: "all" as const, label: "ყველა" }, { id: "friends" as const, label: "მეგობრები" }, { id: "none" as const, label: "არავინ" }];
   return (
     <div>
-      <h1 className="text-[56px] leading-none font-bold tracking-tight text-white">მოწყობა</h1>
+      <h1 className="text-[56px] leading-none font-bold tracking-tight text-white max-md:text-[34px]">მოწყობა</h1>
       <section className="mt-8 rounded-2xl border border-white/8 bg-[#0c0c0c] px-5">
         <h2 className="pt-5 text-lg font-extrabold text-white">ჩვენება</h2>
         <Row title="კომენტარები" text="კომენტარების ბლოკი ყურების გვერდზე." on={prefs.comments} set={(value) => setFlag("comments", value)} />
@@ -323,7 +323,7 @@ function PreferencesPane({ prefs, setFlag, setPrefs, onSave }: { prefs: Prefs; s
 function SecurityPane({ pass, setPass, mail, setMail, onNote }: { pass: { current: string; next: string; confirm: string; show: boolean }; setPass: Dispatch<SetStateAction<{ current: string; next: string; confirm: string; show: boolean }>>; mail: { email: string; password: string; show: boolean }; setMail: Dispatch<SetStateAction<{ email: string; password: string; show: boolean }>>; onNote: (data: { ok?: boolean; error?: string }) => void }) {
   return (
     <div>
-      <h1 className="text-[56px] leading-none font-bold tracking-tight text-white">უსაფრთხოება</h1>
+      <h1 className="text-[56px] leading-none font-bold tracking-tight text-white max-md:text-[34px]">უსაფრთხოება</h1>
       <form className="mt-8 space-y-4" onSubmit={async (event) => { event.preventDefault(); onNote(await post({ action: "password", current: pass.current, next: pass.next, confirm: pass.confirm })); }}>
         <Field label="მიმდინარე პაროლი" hint="დაადასტურე, რომ ეს შენი ანგარიშია."><input type={pass.show ? "text" : "password"} value={pass.current} onChange={(event) => setPass({ ...pass, current: event.target.value })} className={inputClass} /></Field>
         <Field label="ახალი პაროლი" hint="მინიმუმ 8 სიმბოლო."><input type={pass.show ? "text" : "password"} value={pass.next} onChange={(event) => setPass({ ...pass, next: event.target.value })} className={inputClass} /></Field>

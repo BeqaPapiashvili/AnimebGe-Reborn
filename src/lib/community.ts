@@ -4,7 +4,7 @@ import { execute, query } from "@/lib/db";
 import { portrait } from "@/lib/dle";
 import type { CommunityAnimeTag, CommunityCategory, CommunityPageData, CommunityPoll, CommunityPost, CommunityReply } from "@/lib/community-types";
 import { communityCategories } from "@/lib/community-types";
-import { readExtra, writeExtra, type CommunityPollData } from "@/lib/community-body";
+import { readExtra, visibleBody, writeExtra, type CommunityPollData } from "@/lib/community-body";
 import { getAnimeBySlug } from "@/lib/catalog";
 import { storageFile } from "@/lib/storage";
 
@@ -219,6 +219,43 @@ export async function getCommunityPage(userId?: number): Promise<CommunityPageDa
     counts: categoryCounts,
   };
 }
+
+function ago(value: string) {
+  const minutes = Math.max(0, Math.floor((Date.now() - new Date(value.replace(" ", "T")).getTime()) / 60000));
+  if (minutes < 1) return "ახლახან";
+  if (minutes < 60) return `${minutes} წუთის წინ`;
+  if (minutes < 1440) return `${Math.floor(minutes / 60)} საათის წინ`;
+  return `${Math.floor(minutes / 1440)} დღის წინ`;
+}
+
+export async function getHomePosts(limit = 3) {
+  await ensure();
+  const rows = await query<{ id: number; category: string; title: string; body: string; pinned: number; created_at: string; name: string; foto: string | null; decoration_id: string | null; shop_image: string | null; replies: number; votes: number }>(
+    `SELECT p.id, p.category, p.title, p.body, p.pinned, p.created_at, u.name, u.foto, u.decoration_id, si.image_url AS shop_image,
+       (SELECT COUNT(*) FROM site_community_replies r WHERE r.post_id = p.id) replies,
+       (SELECT COALESCE(SUM(IF(v.value > 0, 1, -1)), 0) FROM site_community_votes v WHERE v.post_id = p.id) votes
+     FROM site_community_posts p
+     JOIN dle_users u ON u.user_id = p.user_id
+     LEFT JOIN shop_items si ON u.decoration_id REGEXP '^[0-9]+$' AND si.id = u.decoration_id AND si.type = 'frame'
+     ORDER BY p.pinned DESC, p.id DESC LIMIT ?`,
+    [limit],
+  );
+  const labels = new Map<string, string>(communityCategories.map((item) => [item.id, item.label]));
+  return rows.map((row) => ({
+    id: row.id,
+    tag: labels.get(row.category) ?? "ზოგადი",
+    title: row.title,
+    body: clean(visibleBody(row.body).replace(/!\[[^\]]*\]\([^)]*\)/g, " ").replace(/\|\||>!|!<|[*_~`#>]/g, ""), 140),
+    user: row.name,
+    avatar: portrait(row.foto, row.decoration_id, row.shop_image).avatar,
+    at: ago(String(row.created_at)),
+    replies: Number(row.replies) || 0,
+    votes: Number(row.votes) || 0,
+    pinned: Number(row.pinned) === 1,
+  }));
+}
+
+export type HomePost = Awaited<ReturnType<typeof getHomePosts>>[number];
 
 export async function getCommunityPost(id: number, userId?: number) {
   if (!Number.isInteger(id) || id <= 0) return null;

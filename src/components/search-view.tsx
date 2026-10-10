@@ -29,7 +29,9 @@ export function SearchView({ items, total, facets, query, lists = [], listOf, on
   const router = useRouter();
   const [q, setQ] = useState(query.q);
   const [open, setOpen] = useState("");
+  const [more, setMore] = useState(false);
   const panel = useRef<HTMLDivElement>(null);
+  const results = useRef<HTMLParagraphElement>(null);
   const page = Math.floor(query.offset / query.limit) + 1;
   const pages = Math.ceil(total / query.limit);
 
@@ -83,7 +85,7 @@ export function SearchView({ items, total, facets, query, lists = [], listOf, on
   return (
     <div className="bg-[#070707] pt-20 text-white">
       <div className="rise mx-auto flex w-full max-w-[1680px] flex-col gap-6 px-4 py-6 lg:flex-row lg:px-6">
-        <aside className="h-fit w-full shrink-0 rounded-xl border border-white/8 bg-[#0c0c0c] px-3 lg:sticky lg:top-24 lg:w-[232px]">
+        <aside className="hidden h-fit w-full shrink-0 rounded-xl bg-[#121214] px-3 lg:sticky lg:top-24 lg:block lg:w-[232px]">
           <SideGroup title="სეზონი">
             {facets.seasons.map((option) => <Radio key={option} label={option} on={query.season === option} onPick={() => go({ season: query.season === option ? "" : option })} />)}
           </SideGroup>
@@ -97,12 +99,70 @@ export function SearchView({ items, total, facets, query, lists = [], listOf, on
             {sortOptions.map((option) => <Radio key={option.value} label={option.label} on={query.sort === option.value} onPick={() => go({ sort: option.value as SearchQuery["sort"] })} />)}
           </SideGroup>
         </aside>
-        <div className="min-w-0 flex-1">
-          <div ref={panel} className="grid grid-cols-1 gap-x-3 gap-y-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+        <div ref={panel} className="min-w-0 flex-1">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-4 lg:hidden">
+            <div className="col-span-2">
+              <Field label="ანიმეს ძებნა">
+                <label className="relative block">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="absolute top-1/2 left-3.5 -translate-y-1/2 text-[#6a7282]" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
+                  <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="ჩაწერე სახელი..." aria-label="ანიმეს ძებნა" className="h-11 w-full rounded-lg bg-[#18181b] pr-9 pl-10 text-sm text-white outline-none placeholder:text-[#6a7282] focus:bg-[#1f1f23]" />
+                  {q ? <button type="button" className="absolute top-1/2 right-2 grid size-7 -translate-y-1/2 cursor-pointer place-items-center rounded text-[#9ca3af]" aria-label="გასუფთავება" onClick={() => setQ("")}>×</button> : null}
+                </label>
+              </Field>
+            </div>
+            <Menu label="ჟანრი" placeholder="აირჩიე ჟანრი" open={open === "genre"} value={genreLabel} onToggle={() => setOpen(open === "genre" ? "" : "genre")}>
+              {facets.genres.map((option) => <button key={option} type="button" className={optionClass(splitFilter(query.genre).includes(option))} onClick={() => go({ genre: toggleGenre(option) }, true)}>{option}</button>)}
+            </Menu>
+            <Menu label="წელი" placeholder="ნებისმიერი" open={open === "year"} value={query.year} onToggle={() => setOpen(open === "year" ? "" : "year")}>
+              <button type="button" className={optionClass(!query.year)} onClick={() => go({ year: "" })}>ნებისმიერი</button>
+              {facets.years.map((option) => <button key={option} type="button" className={optionClass(query.year === option)} onClick={() => go({ year: option })}>{option}</button>)}
+            </Menu>
+            <Menu label="სტატუსი" placeholder="ნებისმიერი" open={open === "status"} value={query.status} onToggle={() => setOpen(open === "status" ? "" : "status")}>
+              <button type="button" className={optionClass(!query.status)} onClick={() => go({ status: "" })}>ნებისმიერი</button>
+              {facets.statuses.map((option) => <button key={option} type="button" className={optionClass(query.status === option)} onClick={() => go({ status: option })}>{option}</button>)}
+            </Menu>
+            <Menu label="ფორმატი" placeholder="ნებისმიერი" open={open === "format"} value={query.format} onToggle={() => setOpen(open === "format" ? "" : "format")}>
+              <button type="button" className={optionClass(!query.format)} onClick={() => go({ format: "" })}>ნებისმიერი</button>
+              {facets.formats.map((option) => <button key={option} type="button" className={optionClass(query.format === option)} onClick={() => go({ format: option })}>{option}</button>)}
+            </Menu>
+            {more ? (
+              <>
+                <Menu label="დალაგება" placeholder="უახლესი" open={open === "sort"} value={sortLabel ?? ""} onToggle={() => setOpen(open === "sort" ? "" : "sort")}>
+                  {sortOptions.map((option) => <button key={option.value} type="button" className={optionClass(query.sort === option.value)} onClick={() => go({ sort: option.value as SearchQuery["sort"] })}>{option.label}</button>)}
+                </Menu>
+                <div className="col-span-2 h-px bg-white/6" />
+                <Menu label="სეზონი" placeholder="ნებისმიერი" open={open === "season"} value={query.season} onToggle={() => setOpen(open === "season" ? "" : "season")}>
+                  <button type="button" className={optionClass(!query.season)} onClick={() => go({ season: "" })}>ნებისმიერი</button>
+                  {facets.seasons.map((option) => <button key={option} type="button" className={optionClass(query.season === option)} onClick={() => go({ season: option })}>{option}</button>)}
+                </Menu>
+                <Finder label="პერსონაჟი" placeholder="ნებისმიერი" open={open === "character"} value={query.character} options={facets.characters} onToggle={() => setOpen(open === "character" ? "" : "character")} onPick={(value) => go({ character: value })} />
+                <Finder label="პერსონალი" placeholder="ნებისმიერი" open={open === "staff"} value={query.staff} options={facets.staff} onToggle={() => setOpen(open === "staff" ? "" : "staff")} onPick={(value) => go({ staff: value })} />
+                <Finder label="სტუდია" placeholder="ნებისმიერი" open={open === "studio"} value={query.studio} options={facets.studios} onToggle={() => setOpen(open === "studio" ? "" : "studio")} onPick={(value) => go({ studio: value })} />
+              </>
+            ) : null}
+            <div className={more ? "col-start-1" : ""}>
+              <p className="pb-1.5 text-[13px] font-semibold text-white">მოქმედება</p>
+              <div className="grid h-10 grid-cols-3 gap-px overflow-hidden rounded-lg bg-white/5">
+                <button type="button" className="flex cursor-pointer flex-col items-center justify-center gap-0.5 bg-[#18181b] text-[#d1d5dc] active:bg-[#222226]" aria-label="გაფილტვრა" onClick={() => { setOpen(""); results.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"><path d="M4 5h16l-6 7.5V19l-4-2v-4.5z" /></svg>
+                  <span className="text-[9px] leading-none text-[#9ca3af]">შედეგი</span>
+                </button>
+                <button type="button" className="flex cursor-pointer flex-col items-center justify-center gap-0.5 bg-[#18181b] text-[#d1d5dc] active:bg-[#222226]" aria-label="გასუფთავება" onClick={() => { setQ(""); setOpen(""); router.push(searchHref({ ...query, q: "", genre: "", year: "", status: "", format: "", season: "", character: "", staff: "", studio: "", sort: "newest", offset: 0 }), { scroll: false }); }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M4 12a8 8 0 1 0 2.4-5.7" /><path d="M4 4v4h4" /></svg>
+                  <span className="text-[9px] leading-none text-[#9ca3af]">წაშლა</span>
+                </button>
+                <button type="button" className={`flex cursor-pointer flex-col items-center justify-center gap-0.5 bg-[#18181b] active:bg-[#222226] ${more ? "text-[#ff8a95]" : "text-[#d1d5dc]"}`} aria-label={more ? "ნაკლები ფილტრი" : "ყველა ფილტრი"} aria-expanded={more} onClick={() => { setOpen(""); setMore(!more); }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform duration-300 ${more ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6" /></svg>
+                  <span className={`text-[9px] leading-none ${more ? "text-[#ff8a95]" : "text-[#9ca3af]"}`}>{more ? "ნაკლები" : "მეტი"}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="hidden gap-x-3 gap-y-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
             <Field label="ძებნა">
               <label className="relative block">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="absolute top-1/2 left-3 -translate-y-1/2 text-[#6a7282]" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
-                <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="ძებნა" aria-label="ანიმეს ძებნა" className="h-10 w-full rounded-md border border-white/8 bg-[#141414] pr-9 pl-9 text-sm text-white outline-none placeholder:text-[#6a7282]" />
+                <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="ძებნა" aria-label="ანიმეს ძებნა" className="h-10 w-full rounded-lg bg-[#18181b] pr-9 pl-9 text-sm text-white outline-none transition-colors placeholder:text-[#6a7282] focus:bg-[#1f1f23]" />
                 {q ? <button type="button" className="absolute top-1/2 right-2 grid size-6 -translate-y-1/2 cursor-pointer place-items-center rounded text-[#9ca3af] hover:text-white" aria-label="გასუფთავება" onClick={() => setQ("")}>×</button> : null}
               </label>
             </Field>
@@ -120,14 +180,14 @@ export function SearchView({ items, total, facets, query, lists = [], listOf, on
           {chips.length ? (
             <div className="flex flex-wrap gap-2 pt-4">
               {chips.map((chip) => (
-                <button key={chip.key} type="button" className="filter-chip inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border border-[#e93748]/45 bg-[#e93748]/8 px-2.5 text-[11px] font-bold tracking-[0.4px] text-[#e93748] uppercase" onClick={() => clearChip(chip.clear)}>
+                <button key={chip.key} type="button" className="filter-chip inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md bg-[#e93748]/15 px-2.5 text-[11px] font-bold tracking-[0.4px] text-[#e93748] uppercase" onClick={() => clearChip(chip.clear)}>
                   {chip.label}
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
                 </button>
               ))}
             </div>
           ) : null}
-          <p className="pt-5 text-sm text-[#9ca3af]">ნაპოვნია <b className="font-semibold text-white">{total.toLocaleString("en-US")}</b> შედეგი</p>
+          <p ref={results} className="scroll-mt-20 pt-5 text-sm text-[#9ca3af]">ნაპოვნია <b className="font-semibold text-white">{total.toLocaleString("en-US")}</b> შედეგი</p>
           {items.length ? (
             <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8">
               {items.map((item) => {
@@ -166,11 +226,11 @@ function Menu({ label, placeholder, open, value, onToggle, children }: { label: 
   return (
     <Field label={label}>
       <div className="relative">
-        <button type="button" className={`filter-trigger flex h-10 w-full items-center justify-between rounded-md border px-3 text-sm ${picked ? "border-[#e93748]/40 bg-[#e93748]/10 text-white" : "border-white/8 bg-[#141414] text-[#9ca3af]"}`} aria-expanded={open} onClick={onToggle}>
+        <button type="button" className={`filter-trigger flex h-10 w-full items-center justify-between rounded-lg px-3 text-sm transition-colors ${picked ? "bg-[#e93748]/15 text-white" : open ? "bg-[#1f1f23] text-white" : "bg-[#18181b] text-[#9ca3af] hover:bg-[#1f1f23]"}`} aria-expanded={open} onClick={onToggle}>
           <span className="truncate">{value || placeholder}</span>
           <Chevron open={open} />
         </button>
-        {open ? <div className="filter-pop absolute top-full right-0 left-0 z-30 mt-1 max-h-64 overflow-y-auto rounded-md border border-white/8 bg-[#0c0c0c] p-1 shadow-[0_18px_40px_rgba(0,0,0,0.55)]">{children}</div> : null}
+        {open ? <div className="filter-pop absolute top-full right-0 left-0 z-30 mt-1 max-h-64 overflow-y-auto rounded-lg bg-[#121214] p-1 shadow-[0_18px_40px_rgba(0,0,0,0.55)]">{children}</div> : null}
       </div>
     </Field>
   );
@@ -190,7 +250,7 @@ function Finder({ label, placeholder, open, value, options, onToggle, onPick }: 
   }, [needle, options]);
   return (
     <Menu label={label} placeholder={placeholder} open={open} value={value} onToggle={onToggle}>
-      <input ref={input} value={needle} onChange={(event) => setNeedle(event.target.value)} placeholder="ძებნა სიაში" aria-label={`${label} სიაში`} className="mb-1 h-8 w-full rounded bg-[#141414] px-2 text-sm text-white outline-none placeholder:text-[#6a7282]" />
+      <input ref={input} value={needle} onChange={(event) => setNeedle(event.target.value)} placeholder="ძებნა სიაში" aria-label={`${label} სიაში`} className="mb-1 h-8 w-full rounded bg-[#1f1f23] px-2 text-sm text-white outline-none placeholder:text-[#6a7282]" />
       <button type="button" className={optionClass(!value)} onClick={() => onPick("")}>ნებისმიერი</button>
       {shown.map((option) => <button key={option} type="button" className={optionClass(value === option)} onClick={() => onPick(option)}>{option}</button>)}
       {!shown.length ? <p className="px-2.5 py-2 text-sm text-[#6a7282]">ვერ მოიძებნა</p> : null}
@@ -201,7 +261,7 @@ function Finder({ label, placeholder, open, value, options, onToggle, onPick }: 
 function SideGroup({ title, children }: { title: string; children: ReactNode }) {
   const [open, setOpen] = useState(true);
   return (
-    <section className="border-b border-white/6 py-3 last:border-b-0">
+    <section className="py-3">
       <button type="button" className="filter-trigger flex w-full items-center justify-between rounded-md px-2 py-1 text-[13px] font-semibold" aria-expanded={open} onClick={() => setOpen(!open)}>
         {title}
         <Chevron open={open} />

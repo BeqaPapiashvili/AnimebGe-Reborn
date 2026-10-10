@@ -4,7 +4,11 @@ import { execute, query } from "@/lib/db";
 import { applyLevelSpans, applyRankNames, currentRankColors, currentRankNames, currentSpans, defaultRankColors, defaultRankNames, defaultSpans, type LevelSpan } from "@/lib/levels";
 
 export type SiteNotice = { on: boolean; kicker: string; text: string; href: string; label: string };
-export type HomeBlock = { id: string; title: string; on: boolean };
+export type HomeSource = "pick" | "rating" | "popular" | "ongoing" | "movies";
+export type HomeBlock = { id: string; title: string; on: boolean; source?: HomeSource; picks?: { id: number; title: string }[]; size?: number };
+
+const homeSources = new Set<HomeSource>(["pick", "rating", "popular", "ongoing", "movies"]);
+const homeSizes = new Set([6, 12, 18]);
 
 const defaultNotice: SiteNotice = {
   on: true,
@@ -23,8 +27,6 @@ export const defaultHomeBlocks: HomeBlock[] = [
   { id: "schedule", title: "განრიგი", on: true },
   { id: "posts", title: "პოსტები", on: true },
 ];
-
-const homeIds = new Set(defaultHomeBlocks.map((item) => item.id));
 
 let ready: Promise<void> | null = null;
 let spansLoaded: Promise<void> | null = null;
@@ -110,35 +112,38 @@ export async function saveNotice(input: SiteNotice) {
   });
 }
 
-export async function getHomeBlocks(): Promise<HomeBlock[]> {
-  const raw = await readSetting("home");
-  const saved = Array.isArray(raw) ? raw : [];
+function cleanHomeBlocks(input: unknown[]) {
   const known = new Map(defaultHomeBlocks.map((item) => [item.id, item]));
   const used = new Set<string>();
   const blocks: HomeBlock[] = [];
-  for (const item of saved) {
-    if (!item || typeof item !== "object") continue;
-    const id = String((item as HomeBlock).id);
+  for (const raw of input.slice(0, 30)) {
+    if (!raw || typeof raw !== "object") continue;
+    const item = raw as HomeBlock;
+    const id = text(item.id, 24);
+    if (!id || used.has(id)) continue;
     const base = known.get(id);
-    if (!base || used.has(id)) continue;
+    if (base) {
+      used.add(id);
+      blocks.push({ id, title: text(item.title, 40) || base.title, on: item.on !== false });
+      continue;
+    }
+    if (!/^c-[a-z0-9]{4,16}$/.test(id) || !homeSources.has(item.source as HomeSource)) continue;
     used.add(id);
-    blocks.push({ id, title: text((item as HomeBlock).title, 40) || base.title, on: (item as HomeBlock).on !== false });
+    const picks = item.source === "pick" && Array.isArray(item.picks)
+      ? item.picks.map((pick) => ({ id: Number(pick?.id), title: text(pick?.title, 120) })).filter((pick) => Number.isInteger(pick.id) && pick.id > 0).slice(0, 24)
+      : undefined;
+    blocks.push({ id, title: text(item.title, 40) || "სექცია", on: item.on !== false, source: item.source, picks, size: homeSizes.has(Number(item.size)) ? Number(item.size) : 12 });
   }
-  for (const item of defaultHomeBlocks) if (!used.has(item.id)) blocks.push(item);
   return blocks;
 }
 
-export async function saveHomeBlocks(input: HomeBlock[]) {
-  const known = new Map(defaultHomeBlocks.map((item) => [item.id, item]));
-  const used = new Set<string>();
-  const blocks: HomeBlock[] = [];
-  for (const item of input) {
-    if (!homeIds.has(item.id) || used.has(item.id)) continue;
-    used.add(item.id);
-    blocks.push({ id: item.id, title: text(item.title, 40) || known.get(item.id)?.title || item.id, on: item.on });
-  }
-  for (const item of defaultHomeBlocks) if (!used.has(item.id)) blocks.push(item);
-  await writeSetting("home", blocks);
+export async function getHomeBlocks(): Promise<HomeBlock[]> {
+  const raw = await readSetting("home");
+  return Array.isArray(raw) ? cleanHomeBlocks(raw) : defaultHomeBlocks;
+}
+
+export async function saveHomeBlocks(input: unknown[]) {
+  await writeSetting("home", cleanHomeBlocks(input));
 }
 
 function lines(value: unknown) {
@@ -294,8 +299,8 @@ export const slideModes = [
   { id: "week", label: "კვირა", hint: "ბოლო 7 დღის ნახვები" },
   { id: "weekScore", label: "კვირის რეიტინგი", hint: "ბოლო 7 დღეში განახლებული, ქულით" },
   { id: "month", label: "თვე", hint: "ბოლო 30 დღის ნახვები" },
-  { id: "fresh", label: "ახალი", hint: "ბოლოს დამატებული" },
-  { id: "updated", label: "განახლებული", hint: "ბოლოს განახლებული" },
+  { id: "fresh", label: "ახალი", hint: "ბოლოს დამატებული ანიმეები" },
+  { id: "updated", label: "ახალი და განახლებული", hint: "ბოლოს დამატებული ან „პირველზე აწევით“ განახლებული" },
   { id: "rating", label: "რეიტინგი", hint: "ყველაზე მაღალი ქულა" },
   { id: "ongoing", label: "მიმდინარე", hint: "ახლა მიმდინარე, ნახვებით" },
   { id: "upcoming", label: "მალე", hint: "ჯერ გამოუშვებელი" },

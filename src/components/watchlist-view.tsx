@@ -46,7 +46,10 @@ export function WatchlistView({ page, query, lists, signedIn, onAuth }: { page: 
   const [q, setQ] = useState(query.q);
   const [open, setOpen] = useState("");
   const [hidden, setHidden] = useState<number[]>([]);
+  const [more, setMore] = useState(false);
   const panel = useRef<HTMLDivElement>(null);
+  const results = useRef<HTMLParagraphElement>(null);
+  const extra = more ? "" : "max-md:hidden";
   const items = page.items.filter((item) => !hidden.includes(item.id));
   const shown = Math.max(0, page.total - hidden.length);
 
@@ -115,14 +118,14 @@ export function WatchlistView({ page, query, lists, signedIn, onAuth }: { page: 
 
       <div className="mx-auto w-full max-w-[1280px] px-4 pb-12 sm:px-8">
         <div ref={panel} className="border-b border-white/5 py-4">
-          <div className="grid grid-cols-1 gap-x-3 gap-y-4 sm:grid-cols-2 xl:grid-cols-5">
-            <Field label="ძებნა" className="xl:col-span-2">
+          <div className="grid grid-cols-1 gap-x-3 gap-y-4 sm:grid-cols-2 xl:grid-cols-5 max-md:grid-cols-2">
+            <Field label="ძებნა" className="xl:col-span-2 max-md:order-1">
               <label className="relative block">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="absolute top-1/2 left-3 -translate-y-1/2 text-[#6a7282]" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
                 <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="ჩაწერე საძიებოდ..." aria-label="სიის ძებნა" className="h-10 w-full rounded-md bg-[#141414] pr-3 pl-9 text-sm text-white outline-none placeholder:text-[#6a7282]" />
               </label>
             </Field>
-            <Field label="საქაღალდე">
+            <Field label="საქაღალდე" className="max-md:order-2">
               <div className="relative">
                 <button type="button" className={`filter-trigger flex h-10 w-full items-center justify-between rounded-md border px-3 text-sm ${currentFolder ? "border-[#e93748]/40 bg-[#e93748]/10 text-white" : "border-white/5 bg-[#141414] text-[#d1d5dc]"}`} aria-expanded={open === "folder"} onClick={() => setOpen(open === "folder" ? "" : "folder")}>
                   <span className="truncate">{currentFolder?.label ?? "ყველა საქაღალდე"}</span>
@@ -136,13 +139,13 @@ export function WatchlistView({ page, query, lists, signedIn, onAuth }: { page: 
                 </Menu>
               </div>
             </Field>
-            <MultiField label="ჟანრი" placeholder="აირჩიე ჟანრი" open={open === "genre"} values={splitFilter(query.genre)} options={page.facets.genres} onToggle={() => setOpen(open === "genre" ? "" : "genre")} onPick={(value) => go({ genre: toggleMany(query.genre, value) }, false, true)} onClear={() => go({ genre: "" }, false, true)} />
-            <MultiField label="თეგები" placeholder="აირჩიე თეგი" open={open === "tag"} values={splitFilter(query.tag)} options={page.facets.tags} onToggle={() => setOpen(open === "tag" ? "" : "tag")} onPick={(value) => go({ tag: toggleMany(query.tag, value) }, false, true)} onClear={() => go({ tag: "" }, false, true)} />
-            <SingleField label="წელი" placeholder="ნებისმიერი წელი" open={open === "year"} value={query.year} options={page.facets.years} onToggle={() => setOpen(open === "year" ? "" : "year")} onPick={(value) => go({ year: value })} />
-            <SingleField label="სტატუსი" placeholder="ნებისმიერი სტატუსი" open={open === "status"} value={query.status} options={page.facets.statuses} onToggle={() => setOpen(open === "status" ? "" : "status")} onPick={(value) => go({ status: value })} />
-            <SingleField label="სეზონი" placeholder="ნებისმიერი სეზონი" open={open === "season"} value={query.season} options={page.facets.seasons} onToggle={() => setOpen(open === "season" ? "" : "season")} onPick={(value) => go({ season: value })} />
-            <SingleField label="ფორმატი" placeholder="ნებისმიერი ფორმატი" open={open === "format"} value={query.format} options={page.facets.formats} onToggle={() => setOpen(open === "format" ? "" : "format")} onPick={(value) => go({ format: value })} />
-            <Field label="დალაგება">
+            <MultiField className="max-md:order-3" label="ჟანრი" placeholder="აირჩიე ჟანრი" open={open === "genre"} values={splitFilter(query.genre)} options={page.facets.genres} onToggle={() => setOpen(open === "genre" ? "" : "genre")} onPick={(value) => go({ genre: toggleMany(query.genre, value) }, false, true)} onClear={() => go({ genre: "" }, false, true)} />
+            <MultiField className={`max-md:order-6 ${extra}`} label="თეგები" placeholder="აირჩიე თეგი" open={open === "tag"} values={splitFilter(query.tag)} options={page.facets.tags} onToggle={() => setOpen(open === "tag" ? "" : "tag")} onPick={(value) => go({ tag: toggleMany(query.tag, value) }, false, true)} onClear={() => go({ tag: "" }, false, true)} />
+            <SingleField className={`max-md:order-4 ${extra}`} label="წელი" placeholder="ნებისმიერი წელი" open={open === "year"} value={query.year} options={page.facets.years} onToggle={() => setOpen(open === "year" ? "" : "year")} onPick={(value) => go({ year: value })} />
+            <SingleField className={`max-md:order-7 ${extra}`} label="სტატუსი" placeholder="ნებისმიერი სტატუსი" open={open === "status"} value={query.status} options={page.facets.statuses} onToggle={() => setOpen(open === "status" ? "" : "status")} onPick={(value) => go({ status: value })} />
+            <SingleField className={`max-md:order-8 ${extra}`} label="სეზონი" placeholder="ნებისმიერი სეზონი" open={open === "season"} value={query.season} options={page.facets.seasons} onToggle={() => setOpen(open === "season" ? "" : "season")} onPick={(value) => go({ season: value })} />
+            <SingleField className={`max-md:order-9 ${extra}`} label="ფორმატი" placeholder="ნებისმიერი ფორმატი" open={open === "format"} value={query.format} options={page.facets.formats} onToggle={() => setOpen(open === "format" ? "" : "format")} onPick={(value) => go({ format: value })} />
+            <Field label="დალაგება" className={`max-md:order-10 ${extra}`}>
               <div className="relative">
                 <button type="button" className="filter-trigger flex h-10 w-full items-center justify-between rounded-md border border-white/5 bg-[#141414] px-3 text-sm text-[#d1d5dc]" aria-expanded={open === "sort"} onClick={() => setOpen(open === "sort" ? "" : "sort")}>
                   <span>{sortOptions.find((item) => item.value === query.sort)?.label ?? "განახლებით"}</span>
@@ -155,6 +158,24 @@ export function WatchlistView({ page, query, lists, signedIn, onAuth }: { page: 
                 </Menu>
               </div>
             </Field>
+            {more ? <div className="col-span-2 hidden h-px bg-white/6 max-md:order-5 max-md:block" /> : null}
+            <div className="hidden min-w-0 max-md:order-11 max-md:block">
+              <p className="pl-1 text-[13px] font-bold tracking-[0.3px] text-white">მოქმედება</p>
+              <div className="mt-1.5 grid h-10 grid-cols-3 gap-px overflow-hidden rounded-md bg-white/5">
+                <button type="button" className="flex cursor-pointer flex-col items-center justify-center gap-0.5 bg-[#141414] text-[#d1d5dc] active:bg-[#1f1f23]" aria-label="შედეგები" onClick={() => { setOpen(""); results.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"><path d="M4 5h16l-6 7.5V19l-4-2v-4.5z" /></svg>
+                  <span className="text-[9px] leading-none text-[#9ca3af]">შედეგი</span>
+                </button>
+                <button type="button" className="flex cursor-pointer flex-col items-center justify-center gap-0.5 bg-[#141414] text-[#d1d5dc] active:bg-[#1f1f23]" aria-label="გასუფთავება" onClick={() => { setQ(""); go({ q: "", folder: "", genre: "", tag: "", year: "", status: "", season: "", format: "", sort: "updated" }); }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M4 12a8 8 0 1 0 2.4-5.7" /><path d="M4 4v4h4" /></svg>
+                  <span className="text-[9px] leading-none text-[#9ca3af]">წაშლა</span>
+                </button>
+                <button type="button" className={`flex cursor-pointer flex-col items-center justify-center gap-0.5 bg-[#141414] active:bg-[#1f1f23] ${more ? "text-[#ff8a95]" : "text-[#d1d5dc]"}`} aria-label={more ? "ნაკლები ფილტრი" : "ყველა ფილტრი"} aria-expanded={more} onClick={() => { setOpen(""); setMore(!more); }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`transition-transform duration-300 ${more ? "rotate-180" : ""}`}><path d="m6 9 6 6 6-6" /></svg>
+                  <span className={`text-[9px] leading-none ${more ? "text-[#ff8a95]" : "text-[#9ca3af]"}`}>{more ? "ნაკლები" : "მეტი"}</span>
+                </button>
+              </div>
+            </div>
           </div>
           {chips.length ? (
             <div className="flex flex-wrap gap-2 pt-4">
@@ -175,7 +196,7 @@ export function WatchlistView({ page, query, lists, signedIn, onAuth }: { page: 
           </div>
         ) : (
           <>
-            <p className="pt-6 text-sm font-medium text-[#99a1af]">სიაში <b className="font-bold text-white">{shown}</b> ანიმე</p>
+            <p ref={results} className="scroll-mt-20 pt-6 text-sm font-medium text-[#99a1af]">სიაში <b className="font-bold text-white">{shown}</b> ანიმე</p>
             {items.length ? (
               <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
                 {items.map((item) => {
@@ -224,9 +245,9 @@ function Clear({ onClear }: { onClear: () => void }) {
   );
 }
 
-function SingleField({ label, placeholder, open, value, options, onToggle, onPick }: { label: string; placeholder: string; open: boolean; value: string; options: string[]; onToggle: () => void; onPick: (value: string) => void }) {
+function SingleField({ className, label, placeholder, open, value, options, onToggle, onPick }: { className?: string; label: string; placeholder: string; open: boolean; value: string; options: string[]; onToggle: () => void; onPick: (value: string) => void }) {
   return (
-    <Field label={label}>
+    <Field label={label} className={className}>
       <div className="relative">
         <button type="button" className={`filter-trigger flex h-10 w-full items-center justify-between rounded-md border px-3 text-sm ${value ? "border-[#e93748]/40 bg-[#e93748]/10 text-white" : "border-white/5 bg-[#141414] text-[#d1d5dc]"}`} aria-expanded={open} onClick={onToggle}>
           <span className="truncate">{value || placeholder}</span>
@@ -243,10 +264,10 @@ function SingleField({ label, placeholder, open, value, options, onToggle, onPic
   );
 }
 
-function MultiField({ label, placeholder, open, values, options, onToggle, onPick, onClear }: { label: string; placeholder: string; open: boolean; values: string[]; options: string[]; onToggle: () => void; onPick: (value: string) => void; onClear: () => void }) {
+function MultiField({ className, label, placeholder, open, values, options, onToggle, onPick, onClear }: { className?: string; label: string; placeholder: string; open: boolean; values: string[]; options: string[]; onToggle: () => void; onPick: (value: string) => void; onClear: () => void }) {
   const text = values.length === 0 ? placeholder : values.join(", ");
   return (
-    <Field label={label}>
+    <Field label={label} className={className}>
       <div className="relative">
         <button type="button" className={`filter-trigger flex h-10 w-full items-center justify-between rounded-md border px-3 text-sm ${values.length ? "border-[#e93748]/40 bg-[#e93748]/10 text-white" : "border-white/5 bg-[#141414] text-[#d1d5dc]"}`} aria-expanded={open} onClick={onToggle}>
           <span className="truncate">{text}</span>

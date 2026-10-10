@@ -204,6 +204,10 @@ export function WatchView({ detail, initialEpisode, user, state, initialComments
   const [keysOpen, setKeysOpen] = useState(false);
   const [listOpen, setListOpen] = useState(false);
   const [status, setStatus] = useState<number | null>(state?.list ?? null);
+  const [myVote, setMyVote] = useState(state?.vote ?? 0);
+  const [likes, setLikes] = useState({ rating: detail.likes ?? 0, votes: detail.votes ?? 0 });
+  const likesUp = Math.max(0, (likes.votes + likes.rating) / 2);
+  const likesDown = Math.max(0, (likes.votes - likes.rating) / 2);
   const [reported, setReported] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [reportReason, setReportReason] = useState("");
@@ -541,6 +545,15 @@ export function WatchView({ detail, initialEpisode, user, state, initialComments
     requestAnimationFrame(() => field?.focus());
   }
 
+  async function rate(value: 1 | -1) {
+    if (!user) return onAuth();
+    const next = myVote === value ? 0 : value;
+    const { ok, data } = await postJson<{ likes: number; votes: number }>("/api/vote", { postId: detail.id, value: next });
+    if (!ok) return;
+    setMyVote(next);
+    setLikes({ rating: data.likes, votes: data.votes });
+  }
+
   async function voteComment(comment: Comment, value: 1 | -1) {
     if (!user) return onAuth();
     const next = comment.myVote === value ? 0 : value;
@@ -687,35 +700,64 @@ export function WatchView({ detail, initialEpisode, user, state, initialComments
   }
 
   return (
-    <div className="relative mx-auto max-w-[1920px] pt-24 pr-8 pl-[100px] max-[900px]:pl-4 max-[900px]:pr-4">
+    <div className="relative mx-auto max-w-[1920px] pt-24 pr-8 pl-[100px] max-[900px]:pl-4 max-[900px]:pr-4 max-md:pt-20">
       {w2gOpen ? <Watch2GetherCreate title={detail.title} original={detail.romaji} poster={detail.poster} episode={episode} slug={detail.slug} position={resume} onClose={() => setW2gOpen(false)} /> : null}
       <div className="grid grid-cols-[320px_minmax(0,1fr)_420px] gap-4 max-[1400px]:grid-cols-[minmax(0,1fr)_380px] max-[900px]:grid-cols-1">
         <aside className={`watch-from-left watch-info relative overflow-hidden rounded-[10px] border border-white/5 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] max-[1400px]:order-3 max-[1400px]:col-span-2 max-[900px]:col-span-1 ${theater ? "row-start-2" : ""}`}>
           {detail.poster ? <img src={detail.poster} alt="" className="pointer-events-none absolute -top-4 -left-4 h-[352px] w-[350px] object-cover opacity-40 blur-[17.6px]" /> : null}
-          <div className="relative flex flex-col gap-4 p-5">
-            <div className="flex flex-col items-center gap-4">
-              <a href={animeHref(detail.slug)} className="block h-[300px] w-[200px] overflow-hidden rounded-[7.2px] border border-white/10 bg-[#141414] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)]">
-                {detail.poster ? <img src={detail.poster} alt={detail.title} className="h-full w-full object-cover" /> : null}
-              </a>
-              <div className="w-full text-center">
-                <h1 className="font-bog line-clamp-2 text-xl leading-[25px] font-bold text-white">{detail.title}</h1>
-                {detail.romaji ? <p className="line-clamp-2 pt-1.5 text-xs leading-4 font-medium text-[#9f9fa9]">{detail.romaji}</p> : null}
+          <div className="relative flex flex-col gap-4 p-5 max-md:grid max-md:grid-cols-[100px_minmax(0,1fr)] max-md:gap-x-3.5 max-md:gap-y-2 max-md:p-3.5">
+            <h2 className="hidden text-lg font-bold text-white max-md:col-span-2 max-md:mb-1 max-md:block">ანიმეს შესახებ</h2>
+            <div className="flex flex-col items-center gap-4 max-md:contents">
+              <div className="relative h-[300px] w-[200px] overflow-hidden rounded-[7.2px] border border-white/10 bg-[#141414] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] max-md:row-span-3 max-md:h-[142px] max-md:w-[100px] max-md:self-start max-md:rounded-md">
+                <a href={animeHref(detail.slug)} className="block h-full w-full">
+                  {detail.poster ? <img src={detail.poster} alt={detail.title} className="h-full w-full object-cover" /> : null}
+                </a>
+                <div className="absolute inset-x-0 bottom-0 flex bg-linear-to-t from-black via-black/70 to-transparent pt-10 max-md:hidden">
+                  <button type="button" aria-pressed={myVote === 1} aria-label="მოწონება" className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 py-2.5 text-sm font-semibold ${myVote === 1 ? "text-[#e93748]" : "text-white"}`} onClick={() => rate(1)}>
+                    <Mask name="like" size={15} />
+                    {Math.round(likesUp)}
+                  </button>
+                  <span className="my-2.5 w-px bg-white/25" />
+                  <button type="button" aria-pressed={myVote === -1} aria-label="არმოწონება" className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 py-2.5 text-sm font-semibold ${myVote === -1 ? "text-[#e93748]" : "text-white"}`} onClick={() => rate(-1)}>
+                    <Mask name="dislike" size={15} />
+                    {Math.round(likesDown)}
+                  </button>
+                </div>
+              </div>
+              <div className="w-full text-center max-md:text-left">
+                <h1 className="font-bog line-clamp-2 text-xl leading-[25px] font-bold text-white max-md:text-[17px] max-md:leading-[22px]">{detail.title}</h1>
+                {detail.romaji ? <p className="line-clamp-2 pt-1.5 text-xs leading-4 font-medium text-[#9f9fa9] max-md:line-clamp-1 max-md:pt-0.5">{detail.romaji}</p> : null}
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-2 border-b border-white/5 pb-4">
+            <div className="flex flex-wrap justify-center gap-2 border-b border-white/5 pb-4 max-md:justify-start max-md:gap-1.5 max-md:border-0 max-md:pb-0 max-md:[&_.watch-chip-in]:text-[11px]">
               <span className="watch-chip"><span className="watch-chip-in"><img src="/assets/watch/info-dub.svg" alt="" width={14} height={14} />{episodes.length}{detail.episodes && detail.episodes !== episodes.length ? ` / ${detail.episodes}` : ""}</span></span>
               {detail.format ? <span className="watch-chip"><span className="watch-chip-in">{detail.format}</span></span> : null}
               {detail.status ? <span className="watch-chip"><span className="watch-chip-in">{detail.status}</span></span> : null}
             </div>
 
-            {detail.description ? <p className="font-mkhedruli line-clamp-3 text-[13px] leading-[21.125px] font-normal tracking-[0.325px] text-[#e4e4e7]/90">{detail.description}</p> : null}
+            {detail.description ? <p className="font-mkhedruli line-clamp-3 text-[13px] leading-[21.125px] font-normal tracking-[0.325px] text-[#e4e4e7]/90 max-md:line-clamp-4 max-md:text-xs max-md:leading-[18px]">{detail.description}</p> : null}
 
-            <dl className="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-3 gap-y-2.5 border-t border-white/5 pt-4 text-[13px] leading-5">
+            <dl className="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-3 gap-y-2.5 border-t border-white/5 pt-4 text-[13px] leading-5 max-md:col-span-2 max-md:mt-2 max-md:gap-y-2 max-md:rounded-lg max-md:border-0 max-md:bg-black/35 max-md:p-3 max-md:text-xs">
               {info.map(([label, value]) => <InfoLine key={label} label={label} value={value} />)}
             </dl>
 
-            <div className="grid grid-cols-3 overflow-hidden rounded-[8px] border border-white/8">
+            <div className="hidden col-span-2 mt-1 items-center gap-3 rounded-lg bg-black/35 p-2 max-md:flex">
+              <button type="button" aria-pressed={myVote === 1} aria-label="მოწონება" className={`flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-semibold tabular-nums ${myVote === 1 ? "bg-[#e93748] text-white" : "bg-white/6 text-[#d4d4d8] active:bg-white/10"}`} onClick={() => rate(1)}>
+                <Mask name="like" size={15} />
+                {Math.round(likesUp)}
+              </button>
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <span className="text-center text-[11px] leading-4 font-medium text-[#9f9fa9]">{likes.votes ? `${Math.round((likesUp / likes.votes) * 100)}% მოეწონა` : "შეაფასე პირველმა"}</span>
+                <span className="h-1 overflow-hidden rounded-full bg-white/10"><span className="block h-full rounded-full bg-[#e93748]" style={{ width: likes.votes ? `${(likesUp / likes.votes) * 100}%` : "0%" }} /></span>
+              </div>
+              <button type="button" aria-pressed={myVote === -1} aria-label="არმოწონება" className={`flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-semibold tabular-nums ${myVote === -1 ? "bg-[#e93748] text-white" : "bg-white/6 text-[#d4d4d8] active:bg-white/10"}`} onClick={() => rate(-1)}>
+                {Math.round(likesDown)}
+                <Mask name="dislike" size={15} />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-3 overflow-hidden rounded-[8px] border border-white/8 max-md:col-span-2 max-md:mt-1">
               {emoteItems.map((item, index) => (
                 <button key={item.id} type="button" aria-pressed={myEmote === item.id} className={`relative flex cursor-pointer flex-col items-center gap-1 px-1 py-2 ${myEmote === item.id ? "bg-[#e93748]/14 text-white before:absolute before:inset-x-3 before:bottom-0 before:h-0.5 before:rounded-full before:bg-[#e93748]" : "text-[#c5cad3] hover:bg-white/[0.04]"} ${index ? "border-l border-white/8" : ""}`} onClick={() => pickEmote(item.id)}>
                   <span className="text-base leading-none">{item.emoji}</span>
@@ -724,6 +766,10 @@ export function WatchView({ detail, initialEpisode, user, state, initialComments
                 </button>
               ))}
             </div>
+            <a href={animeHref(detail.slug)} className="hidden h-11 items-center justify-center gap-1.5 rounded-lg bg-white/5 text-xs font-bold tracking-[1.2px] text-[#d4d4d8] uppercase active:bg-white/10 max-md:col-span-2 max-md:mt-1 max-md:flex">
+              დეტალების ნახვა
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 6 6 6-6 6" /></svg>
+            </a>
           </div>
         </aside>
 
@@ -736,28 +782,28 @@ export function WatchView({ detail, initialEpisode, user, state, initialComments
             <span className="shrink-0 text-[#e93748]">სერია {episode}</span>
           </nav>
 
-          <div className="relative aspect-[1084/609.75] overflow-hidden rounded-[7.2px] bg-black">
+          <div className="relative aspect-[1084/609.75] overflow-hidden rounded-[7.2px] bg-black max-md:-mx-4 max-md:rounded-none">
             <Player key={`${episode}-${serverIndex}`} source={source} poster={detail.banner} autoPlay={enabled.includes("ავტო დაკვრა")} startAt={resume} progressEvery={room ? 3000 : 15000} follow={room && !roomHost.current ? follow : null} onProgress={saveProgress} onEnded={onEnded} />
           </div>
 
           <div className="flex flex-col pt-1.5">
             <div className="pt-1 pb-2.5">
-              <p className="flex items-center gap-2 rounded-[5.76px] bg-[#e93748]/30 px-3 py-2 text-sm leading-5 text-white opacity-90">
-                <img src="/assets/watch/notice.svg" alt="" width={16} height={16} />
+              <p className="flex items-center gap-2 rounded-[5.76px] bg-[#e93748]/30 px-3 py-2 text-sm leading-5 text-white opacity-90 max-md:text-xs max-md:leading-[18px]">
+                <img src="/assets/watch/notice.svg" alt="" width={16} height={16} className="shrink-0" />
                 თუ ეპიზოდი არ მუშაობს, გვაცნობე და რაც შეიძლება მალე გავასწორებთ.
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-y-2">
-              <div className="relative flex h-[25px] items-center gap-2 overflow-hidden rounded-[5.76px] px-3 py-1 font-mono tracking-[0.8px]">
+            <div className="flex flex-wrap items-center justify-between gap-y-2 max-md:flex-col max-md:gap-y-3">
+              <div className="relative flex h-[25px] items-center gap-2 overflow-hidden rounded-[5.76px] px-3 py-1 font-mono tracking-[0.8px] max-md:self-center">
                 <span className="relative size-1.5"><span className="absolute -inset-[0.67px] animate-ping bg-[#e93748] opacity-50" /><span className="absolute inset-px bg-[#e93748]" /></span>
                 <b className="text-xs leading-4 text-[#e93748]">{formatCount(detail.views)}</b>
                 <span className="text-[10px] leading-[15px] font-semibold text-[#a1a1aa] uppercase">ნახვა</span>
                 <span className="absolute inset-x-0 bottom-0 h-0.5 bg-linear-to-r from-transparent via-[#e93748]/60 to-transparent" />
               </div>
-              <div className="flex flex-wrap items-center justify-end gap-3">
-                <button type="button" className={`watch-act ${theater ? "is-on" : ""}`} aria-pressed={theater} onClick={() => setTheater((value) => !value)}><Mask name="theater" />თეატრი</button>
-                <div ref={keysRef} className="relative">
+              <div className="flex flex-wrap items-center justify-end gap-3 max-md:w-full max-md:justify-center max-md:gap-x-4 max-md:gap-y-2.5">
+                <button type="button" className={`watch-act max-md:!hidden ${theater ? "is-on" : ""}`} aria-pressed={theater} onClick={() => setTheater((value) => !value)}><Mask name="theater" />თეატრი</button>
+                <div ref={keysRef} className="relative max-md:hidden">
                   <button type="button" className={`watch-act ${keysOpen ? "is-on" : ""}`} aria-expanded={keysOpen} onClick={() => setKeysOpen((value) => !value)}><Mask name="shortcuts" />ღილაკები</button>
                   {keysOpen ? (
                     <div className="list-menu absolute top-full right-0 z-30 mt-2 w-[250px] overflow-hidden rounded-[10px] border border-white/8 bg-[#0a0a0a] p-3 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)]">
@@ -783,7 +829,7 @@ export function WatchView({ detail, initialEpisode, user, state, initialComments
                     <img src="/assets/watch/watchlist-chevron.svg" alt="" width={12} height={12} className={`transition-transform duration-200 ${listOpen ? "rotate-180" : ""}`} />
                   </button>
                   {listOpen ? (
-                    <div className="list-menu absolute top-full right-0 z-30 mt-2 w-[248px] overflow-hidden rounded-[10px] border border-white/8 bg-[#0a0a0a] p-1.5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)]" role="menu">
+                    <div className="list-menu absolute top-full right-0 z-30 mt-2 w-[248px] overflow-hidden rounded-[10px] border border-white/8 bg-[#0a0a0a] p-1.5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] max-md:right-auto max-md:left-1/2 max-md:-translate-x-1/2" role="menu">
                       <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-[#e93748] to-transparent" />
                       <div className="flex flex-col gap-0.5">
                         {lists.map((item) => (
@@ -818,19 +864,19 @@ export function WatchView({ detail, initialEpisode, user, state, initialComments
 
             <div className="py-3"><div className="h-px border-t border-[#d1d5dc]/10" /></div>
 
-            <div className="flex min-h-[134px] items-center gap-2 max-[700px]:flex-col">
-              <div className="flex w-[361px] max-w-full flex-col items-center justify-center p-4 text-center text-sm">
+            <div className="flex min-h-[134px] items-center gap-2 max-[700px]:flex-col max-md:min-h-0 max-md:gap-1 max-md:rounded-xl max-md:bg-[#121214] max-md:py-3">
+              <div className="flex w-[361px] max-w-full flex-col items-center justify-center p-4 text-center text-sm max-md:p-1 max-md:text-[13px]">
                 <p className="leading-5 text-[#9f9fa9]">ახლა უყურებ</p>
                 <p className="pt-0.5 leading-5 font-medium text-white">სერია {episode}</p>
                 <p className="max-w-[330px] pt-1 leading-[17.5px] text-[#71717b]">თუ ეს სერვერი არ მუშაობს, სცადე გვერდით მდგომი სხვა სერვერი.</p>
               </div>
-              <div className="flex min-w-0 flex-1 flex-col justify-center gap-2.5 px-8 py-3">
-                <div className="flex flex-wrap items-center gap-3">
+              <div className="flex min-w-0 flex-1 flex-col justify-center gap-2.5 px-8 py-3 max-md:w-full max-md:px-3 max-md:py-2">
+                <div className="flex flex-wrap items-center gap-3 max-md:flex-col max-md:gap-2">
                   <span className="flex h-8 shrink-0 items-center gap-1.5 text-xs leading-4 font-bold tracking-[0.6px] whitespace-nowrap text-[#9f9fa9] uppercase">
                     <img src="/assets/watch/server-dub.svg" alt="" width={16} height={16} />
                     სერვერი:
                   </span>
-                  <div className="flex min-w-0 flex-1 flex-wrap gap-2">
+                  <div className="flex min-w-0 flex-1 flex-wrap gap-2 max-md:justify-center">
                     {sources.map((item, index) => (
                       <button key={`${item.server}-${index}`} type="button" className={`watch-server ${source === item ? "is-on" : ""}`} onClick={() => setServerIndex(index)}>
                         {item.server}
@@ -844,8 +890,8 @@ export function WatchView({ detail, initialEpisode, user, state, initialComments
           </div>
         </div>
 
-        <section className={`watch-from-right relative min-h-[520px] max-[1400px]:col-start-2 max-[1400px]:row-start-1 max-[900px]:col-start-1 max-[900px]:row-start-auto max-[900px]:h-[640px] ${theater ? "col-[2/-1] row-start-2" : ""}`}>
-          <div className="absolute inset-0 flex flex-col">
+        <section className={`watch-from-right relative min-h-[520px] max-[1400px]:col-start-2 max-[1400px]:row-start-1 max-[900px]:col-start-1 max-[900px]:row-start-auto max-[900px]:h-[640px] max-md:h-auto max-md:min-h-0 ${theater ? "col-[2/-1] row-start-2" : ""}`}>
+          <div className="absolute inset-0 flex flex-col max-md:relative">
             <div className="flex flex-col gap-3 pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -863,7 +909,7 @@ export function WatchView({ detail, initialEpisode, user, state, initialComments
               </label>
             </div>
 
-            <div ref={listRef} className={`detail-scroll min-h-0 flex-1 overflow-y-auto pr-1 ${grid ? "grid grid-cols-5 content-start gap-2" : "flex flex-col gap-2"}`}>
+            <div ref={listRef} className={`detail-scroll min-h-0 flex-1 overflow-y-auto pr-1 max-md:max-h-[420px] max-md:flex-none ${grid ? "grid grid-cols-5 content-start gap-2" : "flex flex-col gap-2"}`}>
               {shown.map((item) => {
                 const active = item.number === episode;
                 const seen = history.find((entry) => entry.episode === item.number);
@@ -909,19 +955,19 @@ export function WatchView({ detail, initialEpisode, user, state, initialComments
 
       <div className="grid grid-cols-[minmax(0,1fr)_440px] gap-5 pt-5 max-[1100px]:grid-cols-1">
         {prefs?.comments === false ? <div /> : <section className="watch-from-left">
-          <div className="flex items-center justify-between border-b border-[#27272a]/50 bg-black p-4">
+          <div className="flex items-center justify-between border-b border-[#27272a]/50 bg-black p-4 max-md:flex-col max-md:items-start max-md:gap-3 max-md:px-0">
             <div className="flex items-center gap-2">
               <h2 className="text-xl leading-7 font-bold text-[#f4f4f5]">კომენტარები</h2>
               <span className="rounded-full bg-[#e93748] px-2 py-0.5 text-xs leading-4 font-bold text-white">{commentTotal}</span>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 max-md:w-full max-md:overflow-x-auto max-md:[scrollbar-width:none]">
               {sorts.map((name) => (
                 <button key={name} type="button" className={`watch-sort ${sort === name ? "is-on" : ""}`} onClick={() => void changeSort(name)}>{name}</button>
               ))}
             </div>
           </div>
 
-          <form className="flex flex-col p-4" onSubmit={post}>
+          <form className="flex flex-col p-4 max-md:px-0" onSubmit={post}>
             <p className="rounded-[7.2px] bg-[#18181b]/50 p-2 text-xs leading-4 text-[#71717b] italic">
               დატოვე კომენტარი და გაგვიზიარე აზრი — ასე საიტი უფრო ცოცხალია. ჯერ წაიკითხე <a href="/guide" className="text-[#e93748]/80 underline">საზოგადოების წესები</a>. 😊
             </p>

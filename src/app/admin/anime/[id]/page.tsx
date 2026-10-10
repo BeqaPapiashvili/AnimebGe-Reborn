@@ -32,13 +32,14 @@ async function save(formData: FormData) {
     japanese: String(formData.get("japanese") ?? ""),
     poster: String(formData.get("poster") ?? ""),
     cover: String(formData.get("cover") ?? ""),
+    logo: String(formData.get("logo") ?? ""),
     current: String(formData.get("current") ?? ""),
     total: String(formData.get("total") ?? ""),
     format: String(formData.get("format") ?? "11"),
     genres: formData.getAll("genre").map(String),
   };
   const sources = formData.getAll("source_key").map((key, index) => ({ key: String(key), value: String(formData.getAll("source_value")[index] ?? "") }));
-  const result = await saveAdminAnime(anime, user.name, sources);
+  const result = await saveAdminAnime(anime, user.name, sources, formData.get("bump") === "1");
   if (result.error) redirect(`/admin/anime/${id || "new"}?error=${encodeURIComponent(result.error)}`);
   await recordAudit(user, "ანიმე", `${anime.title.slice(0, 60)} · ${sources.length} სერვერი`);
   redirect(`/admin/anime/${result.id}?saved=1`);

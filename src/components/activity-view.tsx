@@ -191,25 +191,44 @@ export function ActivityView({ data }: { data: ActivityData }) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 6 9 12l6 6" /></svg>
           პროფილი
         </a>
-        <div className="flex flex-col gap-4 border-b border-white/8 pb-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <Avatar src={profile.avatar} frame={profile.frame} size={80} />
-            <div>
-              <h1 className="text-2xl font-extrabold text-white">{profile.name}</h1>
-              <p className="text-sm text-[#99a1af]">@{profile.name} · აქტივობა</p>
+        <div className="flex flex-col gap-4 border-b border-white/8 pb-6 max-md:gap-3 max-md:border-0 max-md:pb-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4 max-md:gap-3">
+            <span className="md:hidden"><Avatar src={profile.avatar} frame={profile.frame} size={52} /></span>
+            <span className="hidden md:block"><Avatar src={profile.avatar} frame={profile.frame} size={80} /></span>
+            <div className="min-w-0">
+              <h1 className="truncate text-2xl font-extrabold text-white max-md:text-xl">{profile.name}</h1>
+              <p className="text-sm text-[#99a1af] max-md:text-xs">@{profile.name} · აქტივობა</p>
             </div>
           </div>
-          <div className="sm:text-right">
+          <div className="sm:text-right max-md:[&>div]:max-w-none">
             <LevelBar level={profile.level} rank={profile.rank} xp={Math.max(0, profile.xp)} step={profile.xpStep} total={profile.totalXp} />
             <p className="mt-2 text-xs text-[#99a1af]">{profile.streakLive ? `სერია ${profile.streak} დღეა` : "სერია არ მიდის"} · საუკეთესო {profile.streak}</p>
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_0.8fr]">
-          <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4">
-            <h2 className="font-extrabold text-white">გასული წელი</h2>
-            <p className="mt-1 text-sm text-[#99a1af]">{yearActive.active} აქტიური დღე · {sumWatches(data.watches, dayKey(shift(today, -364)), to).episodes} ეპიზოდი · {yearActive.comments} კომენტარი</p>
-            <div className="mt-4 overflow-x-auto">
+        <div className="mt-6 grid gap-4 *:min-w-0 lg:grid-cols-[1.4fr_0.8fr]">
+          <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4 max-md:border-0 max-md:bg-[#121214]">
+            <h2 className="font-extrabold text-white max-md:hidden">გასული წელი</h2>
+            <h2 className="font-extrabold text-white md:hidden">ბოლო 6 თვე</h2>
+            <p className="mt-1 text-sm text-[#99a1af] max-md:text-xs">{yearActive.active} აქტიური დღე · {sumWatches(data.watches, dayKey(shift(today, -364)), to).episodes} ეპიზოდი · {yearActive.comments} კომენტარი</p>
+            <div className="mt-3 md:hidden">
+              <div className="flex gap-[3px]">
+                {weeks.slice(-26).map((week, index, list) => {
+                  const month = week.find((cell) => !cell.future)?.month;
+                  const prev = index ? list[index - 1].find((cell) => !cell.future)?.month : undefined;
+                  return (
+                    <div key={week[0]?.key ?? index} className="flex min-w-0 flex-1 flex-col gap-[3px]">
+                      <span className="h-4 overflow-visible text-[9px] whitespace-nowrap text-[#6a7282]">{month !== prev ? monthShort[month ?? 0] : ""}</span>
+                      {week.map((cell) => (
+                        <span key={cell.key} title={`${cell.key}: ${cell.value}`} className="aspect-square w-full rounded-[2px]" style={{ background: cell.future ? "transparent" : heatColor(cell.value) }} />
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="mt-2 text-right text-[10px] text-[#6a7282]">ნაკლები <span className="mx-1 inline-block size-[10px] rounded-[2px] bg-[#5c1a22]" /> <span className="inline-block size-[10px] rounded-[2px] bg-[#e93748]" /> მეტი</p>
+            </div>
+            <div className="mt-4 overflow-x-auto max-md:hidden">
               <div className="flex gap-[3px]">
                 {weeks.map((week, index) => {
                   const month = week.find((cell) => !cell.future)?.month;
@@ -228,7 +247,7 @@ export function ActivityView({ data }: { data: ActivityData }) {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4">
+          <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4 max-md:border-0 max-md:bg-[#121214]">
             <h2 className="font-extrabold text-white">ბიბლიოთეკა</h2>
             <p className="mt-1 text-sm text-[#99a1af]">სია დღეს</p>
             {library.length ? (
@@ -252,16 +271,16 @@ export function ActivityView({ data }: { data: ActivityData }) {
           </section>
         </div>
 
-        <div className="mt-6 flex gap-4 border-b border-white/8">
+        <div className="mt-6 flex gap-4 border-b border-white/8 max-md:grid max-md:grid-cols-4 max-md:gap-1 max-md:rounded-xl max-md:border-0 max-md:bg-[#121214] max-md:p-1">
           {ranges.map((item) => (
-            <button key={item.id} type="button" className={`border-b-2 px-1 pb-2 text-sm font-bold ${range === item.id ? "border-[#e93748] text-white" : "border-transparent text-[#99a1af]"}`} onClick={() => { setRange(item.id); setShown(6); }}>
+            <button key={item.id} type="button" className={`border-b-2 px-1 pb-2 text-sm font-bold max-md:h-9 max-md:rounded-lg max-md:border-0 max-md:pb-0 max-md:text-xs ${range === item.id ? "border-[#e93748] text-white max-md:bg-[#e93748]" : "border-transparent text-[#99a1af]"}`} onClick={() => { setRange(item.id); setShown(6); }}>
               {item.label}
             </button>
           ))}
         </div>
         <p className="mt-3 text-xs text-[#6a7282]">{range ? `შედარება წინა ${range} დღესთან` : "მთელი პერიოდი"}</p>
 
-        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-6">
+        <div className="mt-4 grid grid-cols-2 gap-3 *:min-w-0 max-md:gap-2 lg:grid-cols-6">
           {[
             ["ყურების დრო", minutesLabel(range ? watched.minutes : data.totals.minutes)],
             ["ეპიზოდები", String(range ? watched.episodes : data.totals.episodes)],
@@ -269,19 +288,19 @@ export function ActivityView({ data }: { data: ActivityData }) {
             ["დასრულებული", String(profile.stats.completed)],
             ["კომენტარები", String(range ? current.comments : data.totals.comments)],
           ].map(([label, value]) => (
-            <article key={label} className="rounded-xl border border-white/8 bg-[#0c0c0c] p-3">
+            <article key={label} className="rounded-xl border border-white/8 bg-[#0c0c0c] p-3 max-md:border-0 max-md:bg-[#121214]">
               <p className="text-xs text-[#99a1af]">{label}</p>
-              <p className="mt-1 text-2xl font-extrabold text-white">{value}</p>
+              <p className="mt-1 truncate text-2xl font-extrabold text-white max-md:text-xl">{value}</p>
             </article>
           ))}
-          <article className="rounded-xl border border-white/8 bg-[#0c0c0c] p-3">
+          <article className="rounded-xl border border-white/8 bg-[#0c0c0c] p-3 max-md:border-0 max-md:bg-[#121214]">
             <p className="flex items-center justify-between text-xs text-[#99a1af]">აქტიური დღეები {range && activeDelta ? <span className={activeDelta > 0 ? "text-white" : "text-[#e93748]"}>{activeDelta > 0 ? `+${activeDelta}` : activeDelta}</span> : null}</p>
-            <p className="mt-1 text-2xl font-extrabold text-white">{current.active}{range ? <span className="text-base text-[#6a7282]">/{range}</span> : null}</p>
+            <p className="mt-1 text-2xl font-extrabold text-white max-md:text-xl">{current.active}{range ? <span className="text-base text-[#6a7282]">/{range}</span> : null}</p>
           </article>
         </div>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-2">
-          <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4">
+        <div className="mt-4 grid gap-4 *:min-w-0 lg:grid-cols-2">
+          <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4 max-md:border-0 max-md:bg-[#121214]">
             <h2 className="font-extrabold text-white">ყურების დრო</h2>
             <p className="text-sm text-[#99a1af]">დღეში, აქტიური {current.active} / {range || "სულ"}</p>
             {bars.some((bar) => bar.minutes) ? (
@@ -296,7 +315,7 @@ export function ActivityView({ data }: { data: ActivityData }) {
               <span>{bars.at(-1)?.label}</span>
             </div>
           </section>
-          <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4">
+          <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4 max-md:border-0 max-md:bg-[#121214]">
             <h2 className="font-extrabold text-white">ტოპ ჟანრები</h2>
             <p className="text-sm text-[#99a1af]">ნანახი ანიმეების მიხედვით</p>
             {genres.length ? (
@@ -310,40 +329,40 @@ export function ActivityView({ data }: { data: ActivityData }) {
               </ul>
             ) : <p className="py-16 text-center text-sm text-[#99a1af]">ამ პერიოდში ყურება არ ყოფილა</p>}
           </section>
-          <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4">
+          <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4 max-md:border-0 max-md:bg-[#121214]">
             <h2 className="font-extrabold text-white">როდის უყურებს</h2>
             <p className="text-sm text-[#99a1af]">ეპიზოდები კვირის დღისა და საათის მიხედვით</p>
             {hourGrid.some((row) => row.some(Boolean)) ? (
               <div className="mt-4 overflow-x-auto">
-                <div className="mb-1 ml-10 flex text-[10px] text-[#6a7282]">{[0, 6, 12, 18].map((hour) => <span key={hour} className="w-[72px]">{String(hour).padStart(2, "0")}:00</span>)}</div>
+                <div className="mb-1 ml-10 flex text-[10px] text-[#6a7282] max-md:grid max-md:grid-cols-4">{[0, 6, 12, 18].map((hour) => <span key={hour} className="w-[72px] max-md:w-auto">{String(hour).padStart(2, "0")}:00</span>)}</div>
                 {hourGrid.map((row, index) => (
                   <div key={weekdays[index]} className="mt-1 flex items-center gap-2">
-                    <span className="w-8 text-[11px] text-[#6a7282]">{weekdays[index]}</span>
-                    <div className="flex gap-px">
-                      {row.map((value, hour) => <span key={hour} title={`${weekdays[index]} ${hour}:00 · ${value}`} className="size-2.5 rounded-[2px]" style={{ background: value ? `rgba(233,55,72,${0.25 + (value / hourMax) * 0.75})` : "#1a1a1a" }} />)}
+                    <span className="w-8 shrink-0 text-[11px] text-[#6a7282]">{weekdays[index]}</span>
+                    <div className="flex gap-px max-md:min-w-0 max-md:flex-1">
+                      {row.map((value, hour) => <span key={hour} title={`${weekdays[index]} ${hour}:00 · ${value}`} className="size-2.5 rounded-[2px] max-md:aspect-square max-md:size-auto max-md:min-w-0 max-md:flex-1" style={{ background: value ? `rgba(233,55,72,${0.25 + (value / hourMax) * 0.75})` : "#1a1a1a" }} />)}
                     </div>
                   </div>
                 ))}
               </div>
             ) : <p className="py-16 text-center text-sm text-[#99a1af]">ამ პერიოდში ეპიზოდი არ ყოფილა</p>}
           </section>
-          <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4">
+          <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4 max-md:border-0 max-md:bg-[#121214]">
             <h2 className="font-extrabold text-white">ბოლოს ნანახი</h2>
             <p className="text-sm text-[#99a1af]">არჩეულ პერიოდში</p>
             {recentTitles.length ? (
               <ul className="mt-4 space-y-3">
                 {recentTitles.map((item) => (
                   <li key={`${item.slug}-${item.day}`}>
-                    <a href={animeHref(item.slug)} className="flex items-center gap-3">
-                      {item.poster ? <img src={item.poster} alt="" className="h-12 w-9 rounded object-cover" /> : <span className="h-12 w-9 rounded bg-white/10" />}
-                      <span className="min-w-0"><span className="block truncate text-sm font-bold text-white">{item.title}</span><span className="text-xs text-[#99a1af]">{item.day}{item.seconds ? ` · ${minutesLabel(Math.round(item.seconds / 60))}` : ""}</span></span>
+                    <a href={animeHref(item.slug)} className="flex min-w-0 items-center gap-3">
+                      {item.poster ? <img src={item.poster} alt="" className="h-12 w-9 shrink-0 rounded object-cover" /> : <span className="h-12 w-9 shrink-0 rounded bg-white/10" />}
+                      <span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold text-white">{item.title}</span><span className="text-xs text-[#99a1af]">{item.day}{item.seconds ? ` · ${minutesLabel(Math.round(item.seconds / 60))}` : ""}</span></span>
                     </a>
                   </li>
                 ))}
               </ul>
             ) : <p className="py-16 text-center text-sm text-[#99a1af]">ამ პერიოდში ყურება არ ყოფილა</p>}
           </section>
-          <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4">
+          <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4 max-md:border-0 max-md:bg-[#121214]">
             <h2 className="font-extrabold text-white">ბოლო აქტივობა</h2>
             <p className="text-sm text-[#99a1af]">ეპიზოდები და კომენტარები</p>
             {groups.length ? (
@@ -353,12 +372,12 @@ export function ActivityView({ data }: { data: ActivityData }) {
                     <p className="mb-2 text-[11px] font-bold tracking-wide text-[#99a1af]">{group.label}</p>
                     <ul className="space-y-3 border-l border-[#e93748]/40 pl-3">
                       {group.items.map((event) => (
-                        <li key={event.id} className="relative">
+                        <li key={event.id} className="relative min-w-0 [overflow-wrap:anywhere]">
                           <span className="absolute top-1.5 -left-[17px] size-2 rounded-full bg-[#e93748]" />
                           <p className="text-[11px] text-[#6a7282]">{event.at.slice(11, 16)}</p>
                           <p className="text-[11px] font-bold tracking-wide" style={{ color: event.kind === "comment" ? "#6ea8ff" : "#e93748" }}>{event.kind === "comment" ? "კომენტარი" : "ყურება"}</p>
                           {event.slug ? <a href={animeHref(event.slug)} className="text-sm font-bold text-white hover:underline">{event.title}{event.episode ? ` · ეპ ${event.episode}` : ""}</a> : <p className="text-sm font-bold text-white">{event.title}</p>}
-                          {event.text ? <p className="text-xs text-[#99a1af]">{event.text}</p> : null}
+                          {event.text ? <p className="line-clamp-3 text-xs text-[#99a1af]">{event.text}</p> : null}
                         </li>
                       ))}
                     </ul>
@@ -369,7 +388,7 @@ export function ActivityView({ data }: { data: ActivityData }) {
             ) : <p className="py-16 text-center text-sm text-[#99a1af]">აქტივობა ჯერ არ არის</p>}
           </section>
           <div className="space-y-4">
-            <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4">
+            <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4 max-md:border-0 max-md:bg-[#121214]">
               <h2 className="font-extrabold text-white">სეზონის ანგარიში</h2>
               <p className="text-sm text-[#99a1af]">ბოლო 90 დღე</p>
               <dl className="mt-3 grid grid-cols-3 gap-3 text-sm">
@@ -378,7 +397,7 @@ export function ActivityView({ data }: { data: ActivityData }) {
                 <div><dt className="text-[#99a1af]">კომენტარი</dt><dd className="font-bold text-white">{formatCount(data.season.comments)}</dd></div>
               </dl>
             </section>
-            <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4">
+            <section className="rounded-2xl border border-white/8 bg-[#0c0c0c] p-4 max-md:border-0 max-md:bg-[#121214]">
               <h2 className="font-extrabold text-white">სულ</h2>
               <dl className="mt-3 grid grid-cols-2 gap-3 text-sm">
                 <div><dt className="text-[#99a1af]">წევრი გახდა</dt><dd className="font-bold text-white">{profile.joinedMonth}</dd></div>

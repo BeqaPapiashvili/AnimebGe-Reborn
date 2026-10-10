@@ -23,6 +23,7 @@ export type AdminAnime = {
   japanese: string;
   poster: string;
   cover: string;
+  logo: string;
   current: string;
   total: string;
   format: string;
@@ -115,6 +116,7 @@ export async function readAdminAnime(id: number): Promise<AdminAnime | null> {
     japanese: fields.japname ?? "",
     poster: fields.image ?? "",
     cover: fields.cover ?? "",
+    logo: fields.logo ?? "",
     current: episode.current,
     total: episode.total,
     format: ids.find((item) => FORMATS.has(item)) ?? "11",
@@ -123,7 +125,7 @@ export async function readAdminAnime(id: number): Promise<AdminAnime | null> {
 }
 
 function blankAnime(): AdminAnime {
-  return { id: 0, title: "", slug: "", description: "", published: true, year: "", status: "დასრულებული", score: "", duration: "", studio: "", dubbers: "", director: "", romaji: "", japanese: "", poster: "", cover: "", current: "", total: "", format: "11", genres: [] };
+  return { id: 0, title: "", slug: "", description: "", published: true, year: "", status: "დასრულებული", score: "", duration: "", studio: "", dubbers: "", director: "", romaji: "", japanese: "", poster: "", cover: "", logo: "", current: "", total: "", format: "11", genres: [] };
 }
 
 export function emptyAdminAnime() {
@@ -141,7 +143,7 @@ export async function readAdminSources(id: number) {
     .map(([key, value]) => ({ key, value }));
 }
 
-export async function saveAdminAnime(input: AdminAnime, author: string, sources?: { key: string; value: string }[]) {
+export async function saveAdminAnime(input: AdminAnime, author: string, sources?: { key: string; value: string }[], bump = false) {
   const title = input.title.trim().slice(0, 255);
   if (title.length < 2) return { error: "სათაური მაინც 2 სიმბოლო უნდა იყოს." };
   let slug = slugify(input.slug || title);
@@ -163,6 +165,7 @@ export async function saveAdminAnime(input: AdminAnime, author: string, sources?
   set("japname", input.japanese);
   set("image", input.poster);
   set("cover", input.cover);
+  set("logo", input.logo);
   set("imdb", input.score.replace(",", "."));
   set("year", input.year.replace(/\D/g, "").slice(0, 4));
   set("studio", input.studio);
@@ -190,11 +193,10 @@ export async function saveAdminAnime(input: AdminAnime, author: string, sources?
 
   if (input.id) {
     const result = await execute(
-      "UPDATE dle_post SET title = ?, alt_name = ?, short_story = ?, xfields = ?, category = ?, approve = ? WHERE id = ?",
-      [title, slug, story, pack(fields), category, input.published ? 1 : 0, input.id],
+      "UPDATE dle_post SET title = ?, alt_name = ?, short_story = ?, xfields = ?, category = ?, approve = ?, date = IF(?, NOW(), date) WHERE id = ?",
+      [title, slug, story, pack(fields), category, input.published ? 1 : 0, bump ? 1 : 0, input.id],
     );
-    if (!result.affectedRows) return { error: "ანიმე ვერ მოიძებნა." };
-    clearCatalogCache();
+    if (!result.affectedRows) return { error: "ანიმე ვერ მოიძებნა." };    clearCatalogCache();
     return { id: input.id };
   }
 

@@ -1,6 +1,6 @@
 import "server-only";
 import { query } from "@/lib/db";
-import { readSlideSetup, slideModes, type SlideMode } from "@/lib/site-config";
+import { readSlideSetup, slideModes, type HomeBlock, type SlideMode } from "@/lib/site-config";
 import { folderKey } from "@/lib/list-model";
 import { getLists, getUserListMap } from "@/lib/lists";
 import type { SearchFacets, SearchQuery } from "@/lib/search-query";
@@ -114,6 +114,7 @@ function toAnime(row: PostRow): Anime & { id: number; date: string; views: numbe
     year: fields.year,
     poster: absUrl(fields.image),
     banner: absUrl(fields.cover) ?? absUrl(fields.playerimage),
+    logo: absUrl(fields.logo),
     desc: htmlToText(row.short_story).slice(0, 320),
     rating: fields.asak1 || fields.asaki,
     dub: current ? String(current) : undefined,
@@ -204,12 +205,19 @@ export async function slideBoard() {
   const upcoming = anime.filter((item, index) => isAnons(rows[index]));
   const setup = await readSlideSetup();
   const byId = new Map(anime.map((item) => [item.id, item]));
-  const card = (item: SlideRow) => ({ id: item.id, title: item.title, note: [item.score ? `★ ${item.score}` : "", item.year, item.banner ? "" : "ბანერი არ აქვს"].filter(Boolean).join(" · ") });
+  const card = (item: SlideRow) => ({
+    id: item.id,
+    title: item.title,
+    poster: item.poster ?? "",
+    banner: item.banner ?? "",
+    note: [item.score ? `★ ${item.score}` : "", item.year, item.date.slice(0, 10)].filter(Boolean).join(" · "),
+    noBanner: !item.banner,
+  });
   return {
     mode: setup.mode,
     picks: setup.ids.flatMap((id) => {
       const item = byId.get(id);
-      return item ? [{ id: item.id, title: item.title }] : [];
+      return item ? [card(item)] : [];
     }),
     pools: slideModes.filter((item) => item.id !== "manual").map((item) => ({
       id: item.id,
@@ -276,6 +284,28 @@ export async function getHomeData(userId?: number): Promise<SiteData & { continu
     schedule,
     userLists,
   };
+}
+
+export async function homeSectionItems(blocks: HomeBlock[]) {
+  const custom = blocks.filter((block) => block.on && block.source);
+  if (!custom.length) return {};
+  const rows = await allPosts();
+  const anime = rows.map(toAnime);
+  const byId = new Map(anime.map((item) => [item.id, item]));
+  const released = anime.filter((item, index) => !isAnons(rows[index]));
+  const byViews = (list: typeof anime) => [...list].sort((a, b) => b.views - a.views);
+  const result: Record<string, Anime[]> = {};
+  for (const block of custom) {
+    const size = block.size ?? 12;
+    const list =
+      block.source === "pick" ? (block.picks ?? []).map((pick) => byId.get(pick.id)).filter((item) => item !== undefined)
+      : block.source === "rating" ? [...released].sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0) || b.views - a.views)
+      : block.source === "popular" ? byViews(released)
+      : block.source === "ongoing" ? byViews(released.filter((item) => item.ongoing))
+      : byViews(released.filter((item) => item.type === "ფილმი"));
+    result[block.id] = list.slice(0, size);
+  }
+  return result;
 }
 
 export async function searchAnime(term: string, limit = 8) {

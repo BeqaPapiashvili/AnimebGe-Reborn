@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Avatar } from "@/components/avatar";
 import { AnimeCard } from "@/components/anime-card";
 import { AnimeDetailView } from "@/components/anime-detail";
@@ -28,7 +28,8 @@ import { MyListsView } from "@/components/my-lists-view";
 import type { FolderCard, FolderDetail } from "@/lib/folders";
 import type { AnimeDetail, CommentItem, ContinueItem, UserAnimeState } from "@/lib/catalog";
 import type { EmoteState } from "@/lib/emote";
-import { animeHref, art, posts } from "@/lib/data";
+import { animeHref, art } from "@/lib/data";
+import type { HomePost } from "@/lib/community";
 import type { SiteList } from "@/lib/list-model";
 import type { Anime, SessionUser, SiteData } from "@/lib/types";
 import type { ActivityData, PublicProfile } from "@/lib/profile-types";
@@ -51,7 +52,6 @@ const menuItems = {
   browse: [
     { id: "home", name: "მთავარი", icon: "/assets/menu/home.svg", href: "/" },
     { id: "search", name: "ძებნა", icon: "/assets/menu/search.svg" },
-    { id: "schedule", name: "განრიგი", icon: "/assets/menu/schedule.svg", href: "/schedule" },
     { id: "community", name: "საზოგადოება", icon: "/assets/menu/community.svg", href: "/community" },
   ],
   more: [
@@ -88,7 +88,9 @@ type HomeProps = {
   characterCards?: { id: number; name: string; image: string; rarity: string; owned?: number; wished?: boolean }[];
   panel?: ReactNode;
   notice?: { kicker: string; text: string; href: string; label: string } | null;
-  sections?: { id: string; title: string; on: boolean }[];
+  sections?: { id: string; title: string; on: boolean; source?: string }[];
+  custom?: Record<string, Anime[]>;
+  posts?: HomePost[];
 };
 
 function joinedAgo(unix: number) {
@@ -107,7 +109,7 @@ function MenuGlyph({ name }: { name: "user" | "public" | "bookmark" | "lists" | 
   if (name === "friends") return <svg {...common}><circle cx="9" cy="9" r="2.6" /><circle cx="16" cy="10" r="2.1" /><path d="M4.8 18.2c.8-2.4 2.4-3.6 4.2-3.6s3.4 1.2 4.2 3.6M14 14.8c1.3-.3 2.4.1 3.3 1.1.8.9 1.2 2 1.4 2.3" /></svg>;
   if (name === "play") return <svg {...common}><circle cx="12" cy="12" r="8" /><path d="m10 9 5 3-5 3z" /></svg>;
   if (name === "bell") return <svg {...common}><path d="M6 9a6 6 0 1 1 12 0c0 6 2.5 6.5 2.5 8H3.5C3.5 15.5 6 15 6 9" /><path d="M10 19.5a2 2 0 0 0 4 0" /></svg>;
-  if (name === "admin") return <svg {...common}><circle cx="12" cy="12" r="3" /><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4 18 18M18 6l-1.6 1.6M7.6 16.4 6 18" /></svg>;
+  if (name === "admin") return <svg {...common}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" strokeLinejoin="round" /><circle cx="12" cy="12" r="3" /></svg>;
   return <svg {...common}><path d="M10 7H6.5A1.5 1.5 0 0 0 5 8.5v7A1.5 1.5 0 0 0 6.5 17H10" /><path d="M10 12h9" /><path d="m16 9 3 3-3 3" /></svg>;
 }
 
@@ -120,10 +122,13 @@ function MenuLink({ href, icon, onClick, children }: { href: string; icon: "user
   );
 }
 
-export function Home({ user, data, detail, state, comments, commentStats, watchEpisode, watchRoom, lists = [], watchlist, search, myLists, friends, continueWatch, hub, inbox, profile, activity, settings, prefs, emotes, panel, notice = null, sections, characterCards }: HomeProps) {
+export function Home({ user, data, detail, state, comments, commentStats, watchEpisode, watchRoom, lists = [], watchlist, search, myLists, friends, continueWatch, hub, inbox, profile, activity, settings, prefs, emotes, panel, notice = null, sections, custom, posts = [], characterCards }: HomeProps) {
   const router = useRouter();
+  const pathname = usePathname() || "/";
+  const dockAt = (href: string) => href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+  const dockItem = (active: boolean) => `relative grid size-[42px] place-items-center rounded-full transition-colors duration-300 ${active ? "text-white" : "text-[#9ca3af] hover:text-white"}`;
   const home = data ?? emptyData;
-  const homeBlocks = sections?.length ? sections : [
+  const homeBlocks = sections ?? [
     { id: "continue", title: "განაგრძე ყურება", on: true },
     { id: "latest", title: "ბოლო ეპიზოდები", on: true },
     { id: "fresh", title: "ახალი საიტზე", on: true },
@@ -139,12 +144,39 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
     }).catch(() => undefined);
   }, []);
   const sideBlocks = homeBlocks.filter((block) => block.on && (block.id === "trend" || block.id === "schedule" || block.id === "posts"));
-  const [slide, setSlide] = useState(1);
+  const [slide, setSlide] = useState(0);
   const [announce, setAnnounce] = useState(true);
   const [dockOpen, setDockOpen] = useState(true);
   const [headerSolid, setHeaderSolid] = useState(Boolean(panel));
   const [dockLocked, setDockLocked] = useState(false);
   const [dockReady, setDockReady] = useState(false);
+  const dockInit = useRef(false);
+  const dockRef = useRef<HTMLElement>(null);
+  const [marker, setMarker] = useState<{ top: number; animate: boolean } | null>(null);
+
+  useLayoutEffect(() => {
+    if (!dockOpen || !dockReady) return;
+    const active = dockRef.current?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (!active) {
+      setMarker(null);
+      return;
+    }
+    const top = active.offsetTop;
+    let previous = 0;
+    try {
+      previous = Number(sessionStorage.getItem("animeb.dockTop")) || 0;
+      sessionStorage.setItem("animeb.dockTop", String(top));
+    } catch {}
+    if (!previous || previous === top) {
+      setMarker((current) => ({ top, animate: Boolean(current) }));
+      return;
+    }
+    setMarker({ top: previous, animate: false });
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => setMarker({ top, animate: true }));
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [pathname, dockOpen, dockReady]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
@@ -321,14 +353,37 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
     document.querySelector(".search-row.is-active")?.scrollIntoView({ block: "nearest" });
   }, [active]);
 
+  function setDock(open: boolean) {
+    setDockOpen(open);
+    if (dockLocked) {
+      try { localStorage.setItem("animeb.dockOpen", open ? "1" : "0"); } catch {}
+    }
+  }
+
+  function toggleDockLock(open: boolean) {
+    const next = !dockLocked;
+    try {
+      localStorage.setItem("animeb.dockLock", next ? "1" : "0");
+      localStorage.setItem("animeb.dockOpen", open ? "1" : "0");
+    } catch {}
+    setDockLocked(next);
+    setDockOpen(open);
+  }
+
   useEffect(() => {
     let locked = dockLocked;
+    let lockedOpen = false;
     try {
       locked = localStorage.getItem("animeb.dockLock") === "1";
+      lockedOpen = localStorage.getItem("animeb.dockOpen") === "1";
     } catch {}
     setDockLocked(locked);
     scrollY.current = window.scrollY;
-    if (locked || window.scrollY > 32) setDockOpen(false);
+    if (!dockInit.current) {
+      dockInit.current = true;
+      if (locked) setDockOpen(lockedOpen);
+      else if (window.scrollY > 32) setDockOpen(false);
+    }
     setDockReady(true);
     setHeaderSolid(window.scrollY > 12);
     function onScroll() {
@@ -375,12 +430,15 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
           </button>
           <a href="/" className="inline-flex items-center"><Logo /></a>
         </div>
-        <button type="button" className="search-trigger absolute top-1/2 left-1/2 z-10 flex h-14 w-[min(560px,calc(100vw-480px))] -translate-x-1/2 -translate-y-1/2 cursor-text items-center gap-3 rounded-full pr-3 pl-5 text-[15px] text-[#8b929e] max-[700px]:w-14 max-[700px]:justify-center max-[700px]:px-0" onClick={openSearch} onMouseMove={(event) => { const box = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.setProperty("--mx", `${event.clientX - box.left}px`); }} aria-label="ანიმეს ძებნა">
+        <button type="button" className="search-trigger absolute top-1/2 left-1/2 z-10 flex h-14 w-[min(560px,calc(100vw-480px))] -translate-x-1/2 -translate-y-1/2 cursor-text items-center gap-3 rounded-full pr-3 pl-5 text-[15px] text-[#8b929e] max-[700px]:hidden" onClick={openSearch} onMouseMove={(event) => { const box = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.setProperty("--mx", `${event.clientX - box.left}px`); }} aria-label="ანიმეს ძებნა">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
           <span className="flex-1 text-left max-[700px]:hidden">მოძებნე ანიმე...</span>
           <span className="flex gap-1 max-[700px]:hidden"><kbd className="search-trigger-kbd">Ctrl</kbd><kbd className="search-trigger-kbd">S</kbd></span>
         </button>
         <div className="relative z-10 flex items-center">
+          <button type="button" className="relative hidden h-9 w-11 cursor-pointer place-items-center text-[#d1d5dc] hover:text-white max-[700px]:grid" aria-label="ანიმეს ძებნა" onClick={openSearch}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
+          </button>
           {user ? (
             <>
               <Notifications />
@@ -472,39 +530,58 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
       ) : null}
 
       {showDock && dockReady ? <nav
-        className={`fixed z-[45] flex flex-col items-center shadow-[0_16px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 ease-out ${dockOpen ? "top-[245px] left-4 w-[70px] translate-y-0 gap-3 rounded-full border border-white/10 bg-[rgba(10,10,10,0.92)] p-3" : "top-1/2 left-0 w-10 -translate-y-1/2 gap-0.5 rounded-r-[16px] border border-l-0 border-white/10 bg-black/70 py-1.5"}`}
+        className={`fixed z-[45] hidden flex-col items-center shadow md:flex-[0_16px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 ease-out ${dockOpen ? "top-[245px] left-4 w-[70px] translate-y-0 gap-3 rounded-full border border-white/10 bg-[rgba(10,10,10,0.92)] p-3" : "top-1/2 left-0 w-10 -translate-y-1/2 gap-0.5 rounded-r-[16px] border border-l-0 border-white/10 bg-black/70 py-1.5"}`}
         aria-label="ნავიგაცია"
+        ref={dockRef}
       >
         {dockOpen ? (
         <>
-          <a href="/" className="relative grid size-[42px] place-items-center rounded-full border border-white/5 bg-white/8 text-white" aria-label="მთავარი">
-            <span className="absolute top-2.5 -left-3 h-5 w-[3px] rounded-r-full bg-[#e93748]" />
+          {marker ? (
+            <span
+              aria-hidden="true"
+              className={`pointer-events-none absolute left-1/2 size-[42px] -translate-x-1/2 rounded-full bg-white/8 ${marker.animate ? "transition-[top] duration-500 ease-[cubic-bezier(0.34,1.4,0.64,1)] motion-reduce:transition-none" : ""}`}
+              style={{ top: marker.top }}
+            >
+              <span className="absolute top-2.5 -left-3 h-5 w-[3px] rounded-r-full bg-[#e93748] shadow-[0_0_10px_rgba(233,55,72,0.6)]" />
+            </span>
+          ) : null}
+          <a href="/" className={dockItem(dockAt("/"))} aria-label="მთავარი" aria-current={dockAt("/") ? "page" : undefined}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" /></svg>
           </a>
-          <button type="button" className="grid size-[42px] place-items-center text-[#9ca3af]" aria-label="ძებნა" onClick={() => { setSearchOpen(false); router.push("/search"); }}>
+          <button type="button" className={dockItem(dockAt("/search"))} aria-label="ძებნა" aria-current={dockAt("/search") ? "page" : undefined} onClick={() => { setSearchOpen(false); router.push("/search"); }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3-3" /></svg>
           </button>
-          <a href="/schedule" className="grid size-[42px] place-items-center text-[#9ca3af]" aria-label="განრიგი">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M8 3v4M16 3v4M4 10h16" /></svg>
+          <a href="/cards" className={dockItem(dockAt("/cards"))} aria-label="ბარათები" title="ბარათები" aria-current={dockAt("/cards") ? "page" : undefined}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"><rect x="8" y="4" width="11" height="15" rx="2" /><path d="M5.5 7.5 5 8a2 2 0 0 0-.6 2.4l3.4 8.2" /><path d="m13.5 9.5 1 2 2 .3-1.5 1.4.4 2-1.9-1-1.9 1 .4-2-1.5-1.4 2-.3z" /></svg>
           </a>
-          <a href="/community" className="grid size-[42px] place-items-center text-[#9ca3af]" aria-label="საზოგადოება">
+          <a href="/community" className={dockItem(dockAt("/community"))} aria-label="საზოგადოება" aria-current={dockAt("/community") ? "page" : undefined}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="9" cy="8" r="3" /><path d="M3 19c1-3 3.5-4.5 6-4.5S14 16 15 19" /><circle cx="17" cy="9" r="2.2" /><path d="M16.5 14.6c2.2.3 4 1.7 4.8 4.4" /></svg>
           </a>
           <div className="h-px w-6 bg-white/8" />
-          <a href="/settings" className="grid size-[42px] place-items-center text-[#9ca3af]" aria-label="პარამეტრები">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="3" /><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4" /></svg>
+          <a href="/settings" className={dockItem(dockAt("/settings"))} aria-label="პარამეტრები" aria-current={dockAt("/settings") ? "page" : undefined}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" strokeLinejoin="round" /><circle cx="12" cy="12" r="3" /></svg>
           </a>
-          <a href="/community" className="grid size-[42px] place-items-center text-[#9ca3af]" aria-label="აქტივობა">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 12h4l2-6 4 12 2-6h6" /></svg>
+          <a href="/watchlist" className={dockItem(dockAt("/watchlist"))} aria-label="ჩემი სია" title="ჩემი სია" aria-current={dockAt("/watchlist") ? "page" : undefined}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"><path d="M7 4.5h10a1 1 0 0 1 1 1V20l-6-3.2L6 20V5.5a1 1 0 0 1 1-1z" /></svg>
           </a>
           <div className="h-px w-6 bg-white/8" />
-          <button type="button" className="grid size-11 place-items-center rounded-lg text-[#9ca3af]" aria-label="ჩაკეცვა" onClick={() => setDockOpen(false)}>
+          <button
+            type="button"
+            className={`grid size-[42px] place-items-center rounded-full transition-colors ${dockLocked ? "bg-[#e93748]/15 text-[#e93748]" : "text-[#9ca3af] hover:text-white"}`}
+            aria-pressed={dockLocked}
+            aria-label={dockLocked ? "მენიუს განბლოკვა" : "მენიუს ჩაკეტვა"}
+            title={dockLocked ? "ჩაკეტილია — გაშლილი დარჩება" : "ჩაკეტე, რომ გაშლილი დარჩეს"}
+            onClick={() => toggleDockLock(true)}
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="11" width="14" height="10" rx="2" /><path d={dockLocked ? "M8 11V8a4 4 0 0 1 8 0v3" : "M8 11V8a4 4 0 0 1 7.5-2"} /></svg>
+          </button>
+          <button type="button" className="grid size-11 place-items-center rounded-lg text-[#9ca3af]" aria-label="ჩაკეცვა" onClick={() => setDock(false)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M15 6 9 12l6 6" /></svg>
           </button>
         </>
         ) : (
           <>
-            <button type="button" className="grid h-16 w-full place-items-center rounded-[10px] text-white/85" aria-label="გაშლა" onClick={() => setDockOpen(true)}>
+            <button type="button" className="grid h-16 w-full place-items-center rounded-[10px] text-white/85" aria-label="გაშლა" onClick={() => setDock(true)}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="m9 6 6 6-6 6" /></svg>
             </button>
             <button
@@ -512,14 +589,8 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
               className={`grid size-8 place-items-center ${dockLocked ? "text-[#e93748]" : "text-white/70"}`}
               aria-pressed={dockLocked}
               aria-label={dockLocked ? "მენიუს განბლოკვა" : "მენიუს ჩაკეტვა"}
-              onClick={() => {
-                setDockLocked((locked) => {
-                  const next = !locked;
-                  try { localStorage.setItem("animeb.dockLock", next ? "1" : "0"); } catch {}
-                  return next;
-                });
-                setDockOpen(false);
-              }}
+              title={dockLocked ? "ჩაკეტილია — ჩაკეცილი დარჩება" : "ჩაკეტე, რომ ჩაკეცილი დარჩეს"}
+              onClick={() => toggleDockLock(false)}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
             </button>
@@ -529,6 +600,27 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
           </>
         )}
       </nav> : null}
+
+      <nav className="fixed inset-x-0 bottom-0 z-[45] bg-[rgba(12,12,14,0.94)] pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_40px_rgba(0,0,0,0.55)] backdrop-blur-xl md:hidden" aria-label="მობილური ნავიგაცია">
+        <div className="mx-auto grid h-[66px] max-w-[560px] grid-cols-5 gap-1 px-2 py-1.5">
+          {([
+            ["/", "მთავარი", <path key="i" d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" />],
+            ["/search", "ძებნა", <g key="i"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3-3" /></g>],
+            ["/cards", "ბარათები", <g key="i"><rect x="8" y="4" width="11" height="15" rx="2" /><path d="M5.5 7.5 5 8a2 2 0 0 0-.6 2.4l3.4 8.2" /></g>],
+            ["/community", "საზოგადოება", <g key="i"><circle cx="9" cy="8" r="3" /><path d="M3 19c1-3 3.5-4.5 6-4.5S14 16 15 19" /><circle cx="17" cy="9" r="2.2" /><path d="M16.5 14.6c2.2.3 4 1.7 4.8 4.4" /></g>],
+            ["/settings", "პარამეტრები", <g key="i"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></g>],
+          ] as const).map(([href, label, icon]) => {
+            const on = dockAt(href);
+            return (
+              <a key={href} href={href} aria-current={on ? "page" : undefined} className={`relative flex flex-col items-center justify-center gap-1 rounded-xl transition-colors duration-300 ${on ? "bg-[#e93748]/12 text-[#ff8a95]" : "text-[#9ca3af] active:bg-white/5"}`}>
+                <span className={`absolute top-0 left-1/2 h-[3px] -translate-x-1/2 rounded-b-full bg-[#e93748] shadow-[0_0_10px_rgba(233,55,72,0.7)] transition-all duration-300 ${on ? "w-7 opacity-100" : "w-0 opacity-0"}`} />
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">{icon}</svg>
+                <span className="max-w-full truncate px-0.5 text-[10px] leading-none font-semibold">{label}</span>
+              </a>
+            );
+          })}
+        </div>
+      </nav>
 
       {panel ? (
         <div className="bg-[#070707] pt-20 text-white">{panel}</div>
@@ -559,7 +651,7 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
       ) : (<>
       <section
         ref={heroRef}
-        className={`relative h-[638px] touch-pan-y overflow-hidden bg-[#0a0a0a] select-none ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
+        className={`relative h-[638px] max-md:h-[600px] touch-pan-y overflow-hidden bg-[#0a0a0a] select-none ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
         aria-roledescription="carousel"
         onPointerDown={onHeroPointerDown}
         onPointerMove={onHeroPointerMove}
@@ -575,7 +667,7 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
           const opacity = !dragging || progress === 0 ? (index === slide ? 1 : 0) : index === slide ? 1 - Math.abs(progress) : index === neighbor ? Math.abs(progress) : 0;
           return (
             <div
-              key={item.title}
+              key={item.slug}
               className="absolute inset-0 overflow-hidden bg-cover bg-center"
               aria-hidden={index !== slide}
               style={{
@@ -586,16 +678,20 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
                 transition: dragging ? "none" : "opacity 480ms cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,10,10,0.72)_0%,rgba(10,10,10,0.48)_20%,rgba(10,10,10,0.2)_40%,rgba(10,10,10,0.06)_62%,rgba(10,10,10,0)_82%),linear-gradient(180deg,rgba(10,10,10,0)_0%,rgba(10,10,10,0.6)_50%,#0a0a0a_100%)]" />
-              <div className="absolute bottom-20 left-[108px] z-2 w-[672px] max-w-[calc(100%-160px)]">
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,10,10,0.72)_0%,rgba(10,10,10,0.48)_20%,rgba(10,10,10,0.2)_40%,rgba(10,10,10,0.06)_62%,rgba(10,10,10,0)_82%),linear-gradient(180deg,rgba(10,10,10,0)_0%,rgba(10,10,10,0.6)_50%,#0a0a0a_100%)] max-md:bg-[linear-gradient(180deg,rgba(10,10,10,0.35)_0%,rgba(10,10,10,0)_22%,rgba(10,10,10,0.25)_45%,rgba(10,10,10,0.85)_72%,#0a0a0a_100%)]" />
+              <div className="absolute bottom-20 left-[108px] z-2 w-[672px] max-w-[calc(100%-160px)] max-md:inset-x-0 max-md:bottom-12 max-md:mx-auto max-md:flex max-md:w-full max-md:max-w-none max-md:flex-col max-md:items-center max-md:px-5 max-md:text-center">
                 <div className="flex gap-2">
                   {[item.score ? `★ ${item.score}` : null, item.type, item.year].filter((badge): badge is string => !!badge).map((badge) => (
                     <span key={badge} className="rounded bg-black/80 px-2 py-1 text-sm leading-5 font-semibold text-[#e93748]">{badge}</span>
                   ))}
                 </div>
-                {item.poster ? <img src={item.poster} alt={item.title} draggable={false} className="h-24 w-[93px] object-cover shadow-[0_0_4px_rgba(255,255,255,0.65),0_1px_4px_rgba(0,0,0,0.9),0_6px_36px_rgba(0,0,0,0.7)]" /> : null}
-                <p className="font-mkhedruli mt-4 h-[72px] max-w-[576px] overflow-hidden text-base leading-6 font-normal text-[#d1d5dc]">{item.desc || item.title}</p>
-                <div className="flex items-center gap-6 pt-4">
+                {item.logo ? (
+                  <img src={item.logo} alt={item.title} draggable={false} className="mt-4 max-h-28 max-w-[420px] object-contain object-left drop-shadow-[0_6px_24px_rgba(0,0,0,0.75)] max-md:max-h-24 max-md:max-w-[85%] max-md:object-center" />
+                ) : (
+                  <h2 className="font-bog mt-4 line-clamp-2 max-w-[600px] text-4xl leading-[1.15] font-normal text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.7)] max-md:text-[32px] min-[900px]:text-5xl">{item.title}</h2>
+                )}
+                <p className="font-mkhedruli mt-4 h-[72px] max-w-[576px] overflow-hidden text-base leading-6 font-normal text-[#d1d5dc] max-md:mt-3 max-md:line-clamp-3 max-md:h-auto max-md:text-[15px]">{item.desc}</p>
+                <div className="flex items-center gap-6 pt-4 max-md:justify-center max-md:gap-3">
                   <button type="button" className="hero-cta relative h-11 -skew-x-12 cursor-pointer overflow-hidden bg-[#e93748] px-8 text-white" onClick={() => openWatch(item.slug)}>
                     <span className="inline-flex skew-x-12 items-center gap-2 text-sm font-black tracking-[2.8px] uppercase"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg> ყურება</span>
                   </button>
@@ -611,7 +707,7 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
           <button type="button" className="grid size-[38px] cursor-pointer place-items-center rounded border border-white/10 bg-black/60 backdrop-blur-sm" aria-label="წინა" onClick={() => go(slide - 1)}>‹</button>
           <button type="button" className="grid size-[38px] cursor-pointer place-items-center rounded border border-white/10 bg-black/60 backdrop-blur-sm" aria-label="შემდეგი" onClick={() => go(slide + 1)}>›</button>
         </div>
-        <div className="absolute right-10 bottom-10 z-3 flex items-center gap-2">
+        <div className="absolute right-10 bottom-10 z-3 flex items-center gap-2 max-md:inset-x-0 max-md:bottom-4 max-md:justify-center">
           {home.slides.map((item, index) => (
             <button key={item.slug} type="button" className={`h-1.5 cursor-pointer rounded-full transition-[width,background-color] duration-300 ${index === slide ? "w-8 bg-[#e93748]" : "w-2 bg-white/30"}`} aria-label={`Go to ${item.title}`} onClick={() => go(index)} />
           ))}
@@ -655,7 +751,7 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
                 </section>
               );
             }
-            const items = block.id === "latest" ? home.latest : block.id === "fresh" ? home.fresh : home.upcoming;
+            const items = block.source ? custom?.[block.id] ?? [] : block.id === "latest" ? home.latest : block.id === "fresh" ? home.fresh : home.upcoming;
             if (!items.length) return null;
             return (
               <section key={block.id} className="mt-8">
@@ -748,26 +844,34 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
               <h2 className="text-xl font-bold">{block.title}</h2>
               <a href="/community" className="text-sm text-[#a1a1aa]">მეტი ›</a>
             </div>
-            {posts.map((post) => (
-              <article key={post.handle} className="mt-4 border border-white/6 bg-white/2">
+            {posts.length ? posts.map((post) => (
+              <a key={post.id} href={`/community/${post.id}`} className="group mt-4 block border border-white/6 bg-white/2 transition-colors hover:bg-white/4">
                 <div className="px-3 pt-3 pb-2">
                   <div className="flex items-center justify-between">
-                    <span className="rounded-full bg-[#e93748]/12 px-2 py-0.5 text-[11px] font-bold text-[#e93748]">{post.tag}</span>
-                    <span className="flex gap-2.5 text-xs text-[#a1a1aa]"><span>💬 {post.comments}</span><span>👁 {post.views}</span></span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="rounded-full bg-[#e93748]/12 px-2 py-0.5 text-[11px] font-bold text-[#e93748]">{post.tag}</span>
+                      {post.pinned ? <span className="text-[11px] text-[#ff8a95]">მიმაგრებული</span> : null}
+                    </span>
+                    <span className="flex gap-2.5 text-xs text-[#a1a1aa]"><span title="პასუხები">💬 {post.replies}</span><span title="ხმები">▲ {post.votes}</span></span>
                   </div>
-                  <h3 className="mt-2 text-sm leading-snug font-semibold">{post.title}</h3>
-                  <p className="mt-1.5 text-[13px] leading-snug text-[#a1a1aa]">{post.body}</p>
+                  <h3 className="mt-2 line-clamp-2 text-sm leading-snug font-semibold">{post.title}</h3>
+                  {post.body ? <p className="mt-1.5 line-clamp-2 text-[13px] leading-snug text-[#a1a1aa]">{post.body}</p> : null}
                 </div>
                 <div className="flex items-center gap-2 border-t border-white/5 px-3 py-2">
-                  <img src={post.avatar} alt={post.user} className="size-6 rounded-full object-cover" />
+                  {post.avatar ? <img src={post.avatar} alt={post.user} className="size-6 rounded-full object-cover" /> : <span className="size-6 rounded-full bg-white/10" />}
                   <div className="min-w-0 flex-1">
-                    <strong className="block text-xs">{post.user}</strong>
-                    <small className="text-[11px] text-[#6a7282]">{post.handle}</small>
+                    <strong className="block truncate text-xs">{post.user}</strong>
+                    <small className="text-[11px] text-[#6a7282]">{post.at}</small>
                   </div>
-                  <span className="text-xs text-[#e93748]">წაკითხვა →</span>
+                  <span className="text-xs text-[#e93748] transition-transform group-hover:translate-x-0.5">წაკითხვა →</span>
                 </div>
-              </article>
-            ))}
+              </a>
+            )) : (
+              <div className="mt-4 bg-white/2 px-4 py-6 text-center">
+                <p className="text-sm text-[#a1a1aa]">ჯერ პოსტი არ არის.</p>
+                <a href="/community" className="mt-2 inline-block text-xs text-[#e93748]">დაწერე პირველი →</a>
+              </div>
+            )}
           </div>
           ))}
         </aside> : null}
@@ -788,12 +892,17 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
           <nav className="mt-3 flex gap-6 text-sm text-[#9ca3af]"><a href="/help">დახმარება</a><a href="/guide">გზამკვლევი</a><a href="/status">სტატუსი</a></nav>
         </div>
       </footer>}
+      <div className="h-[calc(66px+env(safe-area-inset-bottom))] md:hidden" />
 
       {searchOpen ? (
-        <div className="search-overlay fixed inset-0 z-[80] flex items-start justify-center px-6 pt-[12vh]">
+        <div className="search-overlay fixed inset-0 z-[80] flex items-start justify-center px-6 pt-[12vh] max-md:p-0">
           <button type="button" className="absolute inset-0 cursor-default" aria-label="ძებნის დახურვა" onClick={() => setSearchOpen(false)} />
-          <div className="search-panel relative w-full max-w-[600px] overflow-hidden rounded-[36px] border border-white/8 bg-[rgba(14,14,14,0.88)] p-2" role="dialog" aria-label="ანიმეს ძებნა">
-            <label className="search-trigger search-box relative flex h-14 cursor-text items-center gap-3 rounded-full pr-2.5 pl-5 text-[#8b929e]" onMouseMove={(event) => { const box = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.setProperty("--mx", `${event.clientX - box.left}px`); }}>
+          <div className="search-panel relative w-full max-w-[600px] overflow-hidden rounded-[36px] border border-white/8 bg-[rgba(14,14,14,0.88)] p-2 max-md:flex max-md:h-dvh max-md:max-w-none max-md:flex-col max-md:rounded-none max-md:border-0 max-md:bg-[#0a0a0a] max-md:px-3 max-md:pt-[max(12px,env(safe-area-inset-top))] max-md:pb-[env(safe-area-inset-bottom)]" role="dialog" aria-label="ანიმეს ძებნა">
+            <div className="flex items-center gap-2">
+            <button type="button" className="hidden size-11 shrink-0 cursor-pointer place-items-center rounded-full text-[#d1d5dc] active:bg-white/8 max-md:grid" aria-label="ძებნის დახურვა" onClick={() => setSearchOpen(false)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6 9 12l6 6" /></svg>
+            </button>
+            <label className="search-trigger search-box relative flex h-14 min-w-0 flex-1 cursor-text items-center gap-3 rounded-full pr-2.5 pl-5 text-[#8b929e] max-md:h-12 max-md:border-0 max-md:bg-[#18181b] max-md:pl-4" onMouseMove={(event) => { const box = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.setProperty("--mx", `${event.clientX - box.left}px`); }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="shrink-0"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
               <input ref={searchRef} value={query} onChange={(event) => { setQuery(event.target.value); setActive(0); setResults(null); }} onKeyDown={onSearchKey} placeholder="მოძებნე ანიმე..." className="h-full min-w-0 flex-1 border-0 bg-transparent text-[15px] text-white outline-none placeholder:text-[#6a7282]" />
               {query ? (
@@ -801,13 +910,15 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
                 </button>
               ) : (
-                <kbd className="search-trigger-kbd">Esc</kbd>
+                <kbd className="search-trigger-kbd max-md:hidden">Esc</kbd>
               )}
             </label>
-            <p className="px-4 pt-4 pb-2 text-xs font-medium text-[#6a7282]">
+            </div>
+            <p className="px-4 pt-4 pb-2 text-xs font-medium text-[#6a7282] max-md:px-2">
+
               {q ? `${hits.length} შედეგი` : "ახლა პოპულარული"}
             </p>
-            <div className="search-list max-h-[56vh] overflow-y-auto">
+            <div className="search-list max-h-[56vh] overflow-y-auto max-md:max-h-none max-md:min-h-0 max-md:flex-1 max-md:overscroll-contain max-md:pb-4">
               {hits.length ? hits.map((item, index) => (
                 <button key={item.slug} type="button" className={`search-row group flex w-full cursor-pointer items-center gap-3.5 rounded-2xl px-2.5 py-2 text-left ${index === active ? "is-active" : ""}`} onMouseEnter={() => setActive(index)} onClick={() => openWatch(item.slug)}>
                   {art(item) ? <img src={art(item)} alt="" className="h-[56px] w-[40px] shrink-0 rounded-lg object-cover" /> : <span className="h-[56px] w-[40px] shrink-0 rounded-lg bg-[#1a1a1a]" />}
@@ -835,7 +946,7 @@ export function Home({ user, data, detail, state, comments, commentStats, watchE
                 </div>
               )}
             </div>
-            <div className="mt-1 flex items-center gap-5 border-t border-white/6 px-6 pt-3 pb-2.5 text-[11px] text-[#6a7282]">
+            <div className="mt-1 flex items-center gap-5 border-t border-white/6 px-6 pt-3 pb-2.5 text-[11px] text-[#6a7282] max-md:hidden">
               <span className="flex items-center gap-1.5"><kbd className="search-kbd">↑</kbd><kbd className="search-kbd">↓</kbd> არჩევა</span>
               <span className="flex items-center gap-1.5"><kbd className="search-kbd">↵</kbd> ძებნა</span>
               <span className="flex items-center gap-1.5"><kbd className="search-kbd">esc</kbd> დახურვა</span>

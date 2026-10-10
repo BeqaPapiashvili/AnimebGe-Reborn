@@ -126,8 +126,10 @@ export function AdminAnimeForm({
 }) {
   const [format, setFormat] = useState(anime.format || "11");
   const [published, setPublished] = useState(anime.published);
+  const [bump, setBump] = useState(false);
   const [poster, setPoster] = useState(anime.poster);
   const [cover, setCover] = useState(anime.cover);
+  const [logo, setLogo] = useState(anime.logo);
   const [episodes, setEpisodes] = useState<Episode[]>(() => episodesFrom(sources));
   const film = format === "12";
   const rows = pack(episodes, film);
@@ -149,6 +151,20 @@ export function AdminAnimeForm({
             </div>
           </div>
           <div className="flex items-center gap-4">
+            {creating ? null : (
+              <button
+                type="button"
+                onClick={() => setBump((value) => !value)}
+                aria-pressed={bump}
+                title="შენახვისას ანიმე მთავარ გვერდზე პირველ ადგილზე ავა"
+                className={`flex h-11 cursor-pointer items-center gap-2.5 rounded-xl px-4 text-[10px] tracking-widest uppercase transition ${bump ? "bg-[#e93748]/15 text-[#ff8a95]" : "bg-white/5 text-white/50 hover:text-white"}`}
+              >
+                <span className={`relative h-4 w-7 rounded-full transition ${bump ? "bg-[#e93748]" : "bg-white/15"}`}>
+                  <span className={`absolute top-0.5 size-3 rounded-full bg-white transition-all ${bump ? "left-3.5" : "left-0.5"}`} />
+                </span>
+                პირველზე აწევა
+              </button>
+            )}
             <a href="/admin/anime" className={quietClass}>გაუქმება</a>
             <SiteCta submit>{creating ? "დამატება" : "შენახვა"}</SiteCta>
           </div>
@@ -159,8 +175,10 @@ export function AdminAnimeForm({
         <input type="hidden" name="id" value={anime.id} />
         <input type="hidden" name="format" value={format} />
         {published ? <input type="hidden" name="published" value="1" /> : null}
+        {bump ? <input type="hidden" name="bump" value="1" /> : null}
         <input type="hidden" name="poster" value={poster} />
         <input type="hidden" name="cover" value={cover} />
+        <input type="hidden" name="logo" value={logo} />
         {rows.map((row) => (
           <span key={row.key}>
             <input type="hidden" name="source_key" value={row.key} />
@@ -268,7 +286,7 @@ export function AdminAnimeForm({
 
           <aside className="lg:col-span-4">
             <div className="lg:sticky lg:top-32">
-              <Block title="მედია" text="პოსტერი და ქოვერი">
+              <Block title="მედია" text="პოსტერი, ქოვერი და სახელის ლოგო">
                 <p className="mb-2 text-sm font-semibold">პოსტერი</p>
                 <div className="aspect-[2/3] overflow-hidden rounded-[2rem] border-2 border-dashed border-white/10 bg-black/40">
                   {poster ? <img src={poster} alt="" className="h-full w-full object-cover" /> : <div className="grid h-full place-items-center text-sm text-white/35">პოსტერი არ არის</div>}
@@ -279,6 +297,12 @@ export function AdminAnimeForm({
                   {cover ? <img src={cover} alt="" className="h-full w-full object-cover" /> : <div className="grid h-full place-items-center text-sm text-white/35">ქოვერი არ არის</div>}
                 </div>
                 <input value={cover} onChange={(event) => setCover(event.target.value)} placeholder="სურათის ბმული" aria-label="ქოვერი" className={`${inputClass} mt-3`} />
+                <p className="mt-5 mb-1 text-sm font-semibold">სახელის ლოგო</p>
+                <p className="mb-2 text-xs text-white/40">გამჭვირვალე PNG/WEBP სახელით. მთავარ სლაიდერზე სახელის ნაცვლად გამოჩნდება. თუ ცარიელია, სახელი ტექსტად ეწერება.</p>
+                <div className="relative grid h-32 place-items-center overflow-hidden rounded-[2rem] bg-cover bg-center" style={{ backgroundImage: cover ? `linear-gradient(90deg,rgba(10,10,10,0.8),rgba(10,10,10,0.35)),url('${cover}')` : undefined, backgroundColor: "#0f0f11" }}>
+                  {logo ? <img src={logo} alt="" className="max-h-24 max-w-[85%] object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]" /> : <span className="px-4 text-center text-lg font-bold text-white/80">{anime.title || "სახელი"}</span>}
+                </div>
+                <input value={logo} onChange={(event) => setLogo(event.target.value)} placeholder="ლოგოს ბმული (არასავალდებულო)" aria-label="სახელის ლოგო" className={`${inputClass} mt-3`} />
               </Block>
             </div>
           </aside>

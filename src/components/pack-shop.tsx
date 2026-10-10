@@ -195,19 +195,19 @@ export function PackShop({ data }: { data: PlayData }) {
 
   return (
     <div className="mx-auto w-full">
-      <section className="relative overflow-hidden rounded-[18px] border border-white/10 bg-[#121214] px-6 py-8 sm:px-10 sm:py-10">
+      <section className="relative overflow-hidden rounded-[18px] border border-white/10 bg-[#121214] px-6 py-8 sm:px-10 sm:py-10 max-md:border-0 max-md:px-5 max-md:py-6 max-md:text-center">
         <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-[#e93748] to-transparent" />
-        <div className="relative grid items-center gap-6 sm:grid-cols-[minmax(0,1fr)_480px]">
-          <div>
-            <h1 className="max-w-[520px] text-[28px] leading-[1.15] font-semibold tracking-tight sm:text-[36px]">შემდეგი ქარდი შენს კოლექციაში</h1>
-            <p className="mt-4 max-w-[480px] text-[15px] leading-7 text-white/55">გახსენი პაკი, შეადარე სამი ქარდი და დატოვე ის, რომელიც გინდა.</p>
-            <div className="mt-6 flex flex-wrap gap-2">
+        <div className="relative grid items-center gap-6 sm:grid-cols-[minmax(0,1fr)_480px] max-sm:grid-cols-1 max-sm:gap-2">
+          <div className="min-w-0">
+            <h1 className="max-w-[520px] text-[28px] leading-[1.15] font-semibold tracking-tight sm:text-[36px] max-md:mx-auto max-md:text-[24px]">შემდეგი ქარდი შენს კოლექციაში</h1>
+            <p className="mt-4 max-w-[480px] text-[15px] leading-7 text-white/55 max-md:mx-auto max-md:mt-2.5 max-md:text-[13px] max-md:leading-6">გახსენი პაკი, შეადარე სამი ქარდი და დატოვე ის, რომელიც გინდა.</p>
+            <div className="mt-6 flex flex-wrap gap-2 max-md:mt-4 max-md:justify-center">
               <span className="inline-flex h-10 items-center rounded-lg bg-[#1a1a1a] px-3.5 text-sm text-[#d1d5dc]">3 შემთხვევითი ქარდი</span>
               <span className="inline-flex h-10 items-center rounded-lg bg-[#1a1a1a] px-3.5 text-sm text-[#d1d5dc]">1 შენ ირჩევ</span>
             </div>
           </div>
-          <div className="relative mx-auto h-[230px] w-[320px] sm:h-[300px] sm:w-[460px]">
-            <div className="absolute top-1/2 left-1/2 h-[210px] w-[320px] -translate-x-1/2 -translate-y-1/2 sm:scale-[1.42]">
+          <div className="relative mx-auto h-[230px] w-[320px] sm:h-[300px] sm:w-[460px] max-sm:h-[200px] max-sm:w-full">
+            <div className="absolute top-1/2 left-1/2 h-[210px] w-[320px] -translate-x-1/2 -translate-y-1/2 sm:scale-[1.42] max-sm:scale-90">
               {deck.map((card, index) => (
                 <img
                   key={`${card.id}-${index}`}
@@ -221,16 +221,16 @@ export function PackShop({ data }: { data: PlayData }) {
         </div>
       </section>
 
-      <section className="mt-4 rounded-[18px] border border-white/10 bg-[#121214] p-4 sm:p-5">
+      <section className="mt-4 rounded-[18px] border border-white/10 bg-[#121214] p-4 sm:p-5 max-md:border-0 max-md:p-3">
         <div className="flex items-center justify-between gap-4 border-b border-white/[0.06] px-1 pb-4">
-          <div className="flex items-center gap-4">
+          <div className="flex min-w-0 items-center gap-4 max-md:gap-3">
             <span className="grid size-12 place-items-center rounded-xl border border-white/10 bg-[#1a1a1a] text-[#e93748]"><Coins className="size-6" /></span>
             <div>
               <p className="text-xs text-white/45">შენი ბალანსი</p>
               <p className="text-[26px] leading-tight font-semibold tracking-tight">{data.me ? coins : "—"} <span className="text-sm font-normal text-white/45">მონეტა</span></p>
             </div>
           </div>
-          <p className="text-right text-xs text-white/40">ახალი პაკების გასახსნელად</p>
+          <p className="text-right text-xs text-white/40 max-md:hidden">ახალი პაკების გასახსნელად</p>
         </div>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
